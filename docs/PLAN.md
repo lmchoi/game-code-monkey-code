@@ -85,16 +85,16 @@ Each step = 1-3 commits. Game runs without errors after every commit.
 
 | Step | What's built | How to test |
 |------|-------------|-------------|
-| 1 | Project skeleton — autoloads registered (empty), main scene | Game launches, no errors in console |
-| 2 | Top bar (hardcoded) — Day 1, $0 / $5,000 renders | Visual: labels visible, font sizes correct |
-| 3 | Top bar (wired) — GameManager signals drive labels | GUT: set `money = 500`, assert `money_changed` fires. Visual: label updates |
-| 4 | Task card (hardcoded) — title, 🍝🍝, deadline, progress bar | Visual: card renders, progress bar at fixed % |
-| 5 | Task card (from JSON) — first tutorial task populates card | GUT: TaskManager returns task with correct title/complexity. Visual: real task shows |
-| 6 | WORK button — progress calculates, bar flashes, day advances | GUT: `do_work()` with 0 bugs vs 50 bugs gives correct progress delta. Visual: click WORK, bar updates |
-| 7 | HUSTLE button — money increases, day advances | GUT: `do_hustle()` adds correct amount from balance.json. Visual: click HUSTLE, money updates |
-| 8 | SHIP IT button — vibe indicator, greyed below 50%, ships task | GUT: ship at 80% → 🟢, 65% → 🟡, 52% → 🔴, 49% → blocked. Visual: new task loads |
-| 9 | Consequences — bugs on ship, detection roll, strikes appear | GUT: ship at 60% adds correct bugs. GUT: mock `randf()` to force detection hit, assert strike increments. Visual: strike badge appears |
-| 10 | Win/loss checks — money goal, bug spiral | GUT: money ≥ 5000 emits `victory`. GUT: bugs ≥ 100 emits `game_over`. Visual: game ends correctly |
-| 11 | Recap screen — end of run summary | GUT: `get_game_stats()` returns correct dict. Visual: recap shows right numbers |
+| 1 | Project skeleton — autoloads registered (empty), main scene | `/check` — no errors |
+| 2 | Top bar (hardcoded) — Day 1, $0 / $5,000 renders | `/check` + run game, eyeball it |
+| 3 | Top bar (wired) — GameManager signals drive labels | `/check` + run game, verify labels update |
+| 4 | Task card (hardcoded) — title, 🍝🍝, deadline, progress bar | `/check` + run game, eyeball it |
+| 5 | Task card (from JSON) — first tutorial task populates card | `/check` + run game, verify real task shows |
+| 6 | WORK button — progress calculates, bar flashes, day advances | `/check` + click WORK, verify bar updates and day ticks |
+| 7 | HUSTLE button — money increases, day advances | `/check` + click HUSTLE, verify money updates |
+| 8 | SHIP IT button — vibe indicator, greyed below 50%, ships task | `/check` + click SHIP IT, verify new task loads |
+| 9 | Consequences — bugs on ship, detection roll, strikes appear | `/check` + play until consequence fires, verify it shows |
+| 10 | Win/loss checks — money goal, bug spiral | `/check` + cheat money/bugs to threshold, verify game ends |
+| 11 | Recap screen — end of run summary | `/check` + finish a run, verify recap shows correct numbers |
 
-**Rule:** steps 1-4 are visual only. Steps 5+ get a GUT unit test before the visual check.
+**Rule:** `/check` before every commit. `/look` any time you want a second opinion on layout.
