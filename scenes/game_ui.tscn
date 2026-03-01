@@ -7,20 +7,68 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 theme = ExtResource("1_theme")
 
-[node name="TopBar" type="PanelContainer" parent="."]
-anchor_right = 1.0
-
-[node name="HBoxContainer" type="HBoxContainer" parent="TopBar"]
+[node name="MainLayout" type="VBoxContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="DayLabel" type="Label" parent="TopBar/HBoxContainer"]
+[node name="TopBar" type="PanelContainer" parent="MainLayout"]
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MainLayout/TopBar"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="DayLabel" type="Label" parent="MainLayout/TopBar/HBoxContainer"]
 text = "Day 1"
 theme_type_variation = "TopBarLabel"
 
-[node name="MoneyLabel" type="Label" parent="TopBar/HBoxContainer"]
+[node name="MoneyLabel" type="Label" parent="MainLayout/TopBar/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "💰 $0 / $5,000"
 horizontal_alignment = 2
 theme_type_variation = "TopBarLabel"
+
+[node name="TaskCard" type="PanelContainer" parent="MainLayout"]
+size_flags_vertical = 3
+
+[node name="CardContent" type="VBoxContainer" parent="MainLayout/TaskCard"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="TaskTitleLabel" type="Label" parent="MainLayout/TaskCard/CardContent"]
+text = "Build a blockchain todo app"
+theme_type_variation = "TaskTitleLabel"
+
+[node name="MetaRow" type="HBoxContainer" parent="MainLayout/TaskCard/CardContent"]
+
+[node name="ComplexityLabel" type="Label" parent="MainLayout/TaskCard/CardContent/MetaRow"]
+text = "🍝"
+
+[node name="DeadlineLabel" type="Label" parent="MainLayout/TaskCard/CardContent/MetaRow"]
+text = "· Due: Day 6"
+theme_type_variation = "MetricLabel"
+
+[node name="TaskProgressBar" type="ProgressBar" parent="MainLayout/TaskCard/CardContent"]
+value = 85.0
+
+[node name="ProgressLabel" type="Label" parent="MainLayout/TaskCard/CardContent"]
+text = "85%"
+theme_type_variation = "MetricLabel"
+
+[node name="ShipButton" type="Button" parent="MainLayout/TaskCard/CardContent"]
+text = "🟢  SHIP IT"
+disabled = true
+
+[node name="ActionButtons" type="HBoxContainer" parent="MainLayout"]
+
+[node name="WorkButton" type="Button" parent="MainLayout/ActionButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "WORK"
+disabled = true
+
+[node name="HustleButton" type="Button" parent="MainLayout/ActionButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "HUSTLE"
+disabled = true
