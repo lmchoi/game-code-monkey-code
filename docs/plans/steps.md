@@ -127,11 +127,12 @@ All sizes live in `themes/main_theme.tres` — the single source of truth. Never
 1. `data/tutorial_tasks.json` — first 3 tasks in order:
    ```json
    [
-     { "title": "Build a blockchain todo app", "complexity": 1, "deadline_day": 6, "start_progress": 85 },
-     { "title": "...", "complexity": 2, "deadline_day": 10, "start_progress": 0 },
-     { "title": "...", "complexity": 2, "deadline_day": 14, "start_progress": 0 }
+     { "title": "Make the logo 10% bigger", "complexity": 1, "deadline_days": 3 },
+     { "title": "Fix the flaky tests", "complexity": 1, "deadline_days": 3 },
+     { "title": "Fix the 847 linting warnings", "complexity": 2, "deadline_days": 3 }
    ]
    ```
+   - `deadline_days` is a relative window — TaskManager adds it to the current day when the task is assigned
 2. `data/balance.json` — all values from `docs/BALANCE.md`:
    ```json
    {
@@ -164,7 +165,8 @@ All sizes live in `themes/main_theme.tres` — the single source of truth. Never
 - [ ] `/check` passes with no errors
 
 **Notes:**
-- Task 1 starts at 85% progress — TaskManager must respect `start_progress`
+- All tasks start at 0% progress — no `start_progress` field needed
+- `deadline_days` is relative — TaskManager computes absolute deadline on assignment
 - Random task pool is post-V1 — after tutorial tasks, loop or hold on last task for now
 - All balance values must be in balance.json from this point — no magic numbers in code
 - Buttons remain disabled — no signals wired yet

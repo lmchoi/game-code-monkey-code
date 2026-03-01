@@ -1,0 +1,5 @@
+[
+  { "title": "Make the logo 10% bigger", "complexity": 1, "deadline_days": 3 },
+  { "title": "Fix the flaky tests", "complexity": 1, "deadline_days": 3 },
+  { "title": "Fix the 847 linting warnings", "complexity": 2, "deadline_days": 3 }
+]
