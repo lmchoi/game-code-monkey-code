@@ -1,0 +1,17 @@
+{
+  "win_goal": 5000,
+  "bug_spiral_threshold": 100,
+  "max_strikes": 3,
+  "payday_interval": 5,
+  "salary_per_payday": 500,
+  "hustle_income": 200,
+  "detection_base": 0.10,
+  "detection_overdue_bonus": 0.20,
+  "detection_strike1_bonus": 0.10,
+  "detection_strike2_bonus": 0.20,
+  "bug_penalty_per_bug": 0.01,
+  "bugs_per_incomplete_percent": 0.1,
+  "ship_minimum_progress": 50,
+  "ship_vibe_green": 80,
+  "ship_vibe_yellow": 60
+}

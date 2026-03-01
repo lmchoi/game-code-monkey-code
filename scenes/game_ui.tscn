@@ -1,11 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://dcwcc2n6j14fc"]
+[gd_scene load_steps=3 format=3 uid="uid://dcwcc2n6j14fc"]
 
 [ext_resource type="Theme" uid="uid://cq5b1vr4oao0j" path="res://themes/main_theme.tres" id="1_theme"]
+[ext_resource type="Script" path="res://scenes/game_ui.gd" id="2_script"]
 
 [node name="game_ui" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme = ExtResource("1_theme")
+script = ExtResource("2_script")
 
 [node name="MainLayout" type="VBoxContainer" parent="."]
 anchor_right = 1.0
@@ -36,23 +38,18 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="TaskTitleLabel" type="Label" parent="MainLayout/TaskCard/CardContent"]
-text = "Build a blockchain todo app"
 theme_type_variation = "TaskTitleLabel"
 
 [node name="MetaRow" type="HBoxContainer" parent="MainLayout/TaskCard/CardContent"]
 
 [node name="ComplexityLabel" type="Label" parent="MainLayout/TaskCard/CardContent/MetaRow"]
-text = "🍝"
 
 [node name="DeadlineLabel" type="Label" parent="MainLayout/TaskCard/CardContent/MetaRow"]
-text = "· Due: Day 6"
 theme_type_variation = "MetricLabel"
 
 [node name="TaskProgressBar" type="ProgressBar" parent="MainLayout/TaskCard/CardContent"]
-value = 85.0
 
 [node name="ProgressLabel" type="Label" parent="MainLayout/TaskCard/CardContent"]
-text = "85%"
 theme_type_variation = "MetricLabel"
 
 [node name="ShipButton" type="Button" parent="MainLayout/TaskCard/CardContent"]

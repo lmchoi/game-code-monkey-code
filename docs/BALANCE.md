@@ -81,12 +81,12 @@ Examples:
 
 ## Task Difficulty Curve
 
-| Phase | Complexity | Deadline |
-|-------|------------|----------|
-| Task 1 (fixed) | 🍝 (1) | Long (Day 6) |
-| Task 2 (fixed) | 🍝🍝 (2) | Medium |
-| Task 3 (fixed) | 🍝🍝 (2) | Tight |
-| Pool tasks | Scales over time | Scales over time |
+| Phase | Title | Complexity | Deadline window |
+|-------|-------|------------|-----------------|
+| Task 1 (fixed) | "Make the logo 10% bigger" | 🍝 (1) | 3 days |
+| Task 2 (fixed) | "Fix the flaky tests" | 🍝 (1) | 3 days |
+| Task 3 (fixed) | "Fix the 847 linting warnings" | 🍝🍝 (2) | 3 days |
+| Pool tasks | Varies | Scales over time | Scales over time |
 
 ---
 
