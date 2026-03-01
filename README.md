@@ -22,3 +22,11 @@ Each day pick one action:
 - **SHIP IT** — ship your buggy code and repeat
 
 **Win** by saving $5,000 before you get fired
+
+---
+
+## Docs
+
+- **[docs/GDD.md](docs/GDD.md)** — full game design
+- **[docs/BALANCE.md](docs/BALANCE.md)** — all the numbers
+- **[docs/DECISIONS.md](docs/DECISIONS.md)** — design decisions
