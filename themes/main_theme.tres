@@ -1,0 +1,18 @@
+[gd_resource type="Theme" format=3 uid="uid://cq5b1vr4oao0j"]
+
+[resource]
+; Default for all controls — base labels, metadata, badges
+default_font_size = 20
+
+; Action buttons
+Button/font_sizes/font_size = 22
+
+; Semantic label variations — set theme_type_variation on Label nodes in scenes
+; TopBarLabel      → 32px  (day counter, money display)
+; TaskTitleLabel   → 28px  (task card heading)
+; MetricLabel      → 24px  (progress %, deadline)
+; EndGameTitle     → 48px  (recap screen heading)
+TopBarLabel/font_sizes/font_size = 32
+TaskTitleLabel/font_sizes/font_size = 28
+MetricLabel/font_sizes/font_size = 24
+EndGameTitle/font_sizes/font_size = 48
