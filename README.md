@@ -30,3 +30,4 @@ Each day pick one action:
 - **[docs/GDD.md](docs/GDD.md)** — full game design
 - **[docs/BALANCE.md](docs/BALANCE.md)** — all the numbers
 - **[docs/DECISIONS.md](docs/DECISIONS.md)** — design decisions
+- **[docs/INDEX.md](docs/INDEX.md)** — everything else
