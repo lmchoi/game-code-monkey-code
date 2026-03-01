@@ -13,6 +13,17 @@ config_version=5
 config/name="code-monkey-code"
 config/features=PackedStringArray("4.5", "Mobile")
 config/icon="res://icon.svg"
+run/main_scene="res://scenes/game_ui.tscn"
+
+[autoload]
+
+GameManager="*res://autoloads/game_manager.gd"
+TaskManager="*res://autoloads/task_manager.gd"
+
+[display]
+
+window/size/viewport_width=480
+window/size/viewport_height=854
 
 [rendering]
 
