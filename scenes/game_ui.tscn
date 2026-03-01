@@ -1,3 +1,26 @@
-[gd_scene format=3 uid="uid://dcwcc2n6j14fc"]
+[gd_scene load_steps=2 format=3 uid="uid://dcwcc2n6j14fc"]
 
-[node name="game_ui" type="Node2D"]
+[ext_resource type="Theme" uid="uid://cq5b1vr4oao0j" path="res://themes/main_theme.tres" id="1_theme"]
+
+[node name="game_ui" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource("1_theme")
+
+[node name="TopBar" type="PanelContainer" parent="."]
+anchor_right = 1.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TopBar"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="DayLabel" type="Label" parent="TopBar/HBoxContainer"]
+text = "Day 1"
+theme_type_variation = "TopBarLabel"
+
+[node name="MoneyLabel" type="Label" parent="TopBar/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "💰 $0 / $5,000"
+horizontal_alignment = 2
+theme_type_variation = "TopBarLabel"
