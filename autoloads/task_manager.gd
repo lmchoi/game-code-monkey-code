@@ -3,6 +3,8 @@ extends Node
 signal task_changed(task_data: Dictionary)
 signal task_progress_changed(progress: float)
 
+const TASK_MAX_PROGRESS := 100.0
+
 var _tasks: Array = []
 var _current_index: int = 0
 var current_task: Dictionary = {}
@@ -17,7 +19,7 @@ func _ready() -> void:
 	_assign_task(0, 1)
 
 func advance_progress(delta: float) -> void:
-	current_progress = minf(current_progress + delta, 100.0)
+	current_progress = minf(current_progress + delta, TASK_MAX_PROGRESS)
 	task_progress_changed.emit(current_progress)
 
 func _assign_task(index: int, current_day: int) -> void:

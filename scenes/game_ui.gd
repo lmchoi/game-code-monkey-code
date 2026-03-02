@@ -26,4 +26,4 @@ func _on_task_changed(task_data: Dictionary) -> void:
 func _on_task_progress_changed(progress: float) -> void:
 	_progress_bar.value = progress
 	_progress_label.text = "%d%%" % int(progress)
-	_work_button.disabled = progress >= 100.0
+	_work_button.disabled = progress >= TaskManager.TASK_MAX_PROGRESS

@@ -5,7 +5,7 @@ var balance: Dictionary = {}
 var bugs: int = 0
 
 func calculate_progress_delta(complexity: int, bugs_count: int) -> float:
-	return 100.0 / (complexity * (1.0 + bugs_count * balance.bug_penalty_per_bug))
+	return TaskManager.TASK_MAX_PROGRESS / (complexity * (1.0 + bugs_count * balance.bug_penalty_per_bug))
 
 func do_work() -> void:
 	_constraint_phase()
