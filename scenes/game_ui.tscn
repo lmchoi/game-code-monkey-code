@@ -62,7 +62,6 @@ disabled = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "WORK"
-disabled = true
 
 [node name="HustleButton" type="Button" parent="MainLayout/ActionButtons"]
 layout_mode = 2
