@@ -173,38 +173,52 @@ All sizes live in `themes/main_theme.tres` — the single source of truth. Never
 
 ---
 
-## Step 5 — WORK button
+## Step 5a — Progress delta (pure function + GUT)
 
-**Goal:** Clicking WORK advances progress and the day. Core loop tick. Top bar wired.
+**Goal:** Core progress formula extracted as a testable pure function. GUT installed.
 
 **What to build:**
 
-1. `game_manager.gd` — add state + signals, then implement `do_work()`:
+1. Install GUT plugin into `addons/gut/`
+2. `game_manager.gd` — add `calculate_progress_delta(complexity: int, bugs: int) -> float`:
    ```gdscript
-   var day: int = 1 : set = _set_day
-   var money: int = 0 : set = _set_money
-   signal day_changed(new_day: int)
-   signal money_changed(new_money: int)
+   func calculate_progress_delta(complexity: int, bugs: int) -> float:
+       return 100.0 / (complexity * (1.0 + bugs * balance.bug_penalty_per_bug))
    ```
+3. `tests/test_game_manager.gd` — three cases:
+   - complexity 1, 0 bugs → 100.0
+   - complexity 2, 0 bugs → 50.0
+   - complexity 1, 100 bugs → 50.0
+
+**Files touched:**
+- `addons/gut/` (new)
+- `autoloads/game_manager.gd`
+- `tests/test_game_manager.gd` (new)
+
+**Acceptance Criteria:**
+- [ ] GUT runs headlessly with no errors
+- [ ] All three test cases pass
+- [ ] `/check` passes
+
+---
+
+## Step 5b — Progress bar
+
+**Goal:** Clicking WORK advances the progress bar. First interactive moment.
+
+**What to build:**
+
+1. `task_manager.gd` — `advance_progress(delta: float)`: clamp to 100, emit `task_progress_changed(progress)`
+2. `game_manager.gd` — `do_work()` stub:
    ```
-   do_work():
    1. Constraint phase — empty hook (_constraint_phase())
-   2. progress_delta = 100.0 / (task.complexity * (1.0 + bugs * bug_penalty_per_bug))
-   3. TaskManager.advance_progress(progress_delta)
+   2. delta = calculate_progress_delta(current_task.complexity, bugs)
+   3. TaskManager.advance_progress(delta)
    4. Consequence phase — empty hook (_consequence_phase())
-   5. Bookkeeping — _do_bookkeeping()
-   6. Win/loss check — _check_game_state()
-   7. day += 1
    ```
-2. `_do_bookkeeping()` — payday check (`day % payday_interval == 0` → `money += salary`)
-3. `_check_game_state()` — loss only for now: bugs >= bug_spiral_threshold → emit `game_over("bug_spiral")`
-4. `task_manager.gd` — `advance_progress(delta)`, clamp to 100, emit `task_progress_changed(progress)`
-5. `game_ui.gd`:
-   - Connect `day_changed` → `"Day %d" % new_day`
-   - Connect `money_changed` → `"💰 $%d / $%d" % [new_money, balance.win_goal]`
-   - Call `GameManager.day_changed.emit(1)` and `GameManager.money_changed.emit(0)` in `_ready()` to seed initial display
-   - Wire `WorkButton.pressed` → `GameManager.do_work()`
-   - Update progress bar + label on `task_progress_changed`
+3. `game_ui.gd`:
+   - Wire `WorkButton.pressed` → `GameManager.do_work()`, enable button
+   - Connect `task_progress_changed` → update progress bar + progress label
    - Disable WorkButton when progress hits 100
 
 **Files touched:**
@@ -213,48 +227,78 @@ All sizes live in `themes/main_theme.tres` — the single source of truth. Never
 - `scenes/game_ui.gd`
 
 **Acceptance Criteria:**
-- [ ] Clicking WORK increases progress bar
-- [ ] Day counter and money label update from signals (not hardcoded)
-- [ ] Payday fires every 5 days (money increases)
-- [ ] WORK disables when task hits 100%
-- [ ] `/check` passes, game is playable
+- [ ] Clicking WORK increases progress bar and label
+- [ ] WORK disables at 100%
+- [ ] `/check` passes, `/look` confirms bar moves
 
 **Notes:**
-- Overdue check is added in Step 8 alongside other consequences
-- `game_over` signal fires but nothing handles it yet — that's Step 9
-- `[JUICE]` progress flash on delta — skip, plain bar update only
+- Day does not increment yet — that's 5c
+- `[JUICE]` progress flash — skip, plain bar update only
 
 ---
 
-## Step 6 — HUSTLE button
+## Step 5c — Day counter
 
-**Goal:** Clicking HUSTLE earns money and advances the day.
+**Goal:** WORK increments the day. DayLabel updates from signal.
 
 **What to build:**
 
-1. `game_manager.gd` — `do_hustle()`:
-   ```
-   1. Constraint phase — _constraint_phase()
-   2. money += hustle_income
-   3. Consequence phase — _consequence_phase() [detection roll added in Step 8]
-   4. _do_bookkeeping()
-   5. _check_game_state() — add win check: money >= win_goal → game_over("win")
-   6. day += 1
-   ```
-2. `game_ui.gd` — wire `HustleButton.pressed` → `GameManager.do_hustle()`
+1. `game_manager.gd`:
+   - Add `var day: int = 1` with setter that emits `signal day_changed(new_day: int)`
+   - `do_work()` — add `day += 1` at the end
+2. `game_ui.gd`:
+   - Connect `day_changed` → `"Day %d" % new_day`
+   - Seed DayLabel in `_ready()` via `GameManager.day_changed.emit(GameManager.day)`
 
 **Files touched:**
 - `autoloads/game_manager.gd`
 - `scenes/game_ui.gd`
 
 **Acceptance Criteria:**
-- [ ] Clicking HUSTLE adds $200 to money display
-- [ ] Day increments
-- [ ] Reaching $5,000 triggers game_over("win") — nothing visible yet, just verify signal fires
+- [ ] Clicking WORK increments DayLabel
+- [ ] DayLabel shows correct value on startup (Day 1)
+- [ ] `/check` passes
+
+---
+
+## Step 6 — HUSTLE button + money
+
+**Goal:** Clicking HUSTLE earns money and advances the day. MoneyLabel wired.
+
+**What to build:**
+
+1. `game_manager.gd`:
+   - Add `var money: int = 0` with setter that emits `signal money_changed(new_money: int)`
+   - `_do_bookkeeping()` — payday check (`day % payday_interval == 0` → `money += salary`)
+   - `_check_game_state()` — win check: `money >= win_goal → game_over("win")`
+   - `do_work()` — add `_do_bookkeeping()` and `_check_game_state()` calls
+   - `do_hustle()`:
+     ```
+     1. Constraint phase — _constraint_phase()
+     2. money += hustle_income
+     3. Consequence phase — _consequence_phase() [detection roll added in Step 9]
+     4. _do_bookkeeping()
+     5. _check_game_state()
+     6. day += 1
+     ```
+2. `game_ui.gd`:
+   - Wire `HustleButton.pressed` → `GameManager.do_hustle()`, enable button
+   - Connect `money_changed` → `"💰 $%d / $%d" % [new_money, GameManager.balance.win_goal]`
+   - Seed MoneyLabel in `_ready()`
+
+**Files touched:**
+- `autoloads/game_manager.gd`
+- `scenes/game_ui.gd`
+
+**Acceptance Criteria:**
+- [ ] Clicking HUSTLE adds $200 to MoneyLabel
+- [ ] Payday fires every 5 days when WORKing (money increases)
+- [ ] Day increments on HUSTLE
+- [ ] Reaching $5,000 triggers game_over("win") — signal fires, nothing visible yet
 - [ ] `/check` passes
 
 **Notes:**
-- Detection roll is wired in Step 8 — `_consequence_phase()` hook is already there, just empty
+- Detection roll is wired in Step 9 — `_consequence_phase()` hook is already there, just empty
 
 ---
 
