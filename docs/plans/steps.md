@@ -185,7 +185,7 @@ All sizes live in `themes/main_theme.tres` — the single source of truth. Never
    func calculate_progress_delta(complexity: int, bugs: int) -> float:
        return 100.0 / (complexity * (1.0 + bugs * balance.bug_penalty_per_bug))
    ```
-3. `tests/test_game_manager.gd` — three cases:
+3. `test/unit/test_game_manager.gd` — three cases:
    - complexity 1, 0 bugs → 100.0
    - complexity 2, 0 bugs → 50.0
    - complexity 1, 100 bugs → 50.0
