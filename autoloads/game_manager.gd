@@ -1,10 +1,16 @@
 extends Node
 
 signal day_changed(new_day: int)
+signal money_changed(new_money: int)
 
 var balance: Dictionary = {}
 
 var bugs: int = 0
+
+var money: int = 0:
+	set(value):
+		money = value
+		money_changed.emit(money)
 
 var day: int = 1:
 	set(value):
