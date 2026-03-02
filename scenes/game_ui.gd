@@ -5,15 +5,16 @@ extends Control
 @onready var _deadline: Label = $MainLayout/TaskCard/CardContent/MetaRow/DeadlineLabel
 @onready var _progress_bar: ProgressBar = $MainLayout/TaskCard/CardContent/TaskProgressBar
 @onready var _progress_label: Label = $MainLayout/TaskCard/CardContent/ProgressLabel
+@onready var _day_label: Label = $MainLayout/TopBar/HBoxContainer/DayLabel
 @onready var _work_button: Button = $MainLayout/ActionButtons/WorkButton
 
 func _ready() -> void:
 	TaskManager.task_changed.connect(_on_task_changed)
 	TaskManager.task_progress_changed.connect(_on_task_progress_changed)
-	_work_button.disabled = false
+	GameManager.day_changed.connect(_on_day_changed)
 	_work_button.pressed.connect(GameManager.do_work)
-	if not TaskManager.current_task.is_empty():
-		_on_task_changed(TaskManager.current_task)
+	GameManager.day_changed.emit(GameManager.day)
+	TaskManager.task_changed.emit(TaskManager.current_task)
 
 func _on_task_changed(task_data: Dictionary) -> void:
 	_task_title.text = task_data["title"]
@@ -22,6 +23,9 @@ func _on_task_changed(task_data: Dictionary) -> void:
 	_progress_bar.value = 0.0
 	_progress_label.text = "0%"
 	_work_button.disabled = false
+
+func _on_day_changed(new_day: int) -> void:
+	_day_label.text = "Day %d" % new_day
 
 func _on_task_progress_changed(progress: float) -> void:
 	_progress_bar.value = progress

@@ -16,7 +16,7 @@ func _ready() -> void:
 	_tasks = JSON.parse_string(file.get_as_text())
 	assert(_tasks != null, "tutorial_tasks.json is not valid JSON")
 	file.close()
-	_assign_task(0, 1)
+	_assign_task(0, GameManager.day)
 
 func advance_progress(delta: float) -> void:
 	current_progress = minf(current_progress + delta, TASK_MAX_PROGRESS)

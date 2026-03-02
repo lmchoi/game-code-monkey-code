@@ -1,8 +1,15 @@
 extends Node
 
+signal day_changed(new_day: int)
+
 var balance: Dictionary = {}
 
 var bugs: int = 0
+
+var day: int = 1:
+	set(value):
+		day = value
+		day_changed.emit(day)
 
 func calculate_progress_delta(complexity: int, bugs_count: int) -> float:
 	return TaskManager.TASK_MAX_PROGRESS / (complexity * (1.0 + bugs_count * balance.bug_penalty_per_bug))
@@ -12,6 +19,7 @@ func do_work() -> void:
 	var delta := calculate_progress_delta(TaskManager.current_task["complexity"], bugs)
 	TaskManager.advance_progress(delta)
 	_consequence_phase()
+	day += 1
 
 func _constraint_phase() -> void:
 	pass
