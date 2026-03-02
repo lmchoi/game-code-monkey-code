@@ -13,6 +13,32 @@ Main scene: `scenes/game_ui.tscn`
 
 ---
 
+## Development
+
+**Check for errors (headless):**
+```bash
+make check
+```
+
+**Run tests:**
+```bash
+make test
+```
+
+Both default to `/Applications/Godot.app/Contents/MacOS/Godot`. Override if your install differs:
+```bash
+make check GODOT=/path/to/godot
+```
+
+**Installing GUT (required for tests):**
+
+`addons/` is gitignored — install GUT manually:
+1. Download `gut_v*.zip` from the [GUT releases page](https://github.com/bitwes/Gut/releases) or the Godot Asset Library
+2. Extract and place the `gut` folder into `addons/` (create `addons/` if it doesn't exist)
+3. In Godot: Project → Project Settings → Plugins → enable GUT
+
+---
+
 ## How to Play
 
 Each day pick one action:

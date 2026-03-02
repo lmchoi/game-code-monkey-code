@@ -37,6 +37,16 @@ A darkly comedic game. Each day pick a daily action (WORK / HUSTLE) and decide w
 
 Open project in Godot 4.5 and press F5. Main scene: [scenes/game_ui.tscn](scenes/game_ui.tscn)
 
+### Installing GUT (test framework)
+
+`addons/` is gitignored — install GUT manually before running tests:
+
+1. Download `gut_v*.zip` from the [GUT releases page](https://github.com/bitwes/Gut/releases) or the Godot Asset Library
+2. Extract and place the `gut` folder into `addons/` (create `addons/` if it doesn't exist)
+3. In Godot: Project → Project Settings → Plugins → enable GUT
+
+Run tests headlessly: `godot --headless -s addons/gut/gut_cmdln.gd`
+
 ---
 
 ## Architecture & Workflow
