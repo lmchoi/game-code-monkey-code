@@ -92,7 +92,7 @@ If a number affects feel or balance, it belongs in a data file — not hardcoded
 - Bug formula constants
 - Win/loss thresholds
 
-**In code:** logic only — never magic numbers.
+**In code:** logic only — never magic numbers. This includes structural constants (e.g. progress scale). If a bare number appears in code, it needs a name — either a `const` in the owning autoload, or a `balance.json` entry. There is no third option.
 
 Balance can be tuned without opening Godot or touching any `.gd` files.
 
