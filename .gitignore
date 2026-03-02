@@ -4,3 +4,6 @@
 
 # Third-party plugins — install manually (see CLAUDE.md)
 /addons/
+
+# Agent-to-agent communication — ephemeral, not for version control
+.claude/last-review.md
