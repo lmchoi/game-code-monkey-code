@@ -38,16 +38,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: addons/gut
-          key: gut-v9.5.0
+          key: gut-${{ hashFiles('scripts/install_gut.sh') }}
 
       - name: Install GUT
         if: steps.cache_gut.outputs.cache-hit != 'true'
-        run: |
-          wget -qO gut-src.zip "https://github.com/bitwes/Gut/archive/refs/tags/v9.5.0.zip"
-          unzip -q gut-src.zip -d /tmp/gut-src
-          mkdir -p addons
-          cp -r /tmp/gut-src/*/addons/gut addons/gut
-          rm -rf gut-src.zip /tmp/gut-src
+        run: bash scripts/install_gut.sh
 
       - name: Import project
         run: godot4 --headless --import 2>&1 || true
