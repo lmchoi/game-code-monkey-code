@@ -26,6 +26,16 @@ func do_work() -> void:
 	var delta := calculate_progress_delta(TaskManager.current_task["complexity"], bugs)
 	TaskManager.advance_progress(delta)
 	_consequence_phase()
+	_do_bookkeeping()
+	_check_game_state()
+	day += 1
+
+func do_hustle() -> void:
+	_constraint_phase()
+	money += int(balance.hustle_income)
+	_consequence_phase()
+	_do_bookkeeping()
+	_check_game_state()
 	day += 1
 
 func _do_bookkeeping() -> void:
