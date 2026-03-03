@@ -5,10 +5,11 @@ signal task_progress_changed(progress: float)
 
 const TASK_MAX_PROGRESS := 100.0
 
-var _tasks: Array = []
-var _current_index: int = 0
 var current_task: Dictionary = {}
 var current_progress: float = 0.0
+
+var _tasks: Array = []
+var _current_index: int = 0
 
 func _ready() -> void:
 	var file = FileAccess.open("res://data/tutorial_tasks.json", FileAccess.READ)
