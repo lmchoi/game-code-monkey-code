@@ -22,6 +22,14 @@ func advance_progress(delta: float) -> void:
 	current_progress = minf(current_progress + delta, TASK_MAX_PROGRESS)
 	task_progress_changed.emit(current_progress)
 
+func ship_current(current_day: int) -> void:
+	if _current_index < _tasks.size() - 1:
+		_assign_task(_current_index + 1, current_day)
+	else:
+		current_progress = 0.0
+		task_progress_changed.emit(current_progress)
+		task_changed.emit(current_task)
+
 func _assign_task(index: int, current_day: int) -> void:
 	_current_index = index
 	current_task = _tasks[index].duplicate()

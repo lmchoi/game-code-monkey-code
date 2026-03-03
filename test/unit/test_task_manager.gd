@@ -17,3 +17,19 @@ func test_advance_progress_clamps_at_max():
 	task_manager.current_progress = 70.0
 	task_manager.advance_progress(50.0)
 	assert_almost_eq(task_manager.current_progress, TaskManager.TASK_MAX_PROGRESS, 0.001, "Progress should not exceed max")
+
+# === SHIP CURRENT TESTS ===
+
+func test_ship_current_advances_to_next_task():
+	task_manager._current_index = 0
+	task_manager.current_progress = 80.0
+	task_manager.ship_current(1)
+	assert_eq(task_manager._current_index, 1, "Should advance to next task")
+	assert_almost_eq(task_manager.current_progress, 0.0, 0.001, "Progress should reset")
+
+func test_ship_current_holds_on_last_task():
+	task_manager._current_index = 2
+	task_manager.current_progress = 75.0
+	task_manager.ship_current(1)
+	assert_eq(task_manager._current_index, 2, "Should stay on last task")
+	assert_almost_eq(task_manager.current_progress, 0.0, 0.001, "Progress should reset")
