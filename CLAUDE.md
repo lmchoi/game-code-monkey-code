@@ -39,13 +39,15 @@ Open project in Godot 4.5 and press F5. Main scene: [scenes/game_ui.tscn](scenes
 
 ### Installing GUT (test framework)
 
-`addons/` is gitignored — install GUT manually before running tests:
+`addons/` is gitignored — install GUT via the script before running tests:
 
-1. Download `gut_v*.zip` from the [GUT releases page](https://github.com/bitwes/Gut/releases) or the Godot Asset Library
-2. Extract and place the `gut` folder into `addons/` (create `addons/` if it doesn't exist)
-3. In Godot: Project → Project Settings → Plugins → enable GUT
+```bash
+make install-gut
+```
 
-Run tests headlessly: `godot --headless -s addons/gut/gut_cmdln.gd`
+Then enable it in Godot: Project → Project Settings → Plugins → enable GUT.
+
+Run tests headlessly: `make test`
 
 ---
 
