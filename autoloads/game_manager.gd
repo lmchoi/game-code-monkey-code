@@ -2,6 +2,7 @@ extends Node
 
 signal day_changed(new_day: int)
 signal money_changed(new_money: int)
+signal game_over(reason: String)
 
 var balance: Dictionary = {}
 
@@ -26,6 +27,14 @@ func do_work() -> void:
 	TaskManager.advance_progress(delta)
 	_consequence_phase()
 	day += 1
+
+func _do_bookkeeping() -> void:
+	if day % int(balance.payday_interval) == 0:
+		money += int(balance.salary_per_payday)
+
+func _check_game_state() -> void:
+	if money >= int(balance.win_goal):
+		game_over.emit("win")
 
 func _constraint_phase() -> void:
 	pass
