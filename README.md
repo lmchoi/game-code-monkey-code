@@ -32,10 +32,11 @@ make check GODOT=/path/to/godot
 
 **Installing GUT (required for tests):**
 
-`addons/` is gitignored — install GUT manually:
-1. Download `gut_v*.zip` from the [GUT releases page](https://github.com/bitwes/Gut/releases) or the Godot Asset Library
-2. Extract and place the `gut` folder into `addons/` (create `addons/` if it doesn't exist)
-3. In Godot: Project → Project Settings → Plugins → enable GUT
+```bash
+make install-gut
+```
+
+Then enable it in Godot: Project → Project Settings → Plugins → enable GUT.
 
 ---
 
