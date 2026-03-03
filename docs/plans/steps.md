@@ -359,23 +359,53 @@ All sizes live in `themes/main_theme.tres` — the single source of truth. Never
 
 ---
 
-## Step 8 — Consequences
+## Step 8 — Bugs + Consequences
 
-**Goal:** Hustling risks detection. Shipping adds visible bugs. Strikes show on screen.
+### Step 8a — Bug accumulation on ship
+
+**Goal:** Shipping incomplete tasks adds bugs. Bugs slow WORK. First feedback loop.
 
 **What to build:**
 
-1. `game_manager.gd` — fill `_consequence_phase()` for HUSTLE:
+1. `game_manager.gd` — add `bugs` var with setter emitting `bugs_changed(new_bugs)`
+2. `game_manager.gd` — fill in `do_ship()` bug calculation (currently stubbed):
+   - `bugs_added = (100 - progress) * bugs_per_incomplete_percent`
+   - `bugs += bugs_added`
+3. `game_ui.gd` + `game_ui.tscn` — show bug count in TopBar when > 0 (hidden by default)
+4. GUT tests: correct bugs added at 0%, 50%, 100% progress
+
+**Files touched:**
+- `autoloads/game_manager.gd`
+- `scenes/game_ui.tscn`
+- `scenes/game_ui.gd`
+- `test/unit/test_game_manager.gd`
+
+**Acceptance Criteria:**
+- [ ] Shipping at 0% adds `100 * bugs_per_incomplete_percent` bugs
+- [ ] Shipping at 100% adds 0 bugs
+- [ ] Bug count visible in TopBar when > 0
+- [ ] WORK slows down as bugs accumulate (formula already accounts for this)
+- [ ] `/check` passes
+
+---
+
+### Step 8b — Detection + strikes
+
+**Goal:** Hustling risks detection. Strikes show on screen. 3 strikes = fired.
+
+**What to build:**
+
+1. `game_manager.gd` — add `strikes` var with setter emitting `strikes_changed(new_strikes)`
+2. `game_manager.gd` — fill `_consequence_phase()` for HUSTLE:
    - `detection_chance = detection_base`
    - If task overdue: `+= detection_overdue_bonus`
    - If strikes == 1: `+= detection_strike1_bonus`
    - If strikes == 2: `+= detection_strike2_bonus`
    - Roll: `if randf() < detection_chance → strikes += 1`
    - If strikes >= 3: `game_over("fired")`
-2. `game_manager.gd` — add `bugs` var with signal `bugs_changed(new_bugs)`, `strikes` var with signal `strikes_changed(new_strikes)`
-3. `game_ui.gd` — show bug count when > 0, show strike icons when > 0
-4. `game_ui.tscn` — add bug display (hidden, in or below TopBar) + strike display (hidden)
-5. Overdue check in `_do_bookkeeping()`: if `day > task.deadline_day → task_overdue = true`
+3. `game_manager.gd` — overdue check in `_do_bookkeeping()`: `if day > task.deadline_day → task_overdue = true`
+4. `game_ui.gd` + `game_ui.tscn` — show strike indicators when > 0 (hidden by default)
+5. GUT tests: detection roll at various strike/overdue states, fired at 3 strikes
 
 **Files touched:**
 - `autoloads/game_manager.gd`
