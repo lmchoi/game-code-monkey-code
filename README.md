@@ -15,28 +15,17 @@ Main scene: `scenes/game_ui.tscn`
 
 ## Development
 
-**Check for errors (headless):**
 ```bash
-make check
+make help        # list all targets
+make install     # install GUT + gdtoolkit
+make lint        # lint GDScript
+make check       # headless error check
+make test        # run GUT suite
 ```
 
-**Run tests:**
-```bash
-make test
-```
+After `make install`, enable GUT in Godot: Project → Project Settings → Plugins → enable GUT.
 
-Both default to `/Applications/Godot.app/Contents/MacOS/Godot`. Override if your install differs:
-```bash
-make check GODOT=/path/to/godot
-```
-
-**Installing GUT (required for tests):**
-
-```bash
-make install-gut
-```
-
-Then enable it in Godot: Project → Project Settings → Plugins → enable GUT.
+`check` and `test` default to `/Applications/Godot.app/Contents/MacOS/Godot`. Override with `make check GODOT=/path/to/godot`.
 
 ---
 
