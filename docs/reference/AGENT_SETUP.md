@@ -44,13 +44,13 @@ Hooks exist because Claude is probabilistic — it *might* remember to run tests
 | `/check` | Runs Godot headlessly, reports errors |
 | `/test` | Runs GUT suite, reports pass/fail |
 | `/look` | Reviews current game screenshot |
-| `/review <pr>` | Reviews a PR — writes `.claude/last-review.md` (structured JSON + prose) then posts inline comments to GitHub |
+| `/review-pr <pr>` | Reviews a PR — writes `.claude/last-review.md` (structured JSON + prose) then posts inline comments to GitHub |
 
 ### Hooks
 
 None yet. No `.claude/settings.json` exists.
 
-Next candidate: a `Stop` hook (agent type) that runs `/review` automatically before the working agent finishes, blocking it if there are `error`-severity issues.
+Next candidate: a `Stop` hook (agent type) that runs `/review-pr` automatically before the working agent finishes, blocking it if there are `error`-severity issues.
 
 ### Agent tool
 
