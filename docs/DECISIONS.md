@@ -233,3 +233,7 @@ Both phases exist in the architecture from day one. Only consequences fire in V1
 
 ### CLOSED: task-complexity-deadline
 Both. Complexity drives how fast WORK progresses. Deadline is independent. The mismatch between the two is the core tension — a complex task with a tight deadline forces bad ships; breathing room lets you hustle.
+
+### OPEN: payday-feedback
+Payday is currently silent — money just jumps in the top bar. No explicit signal to the player.
+`[JUICE]` — a brief toast or flash ("PAYDAY 💸") would make the moment land. Doesn't affect balance, pure feel. Defer until after core loop is complete.
