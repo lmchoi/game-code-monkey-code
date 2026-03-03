@@ -19,7 +19,7 @@ jobs:
       - name: Get latest GUT version
         id: gut_version
         run: |
-          VERSION=$(curl -s https://api.github.com/repos/bitwes/Gut/releases/latest | grep '"tag_name"' | grep -o 'v[^"]*')
+          VERSION=$(wget -qO- https://api.github.com/repos/bitwes/Gut/releases/latest | grep '"tag_name"' | grep -o 'v[^"]*')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Cache GUT
@@ -33,11 +33,11 @@ jobs:
         if: steps.cache_gut.outputs.cache-hit != 'true'
         run: |
           mkdir -p addons
-          ASSET_URL=$(curl -s https://api.github.com/repos/bitwes/Gut/releases/latest \
+          ASSET_URL=$(wget -qO- https://api.github.com/repos/bitwes/Gut/releases/latest \
             | grep -o '"browser_download_url": *"[^"]*\.zip"' \
             | head -1 \
             | grep -o 'https://[^"]*')
-          curl -sL "$ASSET_URL" -o gut.zip
+          wget -qO gut.zip "$ASSET_URL"
           unzip -q gut.zip -d addons/
           rm gut.zip
 
