@@ -10,36 +10,44 @@ jobs:
   test:
     name: Check & GUT tests
     runs-on: ubuntu-latest
-    container:
-      image: barichello/godot-ci:4.5
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Get latest GUT version
-        id: gut_version
+      - name: Cache Godot
+        id: cache_godot
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/bin/godot4
+          key: godot-4.5-stable
+
+      - name: Install Godot
+        if: steps.cache_godot.outputs.cache-hit != 'true'
         run: |
-          VERSION=$(wget -qO- https://api.github.com/repos/bitwes/Gut/releases/latest | grep '"tag_name"' | grep -o 'v[^"]*')
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          wget -qO godot.zip https://github.com/godotengine/godot/releases/download/4.5-stable/Godot_v4.5-stable_linux.x86_64.zip
+          unzip godot.zip
+          mkdir -p ~/.local/bin
+          mv Godot_v4.5-stable_linux.x86_64 ~/.local/bin/godot4
+          chmod +x ~/.local/bin/godot4
+
+      - name: Add Godot to PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Cache GUT
         id: cache_gut
         uses: actions/cache@v4
         with:
           path: addons/gut
-          key: gut-${{ steps.gut_version.outputs.version }}
+          key: gut-v9.5.0
 
       - name: Install GUT
         if: steps.cache_gut.outputs.cache-hit != 'true'
         run: |
+          wget -qO gut-src.zip "https://github.com/bitwes/Gut/archive/refs/tags/v9.5.0.zip"
+          unzip -q gut-src.zip -d /tmp/gut-src
           mkdir -p addons
-          ASSET_URL=$(wget -qO- https://api.github.com/repos/bitwes/Gut/releases/latest \
-            | grep -o '"browser_download_url": *"[^"]*\.zip"' \
-            | head -1 \
-            | grep -o 'https://[^"]*')
-          wget -qO gut.zip "$ASSET_URL"
-          unzip -q gut.zip -d addons/
-          rm gut.zip
+          cp -r /tmp/gut-src/*/addons/gut addons/gut
+          rm -rf gut-src.zip /tmp/gut-src
 
       - name: Import project
         run: godot4 --headless --import 2>&1 || true
