@@ -5,5 +5,8 @@
 # Third-party plugins — install manually (see CLAUDE.md)
 /addons/
 
+# gdtoolkit virtualenv (CI only)
+/.venv-lint/
+
 # Agent-to-agent communication — ephemeral, not for version control
 .claude/last-review.md
