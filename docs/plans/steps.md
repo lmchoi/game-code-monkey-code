@@ -304,46 +304,58 @@ All sizes live in `themes/main_theme.tres` — the single source of truth. Never
 
 ## Step 7 — SHIP IT button
 
-**Goal:** Shipping completes the task, adds bugs, loads the next task.
+**Goal:** Shipping loads the next task. First playable end-to-end loop (task 1 → 2 → 3 → 3 → 3...). Bugs deferred to Step 8.
+
+### Step 7a — `ship_current()` in TaskManager + GUT tests
 
 **What to build:**
 
-1. `game_manager.gd` — `do_ship()`:
+1. `task_manager.gd` — `ship_current(current_day: int)`:
+   - If not on last tutorial task: advance index, call `_assign_task`
+   - If on last tutorial task: reset progress only (hold on task 3)
+
+**Files touched:**
+- `autoloads/task_manager.gd`
+- `test/unit/test_task_manager.gd`
+
+**Acceptance Criteria:**
+- [ ] GUT: ships from task 0 → 1, resets progress
+- [ ] GUT: holds on last task (task 2), resets progress
+- [ ] `/check` passes
+
+---
+
+### Step 7b — `do_ship()` stub + wire ShipButton
+
+**What to build:**
+
+1. `game_manager.gd` — `do_ship()` stub (no bug calculation yet):
    ```
    1. Constraint phase
-   2. progress = TaskManager.current_progress
-   3. bugs_added = (100 - progress) * bugs_per_incomplete_percent
-   4. bugs += bugs_added
-   5. TaskManager.ship_current() → loads next task
-   6. Consequence phase
-   7. _do_bookkeeping()
-   8. _check_game_state()
-   9. day += 1
+   2. TaskManager.ship_current(day)
+   3. Consequence phase
+   4. _do_bookkeeping()
+   5. _check_game_state()
+   6. day += 1
    ```
-2. `task_manager.gd` — `ship_current()`, advance to next tutorial task (or loop)
-3. Vibe indicator — update ShipButton text before player acts:
-   - progress >= 80: `"🟢  SHIP IT"`
-   - progress >= 60: `"🟡  SHIP IT"`
-   - progress >= 50: `"🔴  SHIP IT"`
-   - progress < 50: button disabled, `"SHIP IT"` (greyed)
-4. `game_ui.gd` — wire ShipButton, update vibe on `task_progress_changed`
+2. `game_ui.gd` — wire ShipButton:
+   - Enable above `ship_minimum_progress` (from balance.json), disable below
+   - Connect to `GameManager.do_ship()`
+   - Update enabled state on `task_progress_changed`
 
 **Files touched:**
 - `autoloads/game_manager.gd`
-- `autoloads/task_manager.gd`
 - `scenes/game_ui.gd`
 
 **Acceptance Criteria:**
 - [ ] SHIP IT disabled below 50% progress
-- [ ] Button shows correct vibe emoji for current progress
-- [ ] Clicking ships task, adds bugs, loads next task
-- [ ] Progress bar resets for new task
-- [ ] `/check` passes
+- [ ] Clicking ships task, loads next task, progress bar resets
+- [ ] Day advances on ship
+- [ ] `/check` passes, play through all 3 tutorial tasks
 
 **Notes:**
-- Vibe thresholds come from balance.json (`ship_vibe_green`, `ship_vibe_yellow`, `ship_minimum_progress`)
-- Bug feedback shown only as vibe emoji (not exact count) per DECISIONS.md open decision
-- `bugs_signal` should emit on change so UI can show bug count when > 0 (Step 8)
+- Vibe indicator (🟢/🟡/🔴) deferred — see DECISIONS.md
+- Bug accumulation on ship deferred to Step 8
 
 ---
 
