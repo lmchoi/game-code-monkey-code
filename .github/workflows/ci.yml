@@ -67,7 +67,7 @@ jobs:
         run: bash scripts/install_gut.sh
 
       - name: Import project
-        run: godot4 --headless --import 2>&1 || true
+        run: godot4 --headless --import 2>&1 || true  # exits non-zero on first run; genuine errors surface in the check step
 
       - name: Headless error check
         run: |

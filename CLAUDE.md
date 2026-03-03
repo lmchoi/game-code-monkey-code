@@ -37,17 +37,9 @@ A darkly comedic game. Each day pick a daily action (WORK / HUSTLE) and decide w
 
 Open project in Godot 4.5 and press F5. Main scene: [scenes/game_ui.tscn](scenes/game_ui.tscn)
 
-### Installing GUT (test framework)
+### Dev dependencies
 
-`addons/` is gitignored — install GUT via the script before running tests:
-
-```bash
-make install-gut
-```
-
-Then enable it in Godot: Project → Project Settings → Plugins → enable GUT.
-
-Run tests headlessly: `make test`
+`addons/` is gitignored. Run `make install` (GUT + gdtoolkit), then enable GUT in Godot: Project → Project Settings → Plugins → enable GUT. Run `make help` for all targets.
 
 ---
 
