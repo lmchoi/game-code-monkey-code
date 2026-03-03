@@ -7,6 +7,7 @@ extends Control
 @onready var _progress_label: Label = $MainLayout/TaskCard/CardContent/ProgressLabel
 @onready var _day_label: Label = $MainLayout/TopBar/HBoxContainer/DayLabel
 @onready var _money_label: Label = $MainLayout/TopBar/HBoxContainer/MoneyLabel
+@onready var _ship_button: Button = $MainLayout/TaskCard/CardContent/ShipButton
 @onready var _work_button: Button = $MainLayout/ActionButtons/WorkButton
 @onready var _hustle_button: Button = $MainLayout/ActionButtons/HustleButton
 
@@ -15,6 +16,7 @@ func _ready() -> void:
 	TaskManager.task_progress_changed.connect(_on_task_progress_changed)
 	GameManager.day_changed.connect(_on_day_changed)
 	GameManager.money_changed.connect(_on_money_changed)
+	_ship_button.pressed.connect(GameManager.do_ship)
 	_work_button.pressed.connect(GameManager.do_work)
 	_hustle_button.pressed.connect(GameManager.do_hustle)
 	GameManager.day_changed.emit(GameManager.day)
@@ -28,6 +30,7 @@ func _on_task_changed(task_data: Dictionary) -> void:
 	_progress_bar.value = 0.0
 	_progress_label.text = "0%"
 	_work_button.disabled = false
+	_ship_button.disabled = true
 
 func _on_day_changed(new_day: int) -> void:
 	_day_label.text = "Day %d" % new_day
@@ -39,3 +42,4 @@ func _on_task_progress_changed(progress: float) -> void:
 	_progress_bar.value = progress
 	_progress_label.text = "%d%%" % int(progress)
 	_work_button.disabled = progress >= TaskManager.TASK_MAX_PROGRESS
+	_ship_button.disabled = progress < GameManager.balance.ship_minimum_progress

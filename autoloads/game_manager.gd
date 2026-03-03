@@ -30,6 +30,14 @@ func do_work() -> void:
 	_check_game_state()
 	day += 1
 
+func do_ship() -> void:
+	_constraint_phase()
+	TaskManager.ship_current(day)
+	_consequence_phase()
+	_do_bookkeeping()
+	_check_game_state()
+	day += 1
+
 func do_hustle() -> void:
 	_constraint_phase()
 	money += int(balance.hustle_income)
