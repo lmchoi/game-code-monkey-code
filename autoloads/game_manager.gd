@@ -1,12 +1,16 @@
 extends Node
 
+signal bugs_changed(new_bugs: int)
 signal day_changed(new_day: int)
-signal money_changed(new_money: int)
 signal game_over(reason: String)
+signal money_changed(new_money: int)
 
 var balance: Dictionary = {}
 
-var bugs: int = 0
+var bugs: int = 0:
+	set(value):
+		bugs = value
+		bugs_changed.emit(bugs)
 
 var money: int = 0:
 	set(value):
@@ -17,6 +21,9 @@ var day: int = 1:
 	set(value):
 		day = value
 		day_changed.emit(day)
+
+func calculate_bugs_for_ship(progress: float) -> int:
+	return roundi((TaskManager.TASK_MAX_PROGRESS - progress) * balance.bugs_per_incomplete_percent)
 
 func calculate_progress_delta(complexity: int, bugs_count: int) -> float:
 	return TaskManager.TASK_MAX_PROGRESS / (complexity * (1.0 + bugs_count * balance.bug_penalty_per_bug))
@@ -32,6 +39,7 @@ func do_work() -> void:
 
 func do_ship() -> void:
 	_constraint_phase()
+	bugs += calculate_bugs_for_ship(TaskManager.current_progress)
 	TaskManager.ship_current(day)
 	_consequence_phase()
 	_do_bookkeeping()
