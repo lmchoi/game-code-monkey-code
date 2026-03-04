@@ -45,6 +45,17 @@ func test_win_check_does_not_fire_below_goal():
 	gm._check_game_state()
 	assert_signal_not_emitted(gm, "game_over")
 
+# === OVERDUE FLAG TESTS ===
+
+func test_not_overdue_before_deadline():
+	assert_false(gm._is_task_overdue(4, 5), "Day 4 with deadline 5 is not overdue")
+
+func test_not_overdue_on_deadline_day():
+	assert_false(gm._is_task_overdue(5, 5), "Deadline day itself is not overdue")
+
+func test_overdue_after_deadline():
+	assert_true(gm._is_task_overdue(6, 5), "Day 6 with deadline 5 is overdue")
+
 # === HUSTLE TESTS ===
 
 func test_hustle_adds_income():
