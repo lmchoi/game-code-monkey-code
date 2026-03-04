@@ -16,6 +16,7 @@ extends Control
 func _ready() -> void:
 	TaskManager.task_changed.connect(_on_task_changed)
 	TaskManager.task_progress_changed.connect(_on_task_progress_changed)
+	GameManager.game_over.connect(_on_game_over)
 	GameManager.day_changed.connect(_on_day_changed)
 	GameManager.money_changed.connect(_on_money_changed)
 	GameManager.bugs_changed.connect(_on_bugs_changed)
@@ -49,6 +50,9 @@ func _on_bugs_changed(new_bugs: int) -> void:
 
 func _on_money_changed(new_money: int) -> void:
 	_money_label.text = "💰 $%d / $%d" % [new_money, int(GameManager.balance.win_goal)]
+
+func _on_game_over(_reason: String) -> void:
+	get_tree().change_scene_to_file("res://scenes/recap.tscn")
 
 func _on_task_progress_changed(progress: float) -> void:
 	_progress_bar.value = progress
