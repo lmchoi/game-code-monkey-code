@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3 uid="uid://recap_scene"]
+
+[ext_resource type="Theme" uid="uid://cq5b1vr4oao0j" path="res://themes/main_theme.tres" id="1_theme"]
+[ext_resource type="Script" path="res://scenes/recap.gd" id="2_script"]
+
+[node name="recap" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource("1_theme")
+script = ExtResource("2_script")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="EndingTitleLabel" type="Label" parent="VBoxContainer"]
+theme_type_variation = "EndGameTitle"
+text = "THE PRAGMATIST"
+
+[node name="DayLabel" type="Label" parent="VBoxContainer"]
+text = "Day 1"
+
+[node name="EndingQuoteLabel" type="Label" parent="VBoxContainer"]
+autowrap_mode = 3
+text = "You made reasonable decisions under unreasonable conditions. No one will remember."
+
+[node name="PlayAgainButton" type="Button" parent="VBoxContainer"]
+text = "Play Again"

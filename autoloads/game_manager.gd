@@ -91,6 +91,13 @@ func _check_game_state() -> void:
 	if money >= int(balance.win_goal):
 		game_over.emit("win")
 
+func reset() -> void:
+	day = 1
+	money = 0
+	bugs = 0
+	strikes = 0
+	task_overdue = false
+
 func _constraint_phase() -> void:
 	pass
 

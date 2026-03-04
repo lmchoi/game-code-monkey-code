@@ -31,6 +31,11 @@ func ship_current(current_day: int) -> void:
 		task_progress_changed.emit(current_progress)
 		task_changed.emit(current_task)
 
+func reset() -> void:
+	_current_index = 0
+	current_progress = 0.0
+	_assign_task(0, 1)
+
 func _assign_task(index: int, current_day: int) -> void:
 	_current_index = index
 	current_task = _tasks[index].duplicate()
