@@ -6,6 +6,7 @@ signal game_over(reason: String)
 signal money_changed(new_money: int)
 
 var balance: Dictionary = {}
+var task_overdue: bool = false
 
 var bugs: int = 0:
 	set(value):
@@ -51,7 +52,11 @@ func do_hustle() -> void:
 	_check_game_state()
 	day += 1
 
+func _is_task_overdue(current_day: int, deadline_day: int) -> bool:
+	return current_day > deadline_day
+
 func _do_bookkeeping() -> void:
+	task_overdue = _is_task_overdue(day, TaskManager.current_task["deadline_day"])
 	if day % int(balance.payday_interval) == 0:
 		money += int(balance.salary_per_payday)
 
@@ -68,3 +73,4 @@ func _ready() -> void:
 	balance = JSON.parse_string(file.get_as_text())
 	assert(balance != null, "balance.json is not valid JSON")
 	file.close()
+	TaskManager.task_changed.connect(func(_task): task_overdue = false)
