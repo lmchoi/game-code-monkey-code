@@ -85,6 +85,9 @@ func _do_bookkeeping() -> void:
 		money += int(balance.salary_per_payday)
 
 func _check_game_state() -> void:
+	if bugs >= int(balance.bug_spiral_threshold):
+		game_over.emit("bug_spiral")
+		return
 	if money >= int(balance.win_goal):
 		game_over.emit("win")
 
