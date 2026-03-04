@@ -8,6 +8,11 @@ func before_each():
 	game_manager.balance = {
 		"bug_penalty_per_bug": 0.01,
 		"bugs_per_incomplete_percent": 0.1,
+		"detection_base": 0.10,
+		"detection_overdue_bonus": 0.20,
+		"detection_strike1_bonus": 0.10,
+		"detection_strike2_bonus": 0.20,
+		"max_strikes": 3,
 	}
 
 # === PROGRESS DELTA TESTS ===
@@ -37,3 +42,37 @@ func test_bugs_for_ship_at_half_progress():
 
 func test_bugs_for_ship_rounds_fractional_result():
 	assert_eq(game_manager.calculate_bugs_for_ship(95.0), 1, "Shipping at 95% adds 0.5 — rounds to 1, not truncates to 0")
+
+# === DETECTION CHANCE TESTS ===
+
+func test_detection_chance_base_only():
+	assert_almost_eq(game_manager.calculate_detection_chance(0, false), 0.10, 0.001, "base only")
+
+func test_detection_chance_overdue_adds_bonus():
+	assert_almost_eq(game_manager.calculate_detection_chance(0, true), 0.30, 0.001, "overdue bonus")
+
+func test_detection_chance_strike1_adds_bonus():
+	assert_almost_eq(game_manager.calculate_detection_chance(1, false), 0.20, 0.001, "strike 1 bonus")
+
+func test_detection_chance_strike2_adds_bonus():
+	assert_almost_eq(game_manager.calculate_detection_chance(2, false), 0.30, 0.001, "strike 2 bonus")
+
+func test_detection_chance_strike1_and_overdue():
+	assert_almost_eq(game_manager.calculate_detection_chance(1, true), 0.40, 0.001, "strike 1 + overdue")
+
+func test_detection_chance_strike2_and_overdue():
+	assert_almost_eq(game_manager.calculate_detection_chance(2, true), 0.50, 0.001, "strike 2 + overdue")
+
+func test_fired_at_max_strikes():
+	game_manager.balance["detection_base"] = 1.0
+	watch_signals(game_manager)
+	game_manager.strikes = int(game_manager.balance.max_strikes) - 1
+	game_manager._hustle_detection()
+	assert_signal_emitted_with_parameters(game_manager, "game_over", ["fired"])
+
+func test_no_game_over_if_detection_misses():
+	game_manager.balance["detection_base"] = 0.0
+	game_manager.strikes = int(game_manager.balance.max_strikes)
+	watch_signals(game_manager)
+	game_manager._hustle_detection()
+	assert_signal_not_emitted(game_manager, "game_over")
