@@ -4,8 +4,13 @@ signal bugs_changed(new_bugs: int)
 signal day_changed(new_day: int)
 signal game_over(reason: String)
 signal money_changed(new_money: int)
+signal strikes_changed(new_strikes: int)
 
 var balance: Dictionary = {}
+var strikes: int = 0:
+	set(value):
+		strikes = value
+		strikes_changed.emit(strikes)
 var task_overdue: bool = false
 
 var bugs: int = 0:
@@ -47,10 +52,29 @@ func do_ship() -> void:
 
 func do_hustle() -> void:
 	_constraint_phase()
+	task_overdue = _is_task_overdue(day, TaskManager.current_task["deadline_day"])
 	money += int(balance.hustle_income)
+	_hustle_detection()
 	_do_bookkeeping()
 	_check_game_state()
 	day += 1
+
+func calculate_detection_chance(strike_count: int, overdue: bool) -> float:
+	var chance: float = balance.detection_base
+	if overdue:
+		chance += balance.detection_overdue_bonus
+	if strike_count == 1:
+		chance += balance.detection_strike1_bonus
+	elif strike_count == 2:
+		chance += balance.detection_strike2_bonus
+	return chance
+
+func _hustle_detection() -> void:
+	var chance := calculate_detection_chance(strikes, task_overdue)
+	if randf() < chance:
+		strikes += 1
+		if strikes >= int(balance.max_strikes):
+			game_over.emit("fired")
 
 func _is_task_overdue(current_day: int, deadline_day: int) -> bool:
 	return current_day > deadline_day

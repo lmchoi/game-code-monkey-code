@@ -9,7 +9,12 @@ func before_each():
 		"payday_interval": 5,
 		"salary_per_payday": 500,
 		"win_goal": 5000,
-		"hustle_income": 200
+		"hustle_income": 200,
+		"detection_base": 0.0,
+		"detection_overdue_bonus": 0.0,
+		"detection_strike1_bonus": 0.0,
+		"detection_strike2_bonus": 0.0,
+		"max_strikes": 3,
 	}
 	gm.money = 0
 	gm.day = 1
@@ -61,3 +66,11 @@ func test_overdue_after_deadline():
 func test_hustle_adds_income():
 	gm.do_hustle()
 	assert_eq(gm.money, 200, "HUSTLE should add hustle_income to money")
+
+func test_hustle_computes_overdue_before_detection():
+	# Tutorial task 1 has deadline_day = 4 (day 1 + 3). Day 10 is overdue.
+	# detection_base = 0 so only overdue bonus can trigger detection.
+	gm.balance["detection_overdue_bonus"] = 1.0
+	gm.day = 10
+	gm.do_hustle()
+	assert_eq(gm.strikes, 1, "Overdue bonus should fire detection when day > deadline")
