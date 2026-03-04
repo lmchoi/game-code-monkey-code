@@ -6,6 +6,7 @@ extends Control
 @onready var _progress_bar: ProgressBar = $MainLayout/TaskCard/CardContent/TaskProgressBar
 @onready var _progress_label: Label = $MainLayout/TaskCard/CardContent/ProgressLabel
 @onready var _day_label: Label = $MainLayout/TopBar/HBoxContainer/DayLabel
+@onready var _bug_label: Label = $MainLayout/TopBar/HBoxContainer/BugLabel
 @onready var _money_label: Label = $MainLayout/TopBar/HBoxContainer/MoneyLabel
 @onready var _ship_button: Button = $MainLayout/TaskCard/CardContent/ShipButton
 @onready var _work_button: Button = $MainLayout/ActionButtons/WorkButton
@@ -16,6 +17,7 @@ func _ready() -> void:
 	TaskManager.task_progress_changed.connect(_on_task_progress_changed)
 	GameManager.day_changed.connect(_on_day_changed)
 	GameManager.money_changed.connect(_on_money_changed)
+	GameManager.bugs_changed.connect(_on_bugs_changed)
 	_ship_button.pressed.connect(GameManager.do_ship)
 	_work_button.pressed.connect(GameManager.do_work)
 	_hustle_button.pressed.connect(GameManager.do_hustle)
@@ -34,6 +36,10 @@ func _on_task_changed(task_data: Dictionary) -> void:
 
 func _on_day_changed(new_day: int) -> void:
 	_day_label.text = "Day %d" % new_day
+
+func _on_bugs_changed(new_bugs: int) -> void:
+	_bug_label.visible = new_bugs > 0
+	_bug_label.text = "🐛 %d" % new_bugs
 
 func _on_money_changed(new_money: int) -> void:
 	_money_label.text = "💰 $%d / $%d" % [new_money, int(GameManager.balance.win_goal)]
