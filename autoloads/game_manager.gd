@@ -32,7 +32,6 @@ func do_work() -> void:
 	_constraint_phase()
 	var delta := calculate_progress_delta(TaskManager.current_task["complexity"], bugs)
 	TaskManager.advance_progress(delta)
-	_consequence_phase()
 	_do_bookkeeping()
 	_check_game_state()
 	day += 1
@@ -41,7 +40,6 @@ func do_ship() -> void:
 	_constraint_phase()
 	bugs += calculate_bugs_for_ship(TaskManager.current_progress)
 	TaskManager.ship_current(day)
-	_consequence_phase()
 	_do_bookkeeping()
 	_check_game_state()
 	day += 1
@@ -49,7 +47,6 @@ func do_ship() -> void:
 func do_hustle() -> void:
 	_constraint_phase()
 	money += int(balance.hustle_income)
-	_consequence_phase()
 	_do_bookkeeping()
 	_check_game_state()
 	day += 1
@@ -63,9 +60,6 @@ func _check_game_state() -> void:
 		game_over.emit("win")
 
 func _constraint_phase() -> void:
-	pass
-
-func _consequence_phase() -> void:
 	pass
 
 func _ready() -> void:
