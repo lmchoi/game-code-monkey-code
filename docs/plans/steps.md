@@ -361,68 +361,157 @@ All sizes live in `themes/main_theme.tres` — the single source of truth. Never
 
 ## Step 8 — Bugs + Consequences
 
-### Step 8a — Bug accumulation on ship
+### Step 8a-i — Bug calculation (logic + tests)
 
 **Goal:** Shipping incomplete tasks adds bugs. Bugs slow WORK. First feedback loop.
 
+**What you'll see while playing:** Nothing yet — this is invisible logic only. But if you ship a task at 30% and then keep WORKing, WORK will feel slightly slower than before (bugs are accumulating and dragging the progress formula). You won't be able to see why until 8a-ii.
+
 **What to build:**
 
-1. `game_manager.gd` — add `bugs` var with setter emitting `bugs_changed(new_bugs)`
-2. `game_manager.gd` — fill in `do_ship()` bug calculation (currently stubbed):
-   - `bugs_added = (100 - progress) * bugs_per_incomplete_percent`
-   - `bugs += bugs_added`
-3. `game_ui.gd` + `game_ui.tscn` — show bug count in TopBar when > 0 (hidden by default)
-4. GUT tests: correct bugs added at 0%, 50%, 100% progress
+1. `game_manager.gd` — add setter to `bugs` var, emitting `bugs_changed(new_bugs)`
+2. `game_manager.gd` — extract `calculate_bugs_for_ship(progress: float) -> float` pure function:
+   - `return (TaskManager.TASK_MAX_PROGRESS - progress) * balance.bugs_per_incomplete_percent`
+3. `game_manager.gd` — call it in `do_ship()`: `bugs += calculate_bugs_for_ship(TaskManager.current_progress)`
+4. GUT tests (`test_game_manager.gd`): correct bugs added at 0%, 50%, 100% progress
 
 **Files touched:**
 - `autoloads/game_manager.gd`
-- `scenes/game_ui.tscn`
-- `scenes/game_ui.gd`
 - `test/unit/test_game_manager.gd`
 
 **Acceptance Criteria:**
-- [ ] Shipping at 0% adds `100 * bugs_per_incomplete_percent` bugs
-- [ ] Shipping at 100% adds 0 bugs
-- [ ] Bug count visible in TopBar when > 0
+- [ ] GUT: shipping at 0% adds `100 * bugs_per_incomplete_percent` bugs
+- [ ] GUT: shipping at 100% adds 0 bugs
+- [ ] GUT: shipping at 50% adds the expected half-penalty
 - [ ] WORK slows down as bugs accumulate (formula already accounts for this)
 - [ ] `/check` passes
 
 ---
 
-### Step 8b — Detection + strikes
+### Step 8a-ii — Bug count in TopBar (UI)
 
-**Goal:** Hustling risks detection. Strikes show on screen. 3 strikes = fired.
+**Goal:** Bug count visible on screen when bugs > 0.
+
+**What you'll see while playing:** The top bar stays clean at game start. Ship a task before it's done and a bug count appears. Ship another sloppy one and it goes up. Now you can see the rot accumulating — and feel WORK getting harder as the number climbs.
 
 **What to build:**
 
-1. `game_manager.gd` — add `strikes` var with setter emitting `strikes_changed(new_strikes)`
-2. `game_manager.gd` — fill `_consequence_phase()` for HUSTLE:
-   - `detection_chance = detection_base`
-   - If task overdue: `+= detection_overdue_bonus`
-   - If strikes == 1: `+= detection_strike1_bonus`
-   - If strikes == 2: `+= detection_strike2_bonus`
-   - Roll: `if randf() < detection_chance → strikes += 1`
-   - If strikes >= 3: `game_over("fired")`
-3. `game_manager.gd` — overdue check in `_do_bookkeeping()`: `if day > task.deadline_day → task_overdue = true`
-4. `game_ui.gd` + `game_ui.tscn` — show strike indicators when > 0 (hidden by default)
-5. GUT tests: detection roll at various strike/overdue states, fired at 3 strikes
+1. `game_ui.tscn` — add `BugLabel` to TopBar, hidden by default
+2. `game_ui.gd` — connect `bugs_changed`: show label and update text when `new_bugs > 0`, hide when 0
 
 **Files touched:**
-- `autoloads/game_manager.gd`
 - `scenes/game_ui.tscn`
 - `scenes/game_ui.gd`
 
 **Acceptance Criteria:**
+- [ ] Bug label hidden at game start
+- [ ] Visible after shipping an incomplete task
+- [ ] `/check` passes, `/look` confirms
+
+---
+
+### Step 8b-i — Remove `_consequence_phase()` (cleanup)
+
+**Goal:** Delete the generic consequence hook. Detection logic will live directly in `do_hustle()`. `_constraint_phase()` stays — constraints are parked, not removed.
+
+**What you'll see while playing:** Nothing — internal refactor, no behaviour change.
+
+**What to build:**
+
+1. `game_manager.gd` — remove `_consequence_phase()` method and all three call sites (`do_work`, `do_hustle`, `do_ship`)
+
+**Files touched:**
+- `autoloads/game_manager.gd`
+
+**Acceptance Criteria:**
+- [ ] No `_consequence_phase` anywhere in codebase
+- [ ] `_constraint_phase()` still present in all three action methods
+- [ ] `/check` passes, GUT suite still green
+
+---
+
+### Step 8b-ii — Overdue flag (logic + tests)
+
+**Goal:** Game knows when the current task is past its deadline.
+
+**What you'll see while playing:** Nothing yet — the flag is tracked silently. It only matters because being overdue increases detection chance in 8b-iii. On its own, missing a deadline has no visible consequence here.
+
+**What to build:**
+
+1. `game_manager.gd` — add `task_overdue: bool = false`
+2. `game_manager.gd` — extract `_is_task_overdue(day: int, deadline_day: int) -> bool` pure function
+3. `game_manager.gd` — call it in `_do_bookkeeping()`, update `task_overdue`; reset to `false` when a new task is assigned (connect to `TaskManager.task_changed`)
+4. GUT tests (`test_bookkeeping.gd`): flag correct when day > deadline, not before, not on deadline day
+
+**Files touched:**
+- `autoloads/game_manager.gd`
+- `test/unit/test_bookkeeping.gd`
+
+**Acceptance Criteria:**
+- [ ] GUT: overdue = false when day <= deadline_day
+- [ ] GUT: overdue = true when day > deadline_day
+- [ ] `/check` passes
+
+---
+
+### Step 8b-iii — Detection roll + strikes (logic + tests)
+
+**Goal:** Hustling risks detection. 3 strikes = fired.
+
+**What you'll see while playing:** HUSTLE now carries real risk — spam it enough and the game will abruptly end (the `game_over("fired")` signal fires). But there's no game over screen yet (that's Step 9) and no visible strike count (that's 8b-iv), so for now it'll just hang or break silently. Play-test by watching Godot's output for the signal, or temporarily print to confirm it fires.
+
+**What to build:**
+
+1. `game_manager.gd` — add `strikes: int` with setter emitting `strikes_changed(new_strikes)`
+2. `game_manager.gd` — extract `calculate_detection_chance(strikes: int, overdue: bool) -> float` pure function:
+   - Start at `detection_base`
+   - If overdue: `+= detection_overdue_bonus`
+   - If strikes == 1: `+= detection_strike1_bonus`
+   - If strikes == 2: `+= detection_strike2_bonus`
+3. `game_manager.gd` — add `_hustle_detection()` private method, called only from `do_hustle()`:
+   - `var chance := calculate_detection_chance(strikes, task_overdue)`
+   - `if randf() < chance: strikes += 1`
+   - `if strikes >= balance.max_strikes: game_over.emit("fired")`
+4. GUT tests (`test_game_manager.gd`):
+   - `calculate_detection_chance` correct for all strike/overdue combinations
+   - Setting `strikes = max_strikes` and calling `_check_game_state()` emits `game_over("fired")` — or test directly via `_hustle_detection()` with chance forced to 1.0
+
+**Files touched:**
+- `autoloads/game_manager.gd`
+- `test/unit/test_game_manager.gd`
+
+**Acceptance Criteria:**
+- [ ] GUT: detection chance formula correct at 0/1/2 strikes × overdue/not
+- [ ] GUT: 3 strikes emits `game_over("fired")`
 - [ ] HUSTLE has a chance to add a strike (verify by spamming HUSTLE)
-- [ ] 3 strikes fires `game_over("fired")`
-- [ ] Bug count appears on screen when bugs > 0
-- [ ] Strike indicator appears after first strike
-- [ ] Task overdue flag set correctly when day > deadline
 - [ ] `/check` passes
 
 **Notes:**
-- Overdue-while-on-PIP firing condition from BALANCE.md (`overdue >= 3 days AND already on strike`) — add if time allows, otherwise parked
+- The random roll itself is not tested — only the chance formula and the fired outcome
+- Overdue-while-on-PIP auto-fire from BALANCE.md — parked, add if time allows
 - `[JUICE]` strike flash / warning animation — skip for now
+
+---
+
+### Step 8b-iv — Strike indicator (UI)
+
+**Goal:** Strikes visible on screen after first detection.
+
+**What you'll see while playing:** The top bar stays clean when you're behaving. Hustle and get caught — a strike appears. Get caught again — another. Three strikes and the fired condition fires. Now you can feel the risk building with every HUSTLE. This is the first time the detection system is fully legible to a player.
+
+**What to build:**
+
+1. `game_ui.tscn` — add strike indicator to TopBar (e.g. `StrikeLabel`), hidden by default
+2. `game_ui.gd` — connect `strikes_changed`: show and update when `new_strikes > 0`, hide when 0
+
+**Files touched:**
+- `scenes/game_ui.tscn`
+- `scenes/game_ui.gd`
+
+**Acceptance Criteria:**
+- [ ] Strike indicator hidden at game start
+- [ ] Appears after first detection hit
+- [ ] `/check` passes, `/look` confirms
 
 ---
 
