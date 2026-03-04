@@ -4,7 +4,7 @@ Decisions being actively discussed or reconsidered. Once resolved, update the GD
 
 | Status | Tag | When | Decision |
 |--------|-----|------|----------|
-| 🟡 Open | `[DESIGN]` | Post-core-loop | [victory-endings](#open-victory-endings) |
+| 🟠 Active | `[DESIGN]` | Now | [victory-endings](#open-victory-endings) |
 | 🟡 Open | `[ARCHITECTURE]` | Post-core-loop | [task-categories](#open-task-categories) |
 | 🟡 Open | `[ARCHITECTURE]` | Post-core-loop | [multi-task](#open-multi-task) |
 | 🟡 Open | `[ARCHITECTURE]` | Post-core-loop | [productivity-meter](#open-productivity-meter) |
@@ -234,9 +234,15 @@ Both phases exist in the architecture from day one. Only consequences fire in V1
 ### CLOSED: task-complexity-deadline
 Both. Complexity drives how fast WORK progresses. Deadline is independent. The mismatch between the two is the core tension — a complex task with a tight deadline forces bad ships; breathing room lets you hustle.
 
+---
+
+## Parked [JUICE]
+
+Minor feel improvements — defer until core loop is playtested.
+
 ### OPEN: ship-vibe-indicator
-SHIP IT button currently shows no quality signal — just enabled/disabled at 50%. The 🟢/🟡/🔴 vibe indicator is `[JUICE]`. Players can infer quality from bugs accumulating after a bad ship. Add after core loop is complete and playtested.
+SHIP IT button currently shows no quality signal — just enabled/disabled at 50%. The 🟢/🟡/🔴 vibe indicator is `[JUICE]`. Players can infer quality from bugs accumulating after a bad ship. Add after core loop is playtested.
 
 ### OPEN: payday-feedback
 Payday is currently silent — money just jumps in the top bar. No explicit signal to the player.
-`[JUICE]` — a brief toast or flash ("PAYDAY 💸") would make the moment land. Doesn't affect balance, pure feel. Defer until after core loop is complete.
+`[JUICE]` — a brief toast or flash ("PAYDAY 💸") would make the moment land. Doesn't affect balance, pure feel. Add after core loop is playtested.

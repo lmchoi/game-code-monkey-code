@@ -130,7 +130,7 @@ All game text should be:
 
 - Reference docs for Claude live in `docs/reference/`. Keep them concise.
 - Design docs: `docs/GDD.md`, `docs/DECISIONS.md`, `docs/BALANCE.md`
-- Build plan: `docs/plans/PLAN.md`
+- Build plan: `docs/plans/steps-game-loop.md` (complete)
 
 ### Before Implementing a Feature — Check These First
 
