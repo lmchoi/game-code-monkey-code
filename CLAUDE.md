@@ -62,8 +62,9 @@ Consistent font sizing for readability. Base defaults in [themes/main_theme.tres
 
 Before implementing any feature:
 1. Plan 3-6 small commits
-2. Each commit should be immediately testable
-3. Implement → Test → Commit → Next
+2. Each commit must leave the game in a runnable, non-broken state
+3. If a scene reference and the scene itself must arrive together, they go in the same commit — never split with a "crash expected" note
+4. Implement → Test → Commit → Next
 
 ### TDD — Test First for Logic
 
