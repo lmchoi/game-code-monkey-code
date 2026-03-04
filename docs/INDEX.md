@@ -12,7 +12,7 @@
 
 | File | Description |
 |------|-------------|
-| [plans/PLAN.md](plans/PLAN.md) | Build order, screen design, architecture decisions |
+| [plans/steps-game-loop.md](plans/steps-game-loop.md) | Core game loop build steps (Steps 1–10, complete) |
 
 ## Reference
 
