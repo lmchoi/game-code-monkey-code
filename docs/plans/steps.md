@@ -515,74 +515,31 @@ All sizes live in `themes/main_theme.tres` — the single source of truth. Never
 
 ---
 
-## Step 9 — Win / loss screen
+## Steps 9 + 10 — Game over → Recap ✅
 
-**Goal:** Game ends cleanly. Buttons disabled, reason shown. Recap is Step 10.
+**Goal:** Game ends cleanly, transitions to a recap screen, Play Again resets the run.
 
-**What to build:**
+Skipped `GameOverPanel` entirely — `game_over` goes straight to a scene transition.
 
-1. `game_ui.tscn` — add `GameOverPanel` (full-screen overlay, hidden by default):
-   - `EndGameTitle` label (EndGameTitle variation, 48px)
-   - `ReasonLabel` label
-   - `PlayAgainButton` (Button)
-2. `game_ui.gd` — connect `GameManager.game_over(reason)`:
-   - Disable all buttons
-   - Show GameOverPanel with correct message:
-     - `"win"` → title `"You escaped."`, reason `"You saved $5,000."`
-     - `"bug_spiral"` → title `"Death spiral."`, reason `"100 bugs. Nothing works."`
-     - `"fired"` → title `"Security will escort you out."`, reason `"3 strikes."`
-   - `PlayAgainButton` → reload scene (`get_tree().reload_current_scene()`)
-3. `game_manager.gd` — track run stats for recap: `days_survived`, `tasks_shipped`, `total_bugs_accumulated`, `ships_below_60` (count)
+**What was built:**
 
-**Files touched:**
-- `scenes/game_ui.tscn`
-- `scenes/game_ui.gd`
-- `autoloads/game_manager.gd`
+1. `game_manager.gd` — bug spiral check in `_check_game_state()` (`bugs >= bug_spiral_threshold → game_over("bug_spiral")`), with `return` to prevent double-emit
+2. `game_manager.gd` — `reset()` resets day/money/bugs/strikes/task_overdue
+3. `task_manager.gd` — `reset()` resets index, progress, assigns task 0 at day 1
+4. `game_ui.gd` — `game_over` signal → `change_scene_to_file("res://scenes/recap.tscn")`
+5. `scenes/recap.tscn` + `scenes/recap.gd` — EndingTitleLabel (48px), DayLabel, EndingQuoteLabel (autowrap), PlayAgainButton; Play Again calls `GameManager.reset()` + `TaskManager.reset()` then reloads `game_ui.tscn`
+6. GUT tests — bug spiral emits `game_over("bug_spiral")` at threshold; no signal below threshold; `test_bookkeeping.gd` balance dict updated with `bug_spiral_threshold`
 
 **Acceptance Criteria:**
-- [ ] Win, bug spiral, and fired conditions each show the right message
-- [ ] All buttons disabled on game over
-- [ ] Play Again resets the game
-- [ ] `/check` passes, play a full game end-to-end
+- [x] HUSTLE to $5,000 → recap appears, correct day, Play Again works
+- [x] 3 strikes → recap appears, correct day, Play Again works
+- [x] Bug spiral (100 bugs) → recap appears (requires deliberate grinding at current balance values)
+- [x] Play Again resets to Day 1, $0, first tutorial task
+- [x] GUT suite green (31/31)
+- [x] `/check` passes
 
----
-
-## Step 10 — Recap screen
-
-**Goal:** End of run shows a Frostpunk-style recap with every key stat and an ending title.
-
-**What to build:**
-
-1. `scenes/recap.tscn` (new scene):
-   - `EndGameTitle` label — ending name
-   - Stats block (Labels):
-     - `"Day {N} — {outcome}"`
-     - `"You shipped {N} tasks. {N} under 60%."`
-     - `"{N} bugs followed you out."`
-   - Ending quote (Label)
-   - `[Play Again]` button
-2. `game_manager.gd` — `get_ending()` — determine ending from stats:
-   - Loss endings always override
-   - Win endings (check in order — first match wins):
-     - `THE PERFECTIONIST` — win + total_bugs <= 10
-     - `THE SPEED RUNNER` — win + days_survived <= threshold (TBD in balance.json)
-     - `THE TECHNICAL DEBT MONSTER` — win + total_bugs >= 50
-     - `THE AI PROMPT ENGINEER` — win + ships_below_60 >= 3
-     - `THE PRAGMATIST` — win (fallback)
-3. Replace `GameOverPanel` from Step 9 with transition to `recap.tscn`
-
-**Files touched:**
-- `scenes/recap.tscn` (new)
-- `scenes/recap.gd` (new)
-- `autoloads/game_manager.gd`
-
-**Acceptance Criteria:**
-- [ ] Recap shows correct day count, task count, bug count
-- [ ] Correct ending title for each win path (test each manually)
-- [ ] Loss runs show "Fired" or "Death Spiral" ending
-- [ ] Play Again resets to Day 1
-- [ ] `/check` passes, full run end-to-end with recap
-
-**Notes:**
-- Ending triggers from DECISIONS.md are still open — these thresholds are a starting point, tune via playtesting
-- Speed Runner threshold: add `speed_runner_day_threshold` to balance.json
+**Deferred to follow-up:**
+- `game_over_reason` var + outcome text in recap ("Day N — escaped / fired / buried in bugs")
+- Run stat tracking (`tasks_shipped`, `ships_below_60`, `total_bugs_accumulated`)
+- `get_ending()` + distinct endings (Perfectionist, Speed Runner, Technical Debt Monster, AI Prompt Engineer, Pragmatist)
+- Stat labels in recap ("You shipped N tasks. N under 60%.")
