@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Pre-push hook: runs gdlint before any push.
+# Install via: make install-hooks
+
+set -e
+
+if [ -f .venv-lint/bin/gdlint ]; then
+    echo "Running gdlint..."
+    .venv-lint/bin/gdlint autoloads/ scenes/ test/
+else
+    echo "gdlint not found — skipping lint (run 'make install' to set up)"
+fi
