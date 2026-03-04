@@ -12,7 +12,7 @@
 
 | File | Description |
 |------|-------------|
-| [plans/steps-game-loop.md](plans/steps-game-loop.md) | Core game loop build steps (Steps 1–10, complete) |
+| [plans/README.md](plans/README.md) | Plans index — status of all feature docs |
 
 ## Reference
 
