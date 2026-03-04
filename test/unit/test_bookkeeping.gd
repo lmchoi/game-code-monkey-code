@@ -9,6 +9,7 @@ func before_each():
 		"payday_interval": 5,
 		"salary_per_payday": 500,
 		"win_goal": 5000,
+		"bug_spiral_threshold": 100,
 		"hustle_income": 200,
 		"detection_base": 0.0,
 		"detection_overdue_bonus": 0.0,
