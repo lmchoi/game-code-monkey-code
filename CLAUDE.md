@@ -65,6 +65,17 @@ Before implementing any feature:
 2. Each commit should be immediately testable
 3. Implement → Test → Commit → Next
 
+### TDD — Test First for Logic
+
+**For any logic that qualifies for GUT** (pure functions, isolated game logic with no scene dependency), write the tests before the implementation:
+
+1. Write the failing test
+2. Run `make test` — confirm it fails
+3. Implement until green
+4. Commit both together
+
+This applies to every `calculate_*` function, every flag/state check, every signal-emitting condition. UI wiring and scene changes don't qualify — test those with `/check` and `/look` after the fact.
+
 **Signal-Driven Design:**
 - GameManager holds all state with property setters that emit signals
 - UI components connect to signals in `_ready()`
