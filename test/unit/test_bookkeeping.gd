@@ -16,6 +16,7 @@ func before_each():
 		"detection_strike1_bonus": 0.0,
 		"detection_strike2_bonus": 0.0,
 		"max_strikes": 3,
+		"max_overdue_days": 3,
 	}
 	gm.money = 0
 	gm.day = 1

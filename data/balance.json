@@ -13,5 +13,6 @@
   "bugs_per_incomplete_percent": 0.1,
   "ship_minimum_progress": 50,
   "ship_vibe_green": 80,
-  "ship_vibe_yellow": 60
+  "ship_vibe_yellow": 60,
+  "max_overdue_days": 3
 }
