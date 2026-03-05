@@ -14,6 +14,7 @@ func before_each():
 		"detection_strike2_bonus": 0.20,
 		"max_strikes": 3,
 		"bug_spiral_threshold": 50,
+		"max_overdue_days": 3,
 	}
 
 # === PROGRESS DELTA TESTS ===
@@ -100,6 +101,38 @@ func test_overdue_days_resets_when_not_overdue():
 	game_manager.overdue_days = 3
 	game_manager._do_bookkeeping()
 	assert_eq(game_manager.overdue_days, 0, "overdue_days should reset when not overdue")
+
+# === OVERDUE AUTO-ESCALATION TESTS ===
+
+func test_overdue_issues_strike_and_resets_overdue_days():
+	game_manager.balance["max_overdue_days"] = 3
+	game_manager.balance["bug_spiral_threshold"] = 50
+	game_manager.balance["win_goal"] = 5000
+	game_manager.overdue_days = 3
+	game_manager.strikes = 0
+	game_manager._check_game_state()
+	assert_eq(game_manager.strikes, 1, "should auto-issue a strike when overdue threshold hit")
+	assert_eq(game_manager.overdue_days, 0, "should reset overdue_days after issuing strike")
+
+func test_overdue_does_not_fire_game_over_below_max_strikes():
+	game_manager.balance["max_overdue_days"] = 3
+	game_manager.balance["bug_spiral_threshold"] = 50
+	game_manager.balance["win_goal"] = 5000
+	game_manager.overdue_days = 3
+	game_manager.strikes = 1
+	watch_signals(game_manager)
+	game_manager._check_game_state()
+	assert_signal_not_emitted(game_manager, "game_over")
+
+func test_overdue_fires_when_strike_hits_max():
+	game_manager.balance["max_overdue_days"] = 3
+	game_manager.balance["bug_spiral_threshold"] = 50
+	game_manager.balance["win_goal"] = 5000
+	game_manager.overdue_days = 3
+	game_manager.strikes = int(game_manager.balance.max_strikes) - 1
+	watch_signals(game_manager)
+	game_manager._check_game_state()
+	assert_signal_emitted_with_parameters(game_manager, "game_over", ["fired_overdue"])
 
 # === BUG SPIRAL TESTS ===
 

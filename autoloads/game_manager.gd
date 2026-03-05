@@ -136,6 +136,12 @@ func _check_game_state() -> void:
 	if bugs >= int(balance.bug_spiral_threshold):
 		game_over.emit("bug_spiral")
 		return
+	if overdue_days >= int(balance.max_overdue_days):
+		strikes += 1
+		overdue_days = 0
+		if strikes >= int(balance.max_strikes):
+			game_over.emit("fired_overdue")
+			return
 	if money >= int(balance.win_goal):
 		game_over.emit("win")
 
