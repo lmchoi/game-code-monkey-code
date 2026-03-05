@@ -37,8 +37,22 @@ func calculate_progress_delta(complexity: int, bugs_count: int) -> float:
 func do_work() -> void:
 	_constraint_phase()
 	var delta := calculate_progress_delta(TaskManager.current_task["complexity"], bugs)
+	var progress_before = TaskManager.current_progress
 	TaskManager.advance_progress(delta)
+
 	_do_bookkeeping()
+
+	GameLogger.log({
+		"event": "action",
+		"day": day,
+		"action": "work",
+		"bugs": bugs,
+		"money": money,
+		"progress_before": progress_before,
+		"progress_after": TaskManager.current_progress,
+		"task": TaskManager.current_task["title"]
+	})
+
 	_check_game_state()
 	day += 1
 
@@ -97,6 +111,7 @@ func reset() -> void:
 	bugs = 0
 	strikes = 0
 	task_overdue = false
+	GameLogger.new_run()
 
 func _constraint_phase() -> void:
 	pass
