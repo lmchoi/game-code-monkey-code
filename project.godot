@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 GameManager="*res://autoloads/game_manager.gd"
 TaskManager="*res://autoloads/task_manager.gd"
+GameLogger="*res://autoloads/game_logger.gd"
 
 [display]
 
