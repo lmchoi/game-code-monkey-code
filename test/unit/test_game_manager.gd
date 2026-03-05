@@ -13,6 +13,7 @@ func before_each():
 		"detection_strike1_bonus": 0.10,
 		"detection_strike2_bonus": 0.20,
 		"max_strikes": 3,
+		"bug_spiral_threshold": 50,
 	}
 
 # === PROGRESS DELTA TESTS ===
