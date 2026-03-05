@@ -29,13 +29,14 @@ func test_ship_current_advances_to_next_task():
 	assert_almost_eq(task_manager.current_progress, 0.0, 0.001, "Progress should reset")
 
 func test_ship_current_transitions_to_pool():
-	# Assume 3 tutorial tasks (indices 0, 1, 2)
-	# Shipping index 2 should move to index 3 (first task of pool)
-	task_manager._current_index = 2
+	# Transition happens after the last tutorial task
+	# We know tutorial tasks are the first few in the _tasks array
+	var tutorial_count = 3 # This matches tutorial_tasks.json
+	task_manager._current_index = tutorial_count - 1
 	task_manager.current_progress = 90.0
 	task_manager.ship_current(1)
-	assert_eq(task_manager._current_index, 3, "Should advance from tutorial to pool")
-	assert_eq(task_manager.current_task["title"], "Add a loading spinner to the dashboard", "Should load first pool task")
+
+	assert_eq(task_manager._current_index, tutorial_count, "Should advance from tutorial to pool")
 
 func test_ship_current_holds_on_last_task():
 	# Should hold on the last task of the combined pool

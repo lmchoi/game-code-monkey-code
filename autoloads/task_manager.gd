@@ -13,6 +13,8 @@ var _current_index: int = 0
 
 func _ready() -> void:
 	_tasks = _load_json("res://data/tutorial_tasks.json")
+	assert(_tasks.size() > 0, "Could not load required tutorial_tasks.json")
+
 	var pool_tasks = _load_json("res://data/tasks.json")
 	if pool_tasks:
 		_tasks.append_array(pool_tasks)
