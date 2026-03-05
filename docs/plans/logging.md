@@ -37,9 +37,23 @@ Include a `run_id` (timestamp or incrementing int) on every line so runs can be 
 
 ## Implementation Notes
 
-- Single `_log(fields: Dictionary)` helper on GameManager — serializes to JSON, appends a line
-- Call from `do_work`, `do_hustle`, `do_ship`, and wherever `game_over` is emitted
-- `run_id` set on `reset()` — use `Time.get_unix_time_from_system()` or a counter
+### Logger autoload (swappable backend)
+
+Logging calls go through a dedicated `Logger` autoload — not directly in `GameManager`. This means the backend (JSONL file, Godot addon, remote endpoint, no-op) can be swapped without touching any game logic.
+
+```gdscript
+# autoloads/logger.gd
+func log(fields: Dictionary) -> void:
+    # today: write JSONL to file
+    # tomorrow: call a Godot addon, send to remote, or no-op
+```
+
+`GameManager` (and the future sim script) only ever calls `Logger.log(fields)`. Nothing else needs to change when the backend changes.
+
+### Other notes
+
+- `run_id` injected automatically by Logger on every line — set from `Time.get_unix_time_from_system()` at run start
+- Call `Logger.log()` from `do_work`, `do_hustle`, `do_ship`, and wherever `game_over` is emitted
 - No test needed for the file I/O itself — keep it simple
 
 ---
