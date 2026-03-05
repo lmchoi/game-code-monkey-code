@@ -70,7 +70,7 @@ func test_fired_at_max_strikes():
 	watch_signals(game_manager)
 	game_manager.strikes = int(game_manager.balance.max_strikes) - 1
 	game_manager._hustle_detection()
-	assert_signal_emitted_with_parameters(game_manager, "game_over", ["fired"])
+	assert_signal_emitted_with_parameters(game_manager, "game_over", ["fired_hustle"])
 
 func test_no_game_over_if_detection_misses():
 	game_manager.balance["detection_base"] = 0.0

@@ -7,6 +7,7 @@ signal money_changed(new_money: int)
 signal strikes_changed(new_strikes: int)
 
 var balance: Dictionary = {}
+var game_over_reason: String = ""
 var strikes: int = 0:
 	set(value):
 		strikes = value
@@ -118,7 +119,8 @@ func _hustle_detection() -> void:
 	if randf() < chance:
 		strikes += 1
 		if strikes >= int(balance.max_strikes):
-			game_over.emit("fired")
+			game_over_reason = "fired_hustle"
+			game_over.emit("fired_hustle")
 
 func _is_task_overdue(current_day: int, deadline_day: int) -> bool:
 	return current_day > deadline_day
@@ -134,15 +136,18 @@ func _do_bookkeeping() -> void:
 
 func _check_game_state() -> void:
 	if bugs >= int(balance.bug_spiral_threshold):
+		game_over_reason = "bug_spiral"
 		game_over.emit("bug_spiral")
 		return
 	if overdue_days >= int(balance.max_overdue_days):
 		strikes += 1
 		overdue_days = 0
 		if strikes >= int(balance.max_strikes):
+			game_over_reason = "fired_overdue"
 			game_over.emit("fired_overdue")
 			return
 	if money >= int(balance.win_goal):
+		game_over_reason = "win"
 		game_over.emit("win")
 
 func reset() -> void:
@@ -152,6 +157,7 @@ func reset() -> void:
 	strikes = 0
 	task_overdue = false
 	overdue_days = 0
+	game_over_reason = ""
 	GameLogger.new_run()
 
 func _on_task_assigned(_task: Dictionary) -> void:
