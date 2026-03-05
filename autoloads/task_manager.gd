@@ -12,12 +12,28 @@ var _tasks: Array = []
 var _current_index: int = 0
 
 func _ready() -> void:
-	var file = FileAccess.open("res://data/tutorial_tasks.json", FileAccess.READ)
-	assert(file != null, "Could not open tutorial_tasks.json")
-	_tasks = JSON.parse_string(file.get_as_text())
-	assert(_tasks != null, "tutorial_tasks.json is not valid JSON")
-	file.close()
+	_tasks = _load_json("res://data/tutorial_tasks.json")
+	var pool_tasks = _load_json("res://data/tasks.json")
+	if pool_tasks:
+		_tasks.append_array(pool_tasks)
+
 	_assign_task(0, GameManager.day)
+
+func _load_json(path: String) -> Array:
+	if not FileAccess.file_exists(path):
+		printerr("Could not find file: ", path)
+		return []
+
+	var file = FileAccess.open(path, FileAccess.READ)
+	var content = file.get_as_text()
+	file.close()
+
+	var data = JSON.parse_string(content)
+	if data == null:
+		printerr("Failed to parse JSON from: ", path)
+		return []
+
+	return data as Array
 
 func advance_progress(delta: float) -> void:
 	current_progress = minf(current_progress + delta, TASK_MAX_PROGRESS)
