@@ -1,6 +1,6 @@
 # Godot Gotchas
 
-Non-obvious things that will bite you. Patterns live in CLAUDE.md.
+Non-obvious things that will bite you. Patterns live in AGENT.md.
 
 ---
 
