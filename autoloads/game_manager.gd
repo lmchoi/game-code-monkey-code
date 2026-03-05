@@ -82,8 +82,23 @@ func do_hustle() -> void:
 	_constraint_phase()
 	task_overdue = _is_task_overdue(day, TaskManager.current_task["deadline_day"])
 	money += int(balance.hustle_income)
+
+	var strikes_before = strikes
 	_hustle_detection()
+	var detected = strikes > strikes_before
+
 	_do_bookkeeping()
+
+	GameLogger.log({
+		"event": "action",
+		"day": day,
+		"action": "hustle",
+		"bugs": bugs,
+		"money": money,
+		"detected": detected,
+		"strikes": strikes
+	})
+
 	_check_game_state()
 	day += 1
 
