@@ -152,3 +152,14 @@ func _ready() -> void:
 	assert(balance != null, "balance.json is not valid JSON")
 	file.close()
 	TaskManager.task_changed.connect(func(_task): task_overdue = false)
+	game_over.connect(_on_game_over)
+
+func _on_game_over(reason: String) -> void:
+	GameLogger.log({
+		"event": "game_over",
+		"day": day,
+		"outcome": reason,
+		"money": money,
+		"bugs": bugs,
+		"strikes": strikes
+	})
