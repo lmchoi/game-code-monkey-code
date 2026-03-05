@@ -42,7 +42,12 @@ func _on_day_changed(new_day: int) -> void:
 
 func _on_strikes_changed(new_strikes: int) -> void:
 	_strike_label.visible = new_strikes > 0
-	_strike_label.text = "⚠️ %d" % new_strikes
+	if new_strikes == 1:
+		_strike_label.text = "⚠️ 1 (Warning)"
+	elif new_strikes == 2:
+		_strike_label.text = "⚠️ 2 (PIP)"
+	else:
+		_strike_label.text = "⚠️ %d" % new_strikes
 
 func _on_bugs_changed(new_bugs: int) -> void:
 	_bug_label.visible = new_bugs > 0
