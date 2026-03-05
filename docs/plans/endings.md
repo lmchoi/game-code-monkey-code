@@ -8,7 +8,7 @@ The recap screen currently shows a hardcoded "THE PRAGMATIST" for all outcomes. 
 
 - `scenes/recap.tscn` — EndingTitleLabel, DayLabel, EndingQuoteLabel, PlayAgainButton
 - `GameManager.reset()` + `TaskManager.reset()` — Play Again works
-- `game_over` emits `"win"`, `"fired"`, or `"bug_spiral"`
+- `game_over` emits `"win"`, `"fired_hustle"`, `"fired_overdue"`, or `"bug_spiral"`
 
 ---
 
@@ -28,7 +28,8 @@ Track in `GameManager` (reset in `reset()`):
 
 `DayLabel` currently shows `"Day N"`. Should show outcome:
 - win → `"Day N — you escaped."`
-- fired → `"Day N — security escorted you out."`
+- fired_hustle → `"Day N — security escorted you out."`
+- fired_overdue → `"Day N — your performance did not meet expectations."`
 - bug_spiral → `"Day N — buried in bugs."`
 
 Store `game_over_reason: String` on `GameManager`, set it before emitting `game_over`.
@@ -50,8 +51,9 @@ Extract titles and quotes to `data/endings.json` — not hardcoded in script.
   "THE SPEED RUNNER":  { "quote": "You got out before they could break you." },
   "THE TECHNICAL DEBT MONSTER": { "quote": "You left a trail of destruction." },
   "THE AI PROMPT ENGINEER": { "quote": "You shipped TODO comments as features." },
-  "CAUGHT RED-HANDED": { "quote": "Security will escort you out." },
-  "DEATH SPIRAL":      { "quote": "100 bugs. Nothing works. Nothing ever worked." }
+  "CAUGHT RED-HANDED":     { "quote": "Security will escort you out." },
+  "TERMINATED FOR CAUSE":  { "quote": "Your performance did not meet expectations." },
+  "DEATH SPIRAL":          { "quote": "100 bugs. Nothing works. Nothing ever worked." }
 }
 ```
 
@@ -60,7 +62,8 @@ Extract titles and quotes to `data/endings.json` — not hardcoded in script.
 | Ending | Condition |
 |--------|-----------|
 | DEATH SPIRAL | reason == "bug_spiral" |
-| CAUGHT RED-HANDED | reason == "fired" |
+| CAUGHT RED-HANDED | reason == "fired_hustle" |
+| TERMINATED FOR CAUSE | reason == "fired_overdue" |
 | THE PERFECTIONIST | win + total_bugs <= 10 |
 | THE SPEED RUNNER | win + day <= `speed_runner_day_threshold` (balance.json) |
 | THE TECHNICAL DEBT MONSTER | win + total_bugs >= 50 |

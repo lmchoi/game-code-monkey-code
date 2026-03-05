@@ -183,5 +183,6 @@ func _on_game_over(reason: String) -> void:
 		"outcome": reason,
 		"money": money,
 		"bugs": bugs,
-		"strikes": strikes
+		"strikes": strikes,
+		"overdue_days": overdue_days
 	})

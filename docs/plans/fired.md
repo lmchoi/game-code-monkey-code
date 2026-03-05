@@ -9,7 +9,7 @@ Currently, the player only gets fired if they are caught HUSTLING 3 times. This 
 - `strikes` variable in `GameManager` (0–3).
 - `StrikeLabel` in `TopBar` showing `⚠️ N`.
 - HUSTLE detection logic (base chance + overdue bonus + strike bonuses).
-- `game_over.emit("fired")` when strikes hit 3.
+- `game_over.emit("fired_hustle")` when strikes hit 3 via hustle detection.
 
 ---
 
@@ -34,17 +34,19 @@ else:
 
 ### 2 — Fired for Overdue (The PIP Trap)
 
-Add a new way to lose: being overdue too long while under scrutiny.
+Missing deadlines climbs the same Warning → PIP → Fired ladder as getting caught hustling.
 
 **New Balance Values (`balance.json`):**
-- `max_overdue_days`: 3 (Threshold to get fired).
-- `min_strikes_for_overdue_firing`: 1 (You only get fired for deadlines if you've already been "warned" once).
+- `max_overdue_days`: 3 (Days overdue before a strike is auto-issued and the counter resets).
 
 **Logic:**
 In `GameManager._check_game_state()`:
 ```gdscript
-if overdue_days >= int(balance.max_overdue_days) and strikes >= int(balance.min_strikes_for_overdue_firing):
-    game_over.emit("fired_overdue")
+if overdue_days >= int(balance.max_overdue_days):
+    strikes += 1
+    overdue_days = 0
+    if strikes >= int(balance.max_strikes):
+        game_over.emit("fired_overdue")
 ```
 
 ### 3 — Strike Terminology & UI
@@ -80,8 +82,8 @@ Write these before implementing the logic:
 
 - `overdue_days` increments correctly when `day > deadline_day`.
 - `overdue_days` resets to 0 when a new task is assigned.
-- `game_over("fired_overdue")` emits when `overdue_days == 3` AND `strikes >= 1`.
-- `game_over("fired_overdue")` does NOT emit when `overdue_days == 3` AND `strikes == 0` (boss hasn't noticed you yet).
+- `game_over("fired_overdue")` emits when `overdue_days >= 3` and auto-strike pushes `strikes` to `max_strikes`.
+- Auto-strike is issued and `overdue_days` resets when threshold hit below `max_strikes`.
 
 ---
 
