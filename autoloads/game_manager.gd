@@ -58,9 +58,23 @@ func do_work() -> void:
 
 func do_ship() -> void:
 	_constraint_phase()
-	bugs += calculate_bugs_for_ship(TaskManager.current_progress)
+	var progress_at_ship = TaskManager.current_progress
+	var bugs_added = calculate_bugs_for_ship(progress_at_ship)
+	bugs += bugs_added
+
 	TaskManager.ship_current(day)
 	_do_bookkeeping()
+
+	GameLogger.log({
+		"event": "action",
+		"day": day,
+		"action": "ship",
+		"bugs": bugs,
+		"bugs_added": bugs_added,
+		"progress_at_ship": progress_at_ship,
+		"task": TaskManager.current_task["title"]
+	})
+
 	_check_game_state()
 	day += 1
 
