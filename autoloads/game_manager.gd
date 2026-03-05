@@ -12,6 +12,7 @@ var strikes: int = 0:
 		strikes = value
 		strikes_changed.emit(strikes)
 var task_overdue: bool = false
+var overdue_days: int = 0
 
 var bugs: int = 0:
 	set(value):
@@ -124,6 +125,10 @@ func _is_task_overdue(current_day: int, deadline_day: int) -> bool:
 
 func _do_bookkeeping() -> void:
 	task_overdue = _is_task_overdue(day, TaskManager.current_task["deadline_day"])
+	if task_overdue:
+		overdue_days += 1
+	else:
+		overdue_days = 0
 	if day % int(balance.payday_interval) == 0:
 		money += int(balance.salary_per_payday)
 
@@ -140,7 +145,12 @@ func reset() -> void:
 	bugs = 0
 	strikes = 0
 	task_overdue = false
+	overdue_days = 0
 	GameLogger.new_run()
+
+func _on_task_assigned(_task: Dictionary) -> void:
+	task_overdue = false
+	overdue_days = 0
 
 func _constraint_phase() -> void:
 	pass
@@ -151,7 +161,7 @@ func _ready() -> void:
 	balance = JSON.parse_string(file.get_as_text())
 	assert(balance != null, "balance.json is not valid JSON")
 	file.close()
-	TaskManager.task_changed.connect(func(_task): task_overdue = false)
+	TaskManager.task_changed.connect(_on_task_assigned)
 	game_over.connect(_on_game_over)
 
 func _on_game_over(reason: String) -> void:

@@ -78,6 +78,29 @@ func test_no_game_over_if_detection_misses():
 	game_manager._hustle_detection()
 	assert_signal_not_emitted(game_manager, "game_over")
 
+# === OVERDUE DAYS TRACKING TESTS ===
+
+func test_overdue_days_increments_when_task_is_overdue():
+	game_manager.balance["payday_interval"] = 5
+	game_manager.balance["salary_per_payday"] = 500
+	TaskManager.current_task["deadline_day"] = 3
+	game_manager.day = 5
+	game_manager.overdue_days = 0
+	game_manager._do_bookkeeping()
+	assert_eq(game_manager.overdue_days, 1, "overdue_days should increment when past deadline")
+	game_manager.day = 6
+	game_manager._do_bookkeeping()
+	assert_eq(game_manager.overdue_days, 2, "overdue_days should keep incrementing each overdue day")
+
+func test_overdue_days_resets_when_not_overdue():
+	game_manager.balance["payday_interval"] = 5
+	game_manager.balance["salary_per_payday"] = 500
+	TaskManager.current_task["deadline_day"] = 10
+	game_manager.day = 5
+	game_manager.overdue_days = 3
+	game_manager._do_bookkeeping()
+	assert_eq(game_manager.overdue_days, 0, "overdue_days should reset when not overdue")
+
 # === BUG SPIRAL TESTS ===
 
 func test_bug_spiral_emits_game_over():
