@@ -153,6 +153,7 @@ func reset() -> void:
 	task_overdue = false
 	overdue_days = 0
 	game_over_reason = ""
+	TaskManager.reset()
 	GameLogger.new_run()
 
 func _on_task_assigned(_task: Dictionary) -> void:
