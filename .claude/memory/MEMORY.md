@@ -94,8 +94,15 @@ Stray `.uid` files from the worktree may leak into main dir — delete before `g
 - `make check` — headless error check
 - `make test` — run GUT suite
 - `make install-gut` — install GUT only, via `scripts/install_gut.sh`
-- Godot binary: `/Applications/Godot.app/Contents/MacOS/Godot` (macOS default)
+- Godot binary: `/home/bokchoi/Applications/Godot_v4.5.1-stable_linux.x86_64` (Linux)
 - `addons/` is gitignored — install GUT via `make install-gut`
+- After installing GUT on a fresh checkout, run `godot --headless --import` once to register class names
+
+### Git / PR workflow
+- Always create a feature branch before starting work — never commit directly to main.
+  main has branch protection; direct pushes bypass it but skip PR review.
+- Branch: `git checkout -b feat/short-description` or `fix/short-description`
+- Raise PR with `gh pr create` once work is ready.
 
 ### GUT process hangs after finishing
 `godot --headless -s addons/gut/gut_cmdln.gd` doesn't self-exit. All output arrives, but the process keeps running — kill it with TaskStop after reading results.
