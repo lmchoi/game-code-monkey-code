@@ -2,6 +2,7 @@ extends Node
 
 var run_id: int
 var log_path: String = "res://logs/game.log"
+var enabled: bool = true
 
 func _ready() -> void:
 	new_run()
@@ -10,6 +11,8 @@ func new_run() -> void:
 	run_id = int(Time.get_unix_time_from_system())
 
 func log(fields: Dictionary) -> void:
+	if not enabled:
+		return
 	var entry: Dictionary = fields.duplicate()
 	entry["run_id"] = run_id
 
