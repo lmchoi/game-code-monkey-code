@@ -1,4 +1,7 @@
-GODOT ?= /Applications/Godot.app/Contents/MacOS/Godot
+-include config.mk
+
+# Use GODOT4_BIN if defined, otherwise default to "godot"
+GODOT4_BIN ?= godot
 
 .PHONY: help check test lint install install-gut install-hooks
 
@@ -20,7 +23,7 @@ lint: ## Lint GDScript with gdlint
 	.venv-lint/bin/gdlint autoloads/ scenes/ test/
 
 check: ## Check for Godot errors headlessly
-	$(GODOT) --headless --quit 2>&1
+	$(GODOT4_BIN) --headless --quit 2>&1
 
 test: ## Run GUT test suite headlessly
-	$(GODOT) --headless -s addons/gut/gut_cmdln.gd -gconfig=res://.gutconfig.json -gexit
+	$(GODOT4_BIN) --headless -s addons/gut/gut_cmdln.gd -gconfig=res://.gutconfig.json -gexit
