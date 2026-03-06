@@ -97,3 +97,23 @@ func test_no_bug_spiral_below_threshold():
 	watch_signals(game_manager)
 	game_manager._check_game_state()
 	assert_signal_not_emitted(game_manager, "game_over")
+
+# === DOUBLE-STRIKE BUG TESTS ===
+
+func test_detection_fires_at_max_does_not_also_trigger_overdue():
+	# Detection brings strikes to max and returns early — overdue must not also fire
+	game_manager.balance["detection_base"] = 1.0
+	game_manager.strikes = int(game_manager.balance.max_strikes) - 1
+	game_manager.overdue_days = int(game_manager.balance.max_overdue_days)
+	watch_signals(game_manager)
+	game_manager._check_game_state("hustle")
+	assert_signal_emitted_with_parameters(game_manager, "game_over", ["fired_hustle"])
+	assert_eq(game_manager.strikes, int(game_manager.balance.max_strikes), "strikes must not exceed max_strikes")
+
+func test_overdue_fires_at_max_emits_fired_overdue():
+	game_manager.balance["detection_base"] = 0.0
+	game_manager.strikes = int(game_manager.balance.max_strikes) - 1
+	game_manager.overdue_days = int(game_manager.balance.max_overdue_days)
+	watch_signals(game_manager)
+	game_manager._check_game_state()
+	assert_signal_emitted_with_parameters(game_manager, "game_over", ["fired_overdue"])

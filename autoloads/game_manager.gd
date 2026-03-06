@@ -125,14 +125,18 @@ func _check_game_state(action: String = "") -> void:
 	if action == "hustle" and randf() < calculate_detection_chance(strikes, task_overdue):
 		strikes += 1
 		GameLogger.log({"event": "detected", "day": day, "strikes": strikes})
+		if strikes >= int(balance.max_strikes):
+			game_over_reason = "fired_hustle"
+			game_over.emit(game_over_reason)
+			return
 	if overdue_days >= int(balance.max_overdue_days):
 		strikes += 1
 		overdue_days = 0
 		GameLogger.log({"event": "auto_strike", "day": day, "reason": "overdue", "strikes": strikes})
-	if strikes >= int(balance.max_strikes):
-		game_over_reason = "fired_hustle" if action == "hustle" else "fired_overdue"
-		game_over.emit(game_over_reason)
-		return
+		if strikes >= int(balance.max_strikes):
+			game_over_reason = "fired_overdue"
+			game_over.emit(game_over_reason)
+			return
 	if bugs >= int(balance.bug_spiral_threshold):
 		game_over_reason = "bug_spiral"
 		game_over.emit("bug_spiral")
