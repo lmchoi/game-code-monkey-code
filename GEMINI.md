@@ -8,7 +8,7 @@ Refer to **[AGENT.md](AGENT.md)** for all project-wide rules, including:
 - **Writing Style & Technical Goals**
 
 ## Workflow & Commands
-- **Custom Workflows**: Always check `.claude/commands/` for specific project workflows and instructions (e.g., `test`, `look`, `check`, `review-pr`).
+- **Available workflows**: Run `make help` to see all targets (test, check, lint, etc.).
 
 ## Reference Material
 - **Docs**: Comprehensive design and planning documentation in `docs/`.
