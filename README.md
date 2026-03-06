@@ -25,7 +25,12 @@ make test        # run GUT suite
 
 After `make install`, enable GUT in Godot: Project → Project Settings → Plugins → enable GUT.
 
-`check` and `test` default to `/Applications/Godot.app/Contents/MacOS/Godot`. Override with `make check GODOT=/path/to/godot`.
+`check` and `test` default to `godot`. Override by setting `GODOT4_BIN` in your environment or by creating a local `config.mk` file:
+
+```makefile
+# config.mk (gitignored)
+GODOT4_BIN ?= /path/to/your/godot/binary
+```
 
 ---
 

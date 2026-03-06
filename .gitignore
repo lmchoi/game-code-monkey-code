@@ -8,6 +8,9 @@
 # gdtoolkit virtualenv (CI only)
 /.venv-lint/
 
+# Local developer overrides
+config.mk
+
 # Agent-to-agent communication — ephemeral, not for version control
 .claude/last-review.md
 .aider*
