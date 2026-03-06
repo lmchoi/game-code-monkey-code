@@ -2,6 +2,9 @@
 """
 Analyze logs/game.log and summarise each real gameplay run.
 Test runs (multiple game_over events) are filtered out automatically.
+
+After analyzing, key metrics for each new run are appended to
+logs/metrics.jsonl. Balance notes are computed from that file.
 """
 
 import json
@@ -10,6 +13,7 @@ from collections import defaultdict
 from pathlib import Path
 
 LOG_PATH = Path(__file__).parent.parent / "logs" / "game.log"
+METRICS_PATH = Path(__file__).parent.parent / "logs" / "metrics.jsonl"
 
 
 def load_runs(path):
@@ -28,83 +32,95 @@ def load_runs(path):
 
 
 def is_real_run(events):
-    game_overs = [e for e in events if e.get("event") == "game_over"]
-    return len(game_overs) == 1
+    return len([e for e in events if e.get("event") == "game_over"]) == 1
 
 
-def summarise_run(run_id, events):
-    game_over = next((e for e in events if e.get("event") == "game_over"), None)
+def extract_metrics(run_id, events):
+    game_over = next((e for e in events if e.get("event") == "game_over"), {})
     actions = [e for e in events if e.get("event") == "action"]
-    detections = [e for e in events if e.get("event") == "detected"]
-    auto_strikes = [e for e in events if e.get("event") == "auto_strike"]
-
-    work_count = sum(1 for a in actions if a.get("action") == "work")
-    ship_count = sum(1 for a in actions if a.get("action") == "ship")
-    hustle_count = sum(1 for a in actions if a.get("action") == "hustle")
-
     ships = [a for a in actions if a.get("action") == "ship"]
-    sloppy_ships = [s for s in ships if s.get("bugs_added", 0) > 0]
-    total_bugs_added = sum(s.get("bugs_added", 0) for s in ships)
+    return {
+        "run_id": run_id,
+        "outcome": game_over.get("outcome"),
+        "day": game_over.get("day"),
+        "money": game_over.get("money"),
+        "bugs": game_over.get("bugs"),
+        "strikes": game_over.get("strikes"),
+        "work_count": sum(1 for a in actions if a.get("action") == "work"),
+        "ship_count": len(ships),
+        "hustle_count": sum(1 for a in actions if a.get("action") == "hustle"),
+        "detection_count": len([e for e in events if e.get("event") == "detected"]),
+        "auto_strike_count": len([e for e in events if e.get("event") == "auto_strike"]),
+        "sloppy_ship_count": sum(1 for s in ships if s.get("bugs_added", 0) > 0),
+        "total_bugs_added": sum(s.get("bugs_added", 0) for s in ships),
+        "task_count": len(dict.fromkeys(a["task"] for a in actions if "task" in a)),
+    }
 
-    tasks_seen = list(dict.fromkeys(
-        a["task"] for a in actions if "task" in a
-    ))
 
-    lines = []
-    lines.append(f"run {run_id}")
-    if game_over:
-        lines.append(
-            f"  outcome:  {game_over['outcome']}  |  day {game_over['day']}"
-            f"  |  ${game_over['money']}  |  {game_over['bugs']} bugs"
-            f"  |  {game_over['strikes']} strikes"
-        )
+def load_metrics():
+    if not METRICS_PATH.exists():
+        return {}
+    metrics = {}
+    with open(METRICS_PATH) as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                try:
+                    m = json.loads(line)
+                    metrics[m["run_id"]] = m
+                except (json.JSONDecodeError, KeyError):
+                    pass
+    return metrics
+
+
+def save_metrics(new_metrics_by_run):
+    known = load_metrics()
+    with open(METRICS_PATH, "a") as f:
+        for run_id, m in new_metrics_by_run.items():
+            if run_id not in known:
+                f.write(json.dumps(m) + "\n")
+
+
+def format_run(m):
+    lines = [f"run {m['run_id']}"]
     lines.append(
-        f"  actions:  {work_count} work  /  {ship_count} ship  /  {hustle_count} hustle"
+        f"  outcome:  {m['outcome']}  |  day {m['day']}"
+        f"  |  ${m['money']}  |  {m['bugs']} bugs  |  {m['strikes']} strikes"
     )
-    if detections:
-        lines.append(f"  detected: {len(detections)}x  (strikes at: {[d['strikes'] for d in detections]})")
-    if auto_strikes:
-        lines.append(f"  overdue:  {len(auto_strikes)} auto-strike(s)")
-    if sloppy_ships:
-        lines.append(
-            f"  sloppy:   {len(sloppy_ships)} ship(s) below 100%"
-            f"  |  {total_bugs_added} bugs added total"
-        )
-    lines.append(f"  tasks:    {len(tasks_seen)} unique  —  {tasks_seen[0]} ... {tasks_seen[-1]}" if len(tasks_seen) > 1 else f"  tasks:    {tasks_seen}")
+    lines.append(
+        f"  actions:  {m['work_count']} work  /  {m['ship_count']} ship  /  {m['hustle_count']} hustle"
+    )
+    if m["detection_count"]:
+        lines.append(f"  detected: {m['detection_count']}x")
+    if m["auto_strike_count"]:
+        lines.append(f"  overdue:  {m['auto_strike_count']} auto-strike(s)")
+    if m["sloppy_ship_count"]:
+        lines.append(f"  sloppy:   {m['sloppy_ship_count']} ship(s)  |  {m['total_bugs_added']} bugs added")
+    lines.append(f"  tasks:    {m['task_count']}")
     return "\n".join(lines)
 
 
-def balance_notes(real_runs_events):
-    bug_spiral_runs = sum(
-        1 for events in real_runs_events
-        if any(e.get("outcome") == "bug_spiral" for e in events if e.get("event") == "game_over")
-    )
-    win_runs = [
-        events for events in real_runs_events
-        if any(e.get("outcome") == "win" for e in events if e.get("event") == "game_over")
-    ]
-    if win_runs:
-        win_days = [
-            next(e["day"] for e in events if e.get("event") == "game_over")
-            for events in win_runs
-        ]
-        avg_win_day = sum(win_days) / len(win_days)
-        max_bugs_in_wins = [
-            next(e["bugs"] for e in events if e.get("event") == "game_over")
-            for events in win_runs
-        ]
-        avg_bugs = sum(max_bugs_in_wins) / len(max_bugs_in_wins)
+def balance_notes(all_metrics):
+    total = len(all_metrics)
+    wins = [m for m in all_metrics if m["outcome"] == "win"]
+    spirals = sum(1 for m in all_metrics if m["outcome"] == "bug_spiral")
 
     lines = ["\n--- balance notes ---"]
-    lines.append(f"  real runs:       {len(real_runs_events)}")
-    lines.append(f"  bug spiral wins: {bug_spiral_runs} / {len(real_runs_events)}")
-    if win_runs:
-        lines.append(f"  avg win day:     {avg_win_day:.1f}  (range {min(win_days)}–{max(win_days)})")
-        lines.append(f"  avg bugs at win: {avg_bugs:.1f}  (range {min(max_bugs_in_wins)}–{max(max_bugs_in_wins)})")
+    lines.append(f"  real runs:        {total}")
+    lines.append(f"  bug spiral runs:  {spirals} / {total}")
+    if wins:
+        avg_day = sum(m["day"] for m in wins) / len(wins)
+        avg_bugs = sum(m["bugs"] for m in wins) / len(wins)
+        day_range = f"{min(m['day'] for m in wins)}–{max(m['day'] for m in wins)}"
+        bug_range = f"{min(m['bugs'] for m in wins)}–{max(m['bugs'] for m in wins)}"
+        lines.append(f"  avg win day:      {avg_day:.1f}  (range {day_range})")
+        lines.append(f"  avg bugs at win:  {avg_bugs:.1f}  (range {bug_range})")
     return "\n".join(lines)
 
 
 def main():
+    show_all = "--all" in sys.argv
+
     if not LOG_PATH.exists():
         print(f"no log found at {LOG_PATH}")
         sys.exit(1)
@@ -116,11 +132,18 @@ def main():
         print("no real gameplay runs found (only test noise or empty log)")
         sys.exit(0)
 
-    for rid, events in sorted(real.items()):
-        print(summarise_run(rid, events))
+    new_metrics = {rid: extract_metrics(rid, events) for rid, events in real.items()}
+    save_metrics(new_metrics)
+
+    all_metrics = list(load_metrics().values())
+    sorted_metrics = sorted(new_metrics.items())
+    to_show = sorted_metrics if show_all else [sorted_metrics[-1]]
+
+    for rid, _ in to_show:
+        print(format_run(new_metrics[rid]))
         print()
 
-    print(balance_notes(list(real.values())))
+    print(balance_notes(all_metrics))
 
 
 if __name__ == "__main__":
