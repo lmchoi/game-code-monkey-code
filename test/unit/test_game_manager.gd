@@ -15,6 +15,7 @@ func before_each():
 		"max_strikes": 3,
 		"bug_spiral_threshold": 50,
 		"max_overdue_days": 3,
+		"win_goal": 5000,
 	}
 
 # === PROGRESS DELTA TESTS ===
@@ -69,14 +70,14 @@ func test_fired_at_max_strikes():
 	game_manager.balance["detection_base"] = 1.0
 	watch_signals(game_manager)
 	game_manager.strikes = int(game_manager.balance.max_strikes) - 1
-	game_manager._hustle_detection()
+	game_manager._check_game_state("hustle")
 	assert_signal_emitted_with_parameters(game_manager, "game_over", ["fired_hustle"])
 
 func test_no_game_over_if_detection_misses():
 	game_manager.balance["detection_base"] = 0.0
-	game_manager.strikes = int(game_manager.balance.max_strikes)
+	game_manager.strikes = int(game_manager.balance.max_strikes) - 1
 	watch_signals(game_manager)
-	game_manager._hustle_detection()
+	game_manager._check_game_state("hustle")
 	assert_signal_not_emitted(game_manager, "game_over")
 
 # === BUG SPIRAL TESTS ===

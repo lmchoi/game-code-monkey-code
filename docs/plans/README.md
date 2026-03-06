@@ -8,5 +8,5 @@ Feature plans and build steps. Each doc covers one feature arc from design to co
 | [task-pool.md](task-pool.md) | 🔍 Pending review | Random task pool + difficulty tiers |
 | [endings.md](endings.md) | 🔍 Pending review | Recap endings system |
 | [fired.md](fired.md) | ✅ Implemented | PIP / Fired condition expansion |
-| [logging.md](logging.md) | 💡 Idea | Structured event logging for balance analysis |
+| [logging.md](logging.md) | ✅ Implemented | Structured event logging for balance analysis |
 | [simulation.md](simulation.md) | 💡 Idea | Headless strategy simulation |

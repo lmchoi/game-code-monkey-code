@@ -85,10 +85,6 @@ func do_hustle() -> void:
 	task_overdue = _is_task_overdue(day, TaskManager.current_task["deadline_day"])
 	money += int(balance.hustle_income)
 
-	var strikes_before = strikes
-	_hustle_detection()
-	var detected = strikes > strikes_before
-
 	_do_bookkeeping()
 
 	GameLogger.log({
@@ -97,11 +93,10 @@ func do_hustle() -> void:
 		"action": "hustle",
 		"bugs": bugs,
 		"money": money,
-		"detected": detected,
 		"strikes": strikes
 	})
 
-	_check_game_state()
+	_check_game_state("hustle")
 	day += 1
 
 func calculate_detection_chance(strike_count: int, overdue: bool) -> float:
@@ -113,14 +108,6 @@ func calculate_detection_chance(strike_count: int, overdue: bool) -> float:
 	elif strike_count == 2:
 		chance += balance.detection_strike2_bonus
 	return chance
-
-func _hustle_detection() -> void:
-	var chance := calculate_detection_chance(strikes, task_overdue)
-	if randf() < chance:
-		strikes += 1
-		if strikes >= int(balance.max_strikes):
-			game_over_reason = "fired_hustle"
-			game_over.emit("fired_hustle")
 
 func _is_task_overdue(current_day: int, deadline_day: int) -> bool:
 	return current_day > deadline_day
@@ -134,18 +121,22 @@ func _do_bookkeeping() -> void:
 	if day % int(balance.payday_interval) == 0:
 		money += int(balance.salary_per_payday)
 
-func _check_game_state() -> void:
+func _check_game_state(action: String = "") -> void:
+	if action == "hustle" and randf() < calculate_detection_chance(strikes, task_overdue):
+		strikes += 1
+		GameLogger.log({"event": "detected", "day": day, "strikes": strikes})
+	if overdue_days >= int(balance.max_overdue_days):
+		strikes += 1
+		overdue_days = 0
+		GameLogger.log({"event": "auto_strike", "day": day, "reason": "overdue", "strikes": strikes})
+	if strikes >= int(balance.max_strikes):
+		game_over_reason = "fired_hustle" if action == "hustle" else "fired_overdue"
+		game_over.emit(game_over_reason)
+		return
 	if bugs >= int(balance.bug_spiral_threshold):
 		game_over_reason = "bug_spiral"
 		game_over.emit("bug_spiral")
 		return
-	if overdue_days >= int(balance.max_overdue_days):
-		strikes += 1
-		overdue_days = 0
-		if strikes >= int(balance.max_strikes):
-			game_over_reason = "fired_overdue"
-			game_over.emit("fired_overdue")
-			return
 	if money >= int(balance.win_goal):
 		game_over_reason = "win"
 		game_over.emit("win")
