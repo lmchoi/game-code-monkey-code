@@ -61,7 +61,7 @@ Consistent font sizing for readability. Base defaults in [themes/main_theme.tres
 **IMPORTANT:** Break features into small, testable commits (20-100 lines, 1-3 files each).
 1. Plan 3-6 small commits.
 2. Each commit must leave the game in a runnable, non-broken state.
-3. If a scene reference and the scene itself must arrive together, they go in the same commit.
+3. If a scene reference and the scene itself must arrive together, they go in the same commit — never split with a "crash expected" note.
 4. Implement → Test → Commit → Next.
 
 ### TDD — Test First for Logic
@@ -71,10 +71,13 @@ Consistent font sizing for readability. Base defaults in [themes/main_theme.tres
 3. Implement until green.
 4. Commit both together.
 
+This applies to every `calculate_*` function, every flag/state check, every signal-emitting condition. UI wiring and scene changes don't qualify — test those with `/check` and `/look` after the fact.
+
 **Signal-Driven Design:**
 - GameManager holds all state with property setters that emit signals.
 - UI components connect to signals in `_ready()`.
 - Never update UI directly — always emit signals from GameManager.
+- Core loop logic lives in GameManager.
 
 ---
 
@@ -111,3 +114,36 @@ Bugs slow down job task progress. They do not affect HUSTLE or SHIP IT speed.
 ### What to Ask vs What to Look Up
 - **Don't ask — just check the code**: "Does X exist?", "How does Y work?".
 - **Do ask**: Design direction, balance tuning, architecture decisions.
+
+### Decide Now vs Playtest Later
+- **Decide now** if changing it requires touching code or architecture.
+- **Playtest** if changing it only requires changing a number in a config file.
+
+If the answer is "just put it in balance.json and tune later", say so.
+
+### Constraints vs Consequences
+
+Two distinct event types — never mix them up:
+
+- **Constraints** — things that happen *to* the player at the **start of day**. Limit options for that day.
+- **Consequences** — things that happen *because of* the player's action, **post-action**. Punish choices.
+
+Both phases exist in the day loop architecture. Only consequences fire in V1. Constraints are parked for later — do not retrofit them into post-action logic.
+
+### Idea Tags
+
+- `[ARCHITECTURE]` — requires code/system design decision now
+- `[DESIGN]` — core mechanic or player experience decision, decide before building
+- `[BALANCE]` — just a number, goes in balance.json, decide via playtesting
+- `[JUICE]` — feel, animation, sound — build plain first, add later
+
+### Project Memory (Claude Code)
+
+Session memory is stored in `.claude/memory/MEMORY.md` in this repo. After cloning on a new machine, copy it to where Claude Code expects it:
+
+```bash
+mkdir -p ~/.claude/projects/-Users-<username>-workspace-game-code-monkey-code/memory/
+cp .claude/memory/MEMORY.md ~/.claude/projects/-Users-<username>-workspace-game-code-monkey-code/memory/MEMORY.md
+```
+
+Adjust the path to match the absolute path of the project on your machine (`/` replaced with `-`).
