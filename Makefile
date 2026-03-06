@@ -3,7 +3,7 @@
 # Use GODOT4_BIN if defined, otherwise default to "godot"
 GODOT4_BIN ?= godot
 
-.PHONY: help check test lint install install-gut install-hooks
+.PHONY: help check test simulate lint install install-gut install-hooks
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
@@ -27,3 +27,6 @@ check: ## Check for Godot errors headlessly
 
 test: ## Run GUT test suite headlessly
 	$(GODOT4_BIN) --headless -s addons/gut/gut_cmdln.gd -gconfig=res://.gutconfig.json -gexit
+
+simulate: ## Run strategy simulation and print outcome distributions
+	$(GODOT4_BIN) --headless --script scripts/simulate.gd 2>/dev/null
