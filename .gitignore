@@ -10,3 +10,7 @@
 
 # Agent-to-agent communication — ephemeral, not for version control
 .claude/last-review.md
+.aider*
+
+# Game logs — local only
+/logs/*.log

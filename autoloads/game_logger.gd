@@ -1,7 +1,7 @@
 extends Node
 
 var run_id: int
-var log_path: String = "user://game.log"
+var log_path: String = "res://logs/game.log"
 
 func _ready() -> void:
 	new_run()
