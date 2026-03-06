@@ -75,6 +75,7 @@ func test_fired_at_max_strikes():
 
 func test_no_game_over_if_detection_misses():
 	game_manager.balance["detection_base"] = 0.0
+	game_manager.balance["detection_strike2_bonus"] = 0.0
 	game_manager.strikes = int(game_manager.balance.max_strikes) - 1
 	watch_signals(game_manager)
 	game_manager._check_game_state("hustle")
