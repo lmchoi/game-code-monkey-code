@@ -7,17 +7,20 @@ After analyzing, key metrics for each new run are appended to
 logs/metrics.jsonl. Balance notes are computed from that file.
 """
 
+import argparse
 import json
 import sys
 from collections import defaultdict
 from pathlib import Path
 
-LOG_PATH = Path(__file__).parent.parent / "logs" / "game.log"
-METRICS_PATH = Path(__file__).parent.parent / "logs" / "metrics.jsonl"
+DEFAULT_LOG_PATH = Path(__file__).parent.parent / "logs" / "game.log"
+DEFAULT_METRICS_PATH = Path(__file__).parent.parent / "logs" / "metrics.jsonl"
 
 
 def load_runs(path):
     runs = defaultdict(list)
+    if not Path(path).exists():
+        return runs
     with open(path) as f:
         for line in f:
             line = line.strip()
@@ -57,11 +60,12 @@ def extract_metrics(run_id, events):
     }
 
 
-def load_metrics():
-    if not METRICS_PATH.exists():
+def load_metrics(metrics_path):
+    metrics_path = Path(metrics_path)
+    if not metrics_path.exists():
         return {}
     metrics = {}
-    with open(METRICS_PATH) as f:
+    with open(metrics_path) as f:
         for line in f:
             line = line.strip()
             if line:
@@ -73,9 +77,9 @@ def load_metrics():
     return metrics
 
 
-def save_metrics(new_metrics_by_run):
-    known = load_metrics()
-    with open(METRICS_PATH, "a") as f:
+def save_metrics(metrics_path, new_metrics_by_run):
+    known = load_metrics(metrics_path)
+    with open(metrics_path, "a") as f:
         for run_id, m in new_metrics_by_run.items():
             if run_id not in known:
                 f.write(json.dumps(m) + "\n")
@@ -102,6 +106,8 @@ def format_run(m):
 
 def balance_notes(all_metrics):
     total = len(all_metrics)
+    if total == 0:
+        return "\n--- no metrics found ---"
     wins = [m for m in all_metrics if m["outcome"] == "win"]
     spirals = sum(1 for m in all_metrics if m["outcome"] == "bug_spiral")
 
@@ -119,13 +125,20 @@ def balance_notes(all_metrics):
 
 
 def main():
-    show_all = "--all" in sys.argv
+    parser = argparse.ArgumentParser(description="Analyze game logs.")
+    parser.add_argument("--log", type=str, default=str(DEFAULT_LOG_PATH), help="Path to game.log")
+    parser.add_argument("--metrics", type=str, default=str(DEFAULT_METRICS_PATH), help="Path to metrics.jsonl")
+    parser.add_argument("--all", action="store_true", help="Show all new runs instead of just the last one")
+    args = parser.parse_args()
 
-    if not LOG_PATH.exists():
-        print(f"no log found at {LOG_PATH}")
+    log_path = Path(args.log)
+    metrics_path = Path(args.metrics)
+
+    if not log_path.exists():
+        print(f"no log found at {log_path}")
         sys.exit(1)
 
-    runs = load_runs(LOG_PATH)
+    runs = load_runs(log_path)
     real = {rid: events for rid, events in runs.items() if is_real_run(events)}
 
     if not real:
@@ -133,11 +146,11 @@ def main():
         sys.exit(0)
 
     new_metrics = {rid: extract_metrics(rid, events) for rid, events in real.items()}
-    save_metrics(new_metrics)
+    save_metrics(metrics_path, new_metrics)
 
-    all_metrics = list(load_metrics().values())
+    all_metrics = list(load_metrics(metrics_path).values())
     sorted_metrics = sorted(new_metrics.items())
-    to_show = sorted_metrics if show_all else [sorted_metrics[-1]]
+    to_show = sorted_metrics if args.all else [sorted_metrics[-1]]
 
     for rid, _ in to_show:
         print(format_run(new_metrics[rid]))
