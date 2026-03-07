@@ -17,6 +17,7 @@ func _process(_delta: float) -> bool:
 	var strategies = {
 		"always_hustle": always_hustle,
 		"diligent_worker": diligent_worker,
+		"ship_asap": ship_asap,
 	}
 
 	var args = OS.get_cmdline_user_args()
@@ -43,10 +44,14 @@ func get_state() -> Dictionary:
 		"progress": _tm.current_progress,
 		"strikes": _gm.strikes,
 		"task_overdue": _gm.task_overdue,
+		"can_ship": _tm.current_progress >= _gm.balance.ship_minimum_progress,
 	}
 
 func run_strategy(strategy: Callable, n: int) -> Dictionary:
 	var tally = {}
+	var win_days: Array = []
+	var win_bugs: Array = []
+	var win_strikes: Array = []
 	for _i in n:
 		_gm.reset()
 		var safety = 0
@@ -58,6 +63,14 @@ func run_strategy(strategy: Callable, n: int) -> Dictionary:
 			safety += 1
 		var outcome = _gm.game_over_reason if _gm.game_over_reason != "" else "timeout"
 		tally[outcome] = tally.get(outcome, 0) + 1
+		if outcome == "win":
+			win_days.append(_gm.day)
+			win_bugs.append(_gm.bugs)
+			win_strikes.append(_gm.strikes)
+	if win_days.size() > 0:
+		tally["_win_avg_day"] = win_days.reduce(func(a, b): return a + b, 0.0) / win_days.size()
+		tally["_win_avg_bugs"] = win_bugs.reduce(func(a, b): return a + b, 0.0) / win_bugs.size()
+		tally["_win_avg_strikes"] = win_strikes.reduce(func(a, b): return a + b, 0.0) / win_strikes.size()
 	return tally
 
 func run_trace(strategy_name: String, strategy: Callable) -> void:
@@ -79,10 +92,15 @@ func run_trace(strategy_name: String, strategy: Callable) -> void:
 	print("=== outcome: %s ===" % outcome)
 
 func print_results(name: String, tally: Dictionary) -> void:
-	var n = tally.values().reduce(func(a, b): return a + b, 0)
+	var outcome_keys = tally.keys().filter(func(k): return not k.begins_with("_"))
+	var n = outcome_keys.reduce(func(a, b): return a + tally[b], 0)
 	print("\n%s (n=%d):" % [name, n])
-	for outcome in tally:
+	for outcome in outcome_keys:
 		print("  %-20s %d%%" % [outcome + ":", roundi(100.0 * tally[outcome] / n)])
+	if tally.has("_win_avg_day"):
+		print("  avg win day:         %.1f" % tally["_win_avg_day"])
+		print("  avg win bugs:        %.1f" % tally["_win_avg_bugs"])
+		print("  avg win strikes:     %.1f" % tally["_win_avg_strikes"])
 
 # Strategies
 func always_hustle(_state: Dictionary) -> String:
@@ -90,5 +108,10 @@ func always_hustle(_state: Dictionary) -> String:
 
 func diligent_worker(state: Dictionary) -> String:
 	if state.progress >= 100.0 or state.task_overdue:
+		return "ship"
+	return "work"
+
+func ship_asap(state: Dictionary) -> String:
+	if state.can_ship:
 		return "ship"
 	return "work"
