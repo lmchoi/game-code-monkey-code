@@ -20,7 +20,7 @@
 
 | Condition | Threshold |
 |-----------|-----------|
-| Victory | $5,000 saved |
+| Victory | $10,000 saved |
 | Death spiral | 100+ bugs |
 | Fired | 3 strikes |
 | Overdue (fired) | Overdue ≥ 3 days AND already on strike — **not implemented, parked** |
