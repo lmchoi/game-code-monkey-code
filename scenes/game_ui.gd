@@ -17,6 +17,7 @@ func _ready() -> void:
 	TaskManager.task_changed.connect(_on_task_changed)
 	TaskManager.task_progress_changed.connect(_on_task_progress_changed)
 	GameManager.game_over.connect(_on_game_over)
+	GameManager.review_ready.connect(_on_review_ready)
 	GameManager.day_changed.connect(_on_day_changed)
 	GameManager.money_changed.connect(_on_money_changed)
 	GameManager.bugs_changed.connect(_on_bugs_changed)
@@ -58,6 +59,14 @@ func _on_money_changed(new_money: int) -> void:
 
 func _on_game_over(_reason: String) -> void:
 	get_tree().change_scene_to_file("res://scenes/recap.tscn")
+
+func _on_review_ready() -> void:
+	var dialog: AcceptDialog = load("res://scenes/review_dialog.gd").new()
+	dialog.continued.connect(_on_review_continued)
+	add_child(dialog)
+
+func _on_review_continued() -> void:
+	TaskManager.task_progress_changed.emit(TaskManager.current_progress)
 
 func _on_task_progress_changed(progress: float) -> void:
 	_progress_bar.value = progress
