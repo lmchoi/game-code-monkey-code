@@ -109,6 +109,20 @@ This reframes the whole opening: the player *thinks* they're learning the game, 
 actually setting their trajectory. Replay value comes from trying different paths.
 The review becomes a reveal, not just a checkpoint.
 
+**The day 30 moment — presentation:**
+
+Delivered via dialogue/narrative, not a stats screen. The player gets a scene (boss calling
+you in, a Slack message, whatever fits the tone) that reflects what they did — without stating
+the exact mechanical consequences. The *vibe* is clear; the numbers reveal themselves through play.
+
+Examples:
+- Clean shipper: "We've been impressed with your output. We'd like to offer you a new role..."
+- Hustler: "You've been busy. We're not sure what with, exactly. Let's call it... initiative."
+- Struggling: "We need to talk about your performance over the last month."
+
+The player understands the shape of what's coming before they know the specifics.
+That gap — knowing something changed but not exactly what — is where the tension lives.
+
 **Reactive levers to strengthen:**
 
 - **Reputation decay** — getting detected should have a lingering effect beyond the strike,
