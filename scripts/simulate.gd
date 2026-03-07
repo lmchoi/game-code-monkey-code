@@ -54,10 +54,13 @@ func run_strategy(strategy: Callable, n: int) -> Dictionary:
 	var win_days: Array = []
 	var win_bugs: Array = []
 	var win_strikes: Array = []
+	var all_days: Array = []
+	var days_per_outcome = {} # outcome -> Array
+	
 	for _i in n:
 		_gm.reset()
 		var safety = 0
-		while _gm.game_over_reason == "" and safety < 500:
+		while _gm.game_over_reason == "" and safety < 1000:
 			match strategy.call(get_state()):
 				"work":   _gm.do_work()
 				"ship":   _gm.do_ship()
@@ -65,10 +68,24 @@ func run_strategy(strategy: Callable, n: int) -> Dictionary:
 			safety += 1
 		var outcome = _gm.game_over_reason if _gm.game_over_reason != "" else "timeout"
 		tally[outcome] = tally.get(outcome, 0) + 1
+		all_days.append(_gm.day)
+		
+		if not days_per_outcome.has(outcome):
+			days_per_outcome[outcome] = []
+		days_per_outcome[outcome].append(_gm.day)
+		
 		if outcome == "win":
 			win_days.append(_gm.day)
 			win_bugs.append(_gm.bugs)
 			win_strikes.append(_gm.strikes)
+	
+	if all_days.size() > 0:
+		tally["_avg_day"] = all_days.reduce(func(a, b): return a + b, 0.0) / all_days.size()
+		
+	for outcome in days_per_outcome:
+		var ds = days_per_outcome[outcome]
+		tally["_avg_day_" + outcome] = ds.reduce(func(a, b): return a + b, 0.0) / ds.size()
+		
 	if win_days.size() > 0:
 		tally["_win_avg_day"] = win_days.reduce(func(a, b): return a + b, 0.0) / win_days.size()
 		tally["_win_avg_bugs"] = win_bugs.reduce(func(a, b): return a + b, 0.0) / win_bugs.size()
@@ -97,9 +114,13 @@ func run_trace(strategy_name: String, strategy: Callable) -> void:
 func print_results(name: String, tally: Dictionary) -> void:
 	var outcome_keys = tally.keys().filter(func(k): return not k.begins_with("_"))
 	var n = outcome_keys.reduce(func(a, b): return a + tally[b], 0)
+	
 	print("\n%s (n=%d):" % [name, n])
+	print("  Ending Type Breakdown:")
 	for outcome in outcome_keys:
-		print("  %-20s %d%%" % [outcome + ":", roundi(100.0 * tally[outcome] / n)])
+		var avg_day = tally.get("_avg_day_" + outcome, 0.0)
+		print("    %-20s %d%% (avg day %.1f)" % [outcome + ":", roundi(100.0 * tally[outcome] / n), avg_day])
+	
 	if tally.has("_win_avg_day"):
 		print("  avg win day:         %.1f" % tally["_win_avg_day"])
 		print("  avg win bugs:        %.1f" % tally["_win_avg_bugs"])
