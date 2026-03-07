@@ -3,7 +3,7 @@
 # Use GODOT4_BIN if defined, otherwise default to "godot"
 GODOT4_BIN ?= godot
 
-.PHONY: help check test test-py simulate lint install install-gut install-hooks
+.PHONY: help check test test-py simulate trace lint install install-gut install-hooks
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
