@@ -10,3 +10,4 @@ Feature plans and build steps. Each doc covers one feature arc from design to co
 | [fired.md](fired.md) | ✅ Implemented | PIP / Fired condition expansion |
 | [logging.md](logging.md) | ✅ Implemented | Structured event logging for balance analysis |
 | [simulation.md](simulation.md) | 💡 Idea | Headless strategy simulation |
+| [progression.md](progression.md) | 💡 Idea | Game length, pacing arc, and day 30 review |
