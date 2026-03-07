@@ -18,6 +18,7 @@ func before_each():
 		"win_goal": 5000,
 		"payday_interval": 5,
 		"salary_per_payday": 500,
+		"ship_vibe_green": 80,
 	}
 
 # === PROGRESS DELTA TESTS ===
@@ -160,3 +161,24 @@ func test_total_bugs_added_resets():
 	game_manager.do_ship()
 	game_manager.reset()
 	assert_eq(game_manager.total_bugs_added, 0, "total_bugs_added should reset")
+
+func test_sloppy_ships_increments_below_green():
+	TaskManager.current_progress = 70.0
+	game_manager.do_ship()
+	assert_eq(game_manager.sloppy_ships, 1, "sloppy_ships should increment when shipping below green threshold")
+
+func test_sloppy_ships_not_incremented_at_green():
+	TaskManager.current_progress = 80.0
+	game_manager.do_ship()
+	assert_eq(game_manager.sloppy_ships, 0, "sloppy_ships should NOT increment when shipping at green threshold")
+
+func test_sloppy_ships_not_incremented_above_green():
+	TaskManager.current_progress = 90.0
+	game_manager.do_ship()
+	assert_eq(game_manager.sloppy_ships, 0, "sloppy_ships should NOT increment when shipping above green threshold")
+
+func test_sloppy_ships_resets():
+	TaskManager.current_progress = 50.0
+	game_manager.do_ship()
+	game_manager.reset()
+	assert_eq(game_manager.sloppy_ships, 0, "sloppy_ships should reset")

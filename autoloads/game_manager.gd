@@ -32,6 +32,7 @@ var day: int = 1:
 
 var tasks_shipped: int = 0
 var total_bugs_added: int = 0
+var sloppy_ships: int = 0
 
 func calculate_bugs_for_ship(progress: float) -> int:
 	return roundi((TaskManager.TASK_MAX_PROGRESS - progress) * balance.bugs_per_incomplete_percent)
@@ -68,6 +69,8 @@ func do_ship() -> void:
 	bugs += bugs_added
 	tasks_shipped += 1
 	total_bugs_added += bugs_added
+	if progress_at_ship < balance.ship_vibe_green:
+		sloppy_ships += 1
 
 	TaskManager.ship_current(day)
 	_do_bookkeeping()
@@ -79,6 +82,7 @@ func do_ship() -> void:
 		"bugs": bugs,
 		"bugs_added": bugs_added,
 		"progress_at_ship": progress_at_ship,
+		"sloppy": progress_at_ship < balance.ship_vibe_green,
 		"task": TaskManager.current_task["title"]
 	})
 
@@ -160,6 +164,7 @@ func reset() -> void:
 	game_over_reason = ""
 	tasks_shipped = 0
 	total_bugs_added = 0
+	sloppy_ships = 0
 	TaskManager.reset()
 	GameLogger.new_run()
 
