@@ -3,7 +3,7 @@
 # Use GODOT4_BIN if defined, otherwise default to "godot"
 GODOT4_BIN ?= godot
 
-.PHONY: help check test test-py simulate trace lint install install-gut install-hooks
+.PHONY: help check test test-py simulate trace lint install install-gut install-hooks worktree-init
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
@@ -18,6 +18,9 @@ install-gut: ## Install GUT test framework into addons/
 install-hooks: ## Install git hooks (pre-push lint)
 	cp scripts/pre-push .git/hooks/pre-push
 	chmod +x .git/hooks/pre-push
+
+worktree-init: ## Symlink addons/ from main workspace into a worktree (run once per worktree)
+	ln -sf $(CURDIR)/addons $(WORKTREE)/addons
 
 lint: ## Lint GDScript with gdlint
 	.venv-lint/bin/gdlint autoloads/ scenes/ test/

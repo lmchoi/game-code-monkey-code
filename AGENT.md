@@ -43,6 +43,8 @@ Always check `.claude/commands/` for specific project workflows and instructions
 ### Dev dependencies
 `addons/` is gitignored. Run `make install` (GUT + gdtoolkit), then enable GUT in Godot: Project → Project Settings → Plugins → enable GUT. Run `make help` for all targets.
 
+**Working in a worktree:** Run `make worktree-init WORKTREE=<path>` once after the worktree is created. This symlinks `addons/` from the main workspace so `make test` works.
+
 **Configuring Godot Path:**
 The `Makefile` uses `GODOT4_BIN` (defaults to `godot`). Override by setting the environment variable or creating a local `config.mk`:
 ```makefile
