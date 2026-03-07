@@ -16,6 +16,8 @@ func before_each():
 		"bug_spiral_threshold": 50,
 		"max_overdue_days": 3,
 		"win_goal": 5000,
+		"payday_interval": 5,
+		"salary_per_payday": 500,
 	}
 
 # === PROGRESS DELTA TESTS ===
@@ -118,3 +120,19 @@ func test_overdue_fires_at_max_emits_fired_overdue():
 	watch_signals(game_manager)
 	game_manager._check_game_state()
 	assert_signal_emitted_with_parameters(game_manager, "game_over", ["fired_overdue"])
+
+# === COUNTER TESTS ===
+
+func test_tasks_shipped_increments_on_ship():
+	game_manager.do_ship()
+	assert_eq(game_manager.tasks_shipped, 1, "tasks_shipped should increment on ship")
+
+func test_tasks_shipped_accumulates():
+	game_manager.do_ship()
+	game_manager.do_ship()
+	assert_eq(game_manager.tasks_shipped, 2, "tasks_shipped should accumulate")
+
+func test_tasks_shipped_resets():
+	game_manager.do_ship()
+	game_manager.reset()
+	assert_eq(game_manager.tasks_shipped, 0, "tasks_shipped should reset")
