@@ -30,7 +30,8 @@ var day: int = 1:
 	set(value):
 		day = value
 		day_changed.emit(day)
-		if day == int(balance.get("review_day", 30)) and game_over_reason == "":
+		var review_days := [int(balance.get("review_day", 30)), int(balance.get("review2_day", 60))]
+		if day in review_days and game_over_reason == "":
 			review_ready.emit()
 
 var tasks_shipped: int = 0
