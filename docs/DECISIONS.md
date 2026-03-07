@@ -10,6 +10,7 @@ Decisions being actively discussed or reconsidered. Once resolved, update the GD
 | 🟡 Open | `[ARCHITECTURE]` | Post-core-loop | [productivity-meter](#open-productivity-meter) |
 | 🟡 Open | `[ARCHITECTURE]` | Post-core-loop | [hustle-varied-tasks](#open-hustle-varied-tasks) |
 | 🟡 Open | `[DESIGN]` | Playtest | [game-duration](#open-game-duration) |
+| 🟡 Open | `[DESIGN]` | Post-core-loop | [day-30-review](#open-day-30-review) |
 | 🟡 Open | `[DESIGN]` | Playtest | [bug-feedback-on-ship](#open-bug-feedback-on-ship) |
 | ✅ Closed | `[DESIGN]` | Pre-build | [work-on-complete-task](#closed-work-on-complete-task) |
 | ✅ Closed | `[DESIGN]` | Pre-build | [ducks-v1](#closed-ducks-v1) |
@@ -48,9 +49,13 @@ Decisions that affect what the player experiences. Decide before building.
 - Aligns with the vision — this is a short story, not a novel
 - Replay value comes from distinct endings + randomised task draws, not length
 
-**Still needs:** Balance values (day count targets, task count) confirmed against actual playtesting.
+**Playtesting findings (2026-03-07):**
+- Run 1772867788: 37 seconds. Current win threshold ($5,000) is reachable too fast.
+- At ~1.5s/action, a 10-minute game needs ~300 days.
+- Implied win threshold: ~$50,000. Needs more tasks and harder complexity to fill the arc.
+- See `docs/plans/progression.md` for full design direction.
 
-**Status:** Locked in principle, thresholds TBD after playtesting.
+**Status:** Locked in principle, thresholds TBD — current numbers need significant upward revision.
 
 ---
 
@@ -80,6 +85,31 @@ Decisions that affect what the player experiences. Decide before building.
 
 ---
 
+
+### OPEN: day-30-review
+
+**Question:** What happens at the day 30 mark, and how does it shape the rest of the game?
+
+**Direction:** A narrative event (dialogue / Slack message) that reflects the player's first-30-day
+behaviour and unlocks a path for the remainder of the game. The boss grades what they *know* — work
+quality, output, timeliness. Hustle affects perception (via strikes/detection) but isn't explicitly graded.
+
+**Report card — three grades:**
+- **Quality** — ship completion % and bugs added across all ships
+- **Output** — tasks completed, weighted by complexity
+- **Timeliness** — tasks delivered on time vs overdue
+
+**Path unlock:** each grade independently affects post-review mechanics (salary, task pool, detection
+sensitivity etc.) rather than funnelling into one of three archetypes. More mix-and-match = more replay value.
+
+**Open questions:**
+- Does the player know the real win target upfront, or does the review reveal it as a surprise?
+- Exact grade thresholds and mechanical consequences — calibrate after playtesting.
+- Hustle detection during warm-up: parked, defer until after core loop is extended.
+
+**Status:** Direction set, not building until game length and task pool are expanded first.
+
+---
 
 ### OPEN: bug-feedback-on-ship
 
