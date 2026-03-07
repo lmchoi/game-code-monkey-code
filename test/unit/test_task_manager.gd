@@ -65,6 +65,40 @@ func test_load_tasks_json_tiered_dict():
 
 	DirAccess.remove_absolute(path)
 
+# === TIER SEQUENCE TESTS ===
+
+func test_tier1_holds_when_tier1_exhausted():
+	var last = task_manager._tasks.size() - 1
+	task_manager._current_index = last
+	task_manager.current_progress = 80.0
+	task_manager.ship_current(1)
+	assert_eq(task_manager._current_index, last, "Should hold on last tier1 task")
+	assert_almost_eq(task_manager.current_progress, 0.0, 0.001, "Progress should reset")
+
+func test_unlock_tier2_appends_tier2_tasks():
+	var size_before = task_manager._tasks.size()
+	var index_before = task_manager._current_index
+	task_manager.unlock_tier2()
+	assert_gt(task_manager._tasks.size(), size_before, "Should have more tasks after unlock")
+	assert_eq(task_manager._current_index, index_before, "Should not advance — player must ship first")
+
+func test_tier2_advances_after_unlock():
+	var tier1_last = task_manager._tasks.size() - 1
+	task_manager._current_index = tier1_last
+	task_manager.unlock_tier2()
+	task_manager.ship_current(2)
+	assert_eq(task_manager._current_index, tier1_last + 1, "Should advance into tier2 after shipping")
+
+func test_reset_resets_tier2_unlock():
+	var tier1_size = task_manager._tasks.size()
+	task_manager._current_index = tier1_size - 1
+	task_manager.unlock_tier2()
+	task_manager.reset()
+	assert_eq(task_manager._tasks.size(), tier1_size, "After reset, tier2 tasks should be removed")
+	task_manager._current_index = task_manager._tasks.size() - 1
+	task_manager.ship_current(1)
+	assert_eq(task_manager._current_index, task_manager._tasks.size() - 1, "After reset, should hold at tier1 end")
+
 func test_load_tasks_json_fallback_empty():
 	# Create a temporary JSON file with invalid shape (e.g., int)
 	var path = "user://test_invalid.json"
