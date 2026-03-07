@@ -19,6 +19,7 @@ func before_each():
 		"payday_interval": 5,
 		"salary_per_payday": 500,
 		"ship_vibe_green": 80,
+		"review_day": 30,
 	}
 
 # === PROGRESS DELTA TESTS ===
@@ -208,3 +209,21 @@ func test_tasks_late_resets():
 	game_manager.do_ship()
 	game_manager.reset()
 	assert_eq(game_manager.tasks_late, 0, "tasks_late should reset")
+
+# === REVIEW TESTS ===
+
+func test_review_ready_emits_at_review_day():
+	watch_signals(game_manager)
+	game_manager.day = int(game_manager.balance.review_day)
+	assert_signal_emitted(game_manager, "review_ready")
+
+func test_review_ready_not_emitted_before_review_day():
+	watch_signals(game_manager)
+	game_manager.day = int(game_manager.balance.review_day) - 1
+	assert_signal_not_emitted(game_manager, "review_ready")
+
+func test_review_ready_not_emitted_if_game_over():
+	game_manager.game_over_reason = "bug_spiral"
+	watch_signals(game_manager)
+	game_manager.day = int(game_manager.balance.review_day)
+	assert_signal_not_emitted(game_manager, "review_ready")

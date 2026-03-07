@@ -4,6 +4,7 @@ signal bugs_changed(new_bugs: int)
 signal day_changed(new_day: int)
 signal game_over(reason: String)
 signal money_changed(new_money: int)
+signal review_ready
 signal strikes_changed(new_strikes: int)
 
 var balance: Dictionary = {}
@@ -29,6 +30,8 @@ var day: int = 1:
 	set(value):
 		day = value
 		day_changed.emit(day)
+		if day == int(balance.get("review_day", 30)) and game_over_reason == "":
+			review_ready.emit()
 
 var tasks_shipped: int = 0
 var total_bugs_added: int = 0
