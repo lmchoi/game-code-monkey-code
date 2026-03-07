@@ -94,9 +94,22 @@ Stray `.uid` files from the worktree may leak into main dir — delete before `g
 - `make check` — headless error check
 - `make test` — run GUT suite
 - `make install-gut` — install GUT only, via `scripts/install_gut.sh`
-- Godot binary: `/home/bokchoi/Applications/Godot_v4.5.1-stable_linux.x86_64` (Linux)
+- `make worktree-init WORKTREE=<path>` — symlink addons/ into a worktree so `make test` works
+- Godot binary: `/home/bokchoi/Applications/Godot_v4.5.1-stable_linux.x86_64` (Linux), configured in `config.mk`
 - `addons/` is gitignored — install GUT via `make install-gut`
 - After installing GUT on a fresh checkout, run `godot --headless --import` once to register class names
+- **NEVER call godot directly** — always use `make test`, `make check`, `make simulate`. The `/test`, `/check`, `/simulate` skills do this correctly (use `make …`).
+
+### Current build state (as of 2026-03-07)
+Task-pool plan (`docs/plans/task-pool.md`) steps done:
+- ✅ 1 — `data/tasks.json` restructured into `{tier1, tier2}`
+- ✅ 2 — `tasks_shipped` counter in GameManager
+- ✅ 3 — `total_bugs_added` counter in GameManager
+- ✅ 4 — `sloppy_ships` counter in GameManager
+- ✅ 5 — `tasks_on_time` / `tasks_late` counters in GameManager
+- ✅ 6 — tier-aware sequence logic in TaskManager (`unlock_tier2(day)`)
+- ⬜ 7 — Day 30 review dialog (reads counters, fires at day 30, calls `TaskManager.unlock_tier2()`)
+- ⬜ 8 — `balance.json` `win_goal: 10000`
 
 ### Git / PR workflow
 - Always create a feature branch before starting work — never commit directly to main.
