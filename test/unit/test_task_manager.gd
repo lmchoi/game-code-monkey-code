@@ -46,3 +46,33 @@ func test_ship_current_holds_on_last_task():
 	task_manager.ship_current(1)
 	assert_eq(task_manager._current_index, last_idx, "Should stay on last task")
 	assert_almost_eq(task_manager.current_progress, 0.0, 0.001, "Progress should reset")
+
+func test_load_tasks_json_tiered_dict():
+	# Create a temporary JSON file with tiers
+	var path = "user://test_tiered.json"
+	var data = {
+		"tier1": [{"title": "t1", "deadline_days": 1}],
+		"tier2": [{"title": "t2", "deadline_days": 2}]
+	}
+	var file = FileAccess.open(path, FileAccess.WRITE)
+	file.store_string(JSON.stringify(data))
+	file.close()
+
+	var loaded = task_manager._load_tasks_json(path)
+	assert_eq(loaded.size(), 2, "Should load both tiers")
+	assert_eq(loaded[0].title, "t1", "Tier 1 should come first")
+	assert_eq(loaded[1].title, "t2", "Tier 2 should come second")
+
+	DirAccess.remove_absolute(path)
+
+func test_load_tasks_json_fallback_empty():
+	# Create a temporary JSON file with invalid shape (e.g., int)
+	var path = "user://test_invalid.json"
+	var file = FileAccess.open(path, FileAccess.WRITE)
+	file.store_string("123")
+	file.close()
+
+	var loaded = task_manager._load_tasks_json(path)
+	assert_eq(loaded, [], "Should return empty array for invalid JSON shape")
+
+	DirAccess.remove_absolute(path)
