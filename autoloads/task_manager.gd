@@ -75,6 +75,7 @@ func ship_current(current_day: int) -> void:
 		_assign_task(_current_index + 1, current_day)
 	else:
 		current_progress = 0.0
+		current_task["deadline_day"] = current_day + current_task["deadline_days"]
 		task_progress_changed.emit(current_progress)
 		task_changed.emit(current_task)
 		GameLogger.log({"event": "task_pool_exhausted", "day": current_day, "task": current_task["title"]})

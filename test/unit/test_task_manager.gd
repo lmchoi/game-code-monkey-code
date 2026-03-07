@@ -99,6 +99,16 @@ func test_reset_resets_tier2_unlock():
 	task_manager.ship_current(1)
 	assert_eq(task_manager._current_index, task_manager._tasks.size() - 1, "After reset, should hold at tier1 end")
 
+func test_ship_current_refreshes_deadline_on_pool_exhausted():
+	task_manager.unlock_tier2()
+	var last_idx = task_manager._tasks.size() - 1
+	task_manager._assign_task(last_idx, 1)  # initial deadline = 1 + deadline_days
+	task_manager.current_progress = 100.0
+	task_manager.ship_current(50)  # ship on day 50
+	var expected = 50 + task_manager.current_task["deadline_days"]
+	assert_eq(task_manager.current_task["deadline_day"], expected,
+		"Deadline should refresh relative to ship day on pool exhaustion")
+
 func test_load_tasks_json_fallback_empty():
 	# Create a temporary JSON file with invalid shape (e.g., int)
 	var path = "user://test_invalid.json"

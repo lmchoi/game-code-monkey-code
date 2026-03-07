@@ -13,6 +13,7 @@ func _process(_delta: float) -> bool:
 
 	_gm = get_root().get_node("GameManager")
 	_tm = get_root().get_node("TaskManager")
+	_gm.review_ready.connect(_tm.unlock_tier2)
 
 	var strategies = {
 		"always_hustle": always_hustle,
@@ -144,7 +145,7 @@ func always_hustle(_state: Dictionary) -> String:
 	return "hustle"
 
 func diligent_worker(state: Dictionary) -> String:
-	if state.progress >= 100.0 or state.task_overdue:
+	if state.progress >= 100.0 or (state.task_overdue and state.can_ship):
 		return "ship"
 	return "work"
 
