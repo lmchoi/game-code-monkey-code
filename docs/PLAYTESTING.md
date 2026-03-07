@@ -17,6 +17,11 @@ Real play confirmed: tension didn't arrive until late (around day 30+), at the p
 the player had to choose between shipping at 66% or hustling more. That decision felt like
 the actual game — but it came too late.
 
+Run `1772867092` breakdown: 17 work / 9 ship / 9 hustle over 35 days, 1 strike, won at $5300.
+Over half the actions were pure work — the player was essentially in "safe mode" until forced
+into a crunch decision near the end. Player note: "maybe the game needs to be longer" — meaning
+more time *in* that tension zone, not more preamble before it.
+
 **Ideas:**
 
 - Hard game-over at day ~30: makes pure-work unviable (day 51 is out of reach), forces some
