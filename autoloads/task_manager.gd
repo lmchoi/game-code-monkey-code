@@ -12,16 +12,16 @@ var _tasks: Array = []
 var _current_index: int = 0
 
 func _ready() -> void:
-	_tasks = _load_json("res://data/tutorial_tasks.json")
+	_tasks = _load_tasks_json("res://data/tutorial_tasks.json")
 	assert(_tasks.size() > 0, "Could not load required tutorial_tasks.json")
 
-	var pool_tasks = _load_json("res://data/tasks.json")
+	var pool_tasks = _load_tasks_json("res://data/tasks.json")
 	if pool_tasks:
 		_tasks.append_array(pool_tasks)
 
 	_assign_task(0, GameManager.day)
 
-func _load_json(path: String) -> Array:
+func _load_tasks_json(path: String) -> Array:
 	if not FileAccess.file_exists(path):
 		printerr("Could not find file: ", path)
 		return []
@@ -35,7 +35,17 @@ func _load_json(path: String) -> Array:
 		printerr("Failed to parse JSON from: ", path)
 		return []
 
-	return data as Array
+	if data is Array:
+		return data
+	if data is Dictionary:
+		var flattened := []
+		if data.has("tier1"):
+			flattened.append_array(data["tier1"])
+		if data.has("tier2"):
+			flattened.append_array(data["tier2"])
+		return flattened
+
+	return []
 
 func advance_progress(delta: float) -> void:
 	current_progress = minf(current_progress + delta, TASK_MAX_PROGRESS)

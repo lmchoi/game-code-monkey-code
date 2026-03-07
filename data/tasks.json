@@ -1,17 +1,21 @@
-[
-  { "title": "Add a loading spinner to the dashboard", "complexity": 1, "deadline_days": 3 },
-  { "title": "Write unit tests for code that can't be tested", "complexity": 2, "deadline_days": 4 },
-  { "title": "Migrate the database. No rollback plan.", "complexity": 2, "deadline_days": 3 },
-  { "title": "Estimate the rewrite. In story points.", "complexity": 2, "deadline_days": 2 },
-  { "title": "Rebuild the auth system over the weekend", "complexity": 3, "deadline_days": 3 },
-  { "title": "Make the app GDPR compliant by Monday", "complexity": 3, "deadline_days": 2 },
-  { "title": "Fix prod. It's been down for 40 minutes.", "complexity": 3, "deadline_days": 1 },
-  { "title": "Reduce load time by 80%. No new infra budget.", "complexity": 3, "deadline_days": 2 },
-  { "title": "Refactor the module that predates the last three CTOs", "complexity": 2, "deadline_days": 5 },
-  { "title": "Implement a 'blockchain-ready' todo list", "complexity": 1, "deadline_days": 4 },
-  { "title": "Fix the recursive memory leak in production", "complexity": 3, "deadline_days": 2 },
-  { "title": "Write docs for the function everyone is afraid to touch", "complexity": 1, "deadline_days": 3 },
-  { "title": "Update the 4-year-old dependencies", "complexity": 2, "deadline_days": 4 },
-  { "title": "Add 'AI-powered' labels to the entire UI", "complexity": 1, "deadline_days": 2 },
-  { "title": "Prepare for the 4-hour Monday morning standup", "complexity": 1, "deadline_days": 1 }
-]
+{
+  "tier1": [
+    { "title": "Add a loading spinner to the dashboard", "complexity": 1, "deadline_days": 3 },
+    { "title": "Implement a 'blockchain-ready' todo list", "complexity": 1, "deadline_days": 4 },
+    { "title": "Write docs for the function everyone is afraid to touch", "complexity": 1, "deadline_days": 3 },
+    { "title": "Add 'AI-powered' labels to the entire UI", "complexity": 1, "deadline_days": 2 },
+    { "title": "Prepare for the 4-hour Monday morning standup", "complexity": 1, "deadline_days": 1 },
+    { "title": "Write unit tests for code that can't be tested", "complexity": 2, "deadline_days": 4 },
+    { "title": "Update the 4-year-old dependencies", "complexity": 2, "deadline_days": 4 },
+    { "title": "Estimate the rewrite. In story points.", "complexity": 2, "deadline_days": 2 },
+    { "title": "Migrate the database. No rollback plan.", "complexity": 2, "deadline_days": 3 },
+    { "title": "Refactor the module that predates the last three CTOs", "complexity": 2, "deadline_days": 5 }
+  ],
+  "tier2": [
+    { "title": "Rebuild the auth system over the weekend", "complexity": 3, "deadline_days": 3 },
+    { "title": "Reduce load time by 80%. No new infra budget.", "complexity": 3, "deadline_days": 2 },
+    { "title": "Fix the recursive memory leak in production", "complexity": 3, "deadline_days": 2 },
+    { "title": "Make the app GDPR compliant by Monday", "complexity": 3, "deadline_days": 2 },
+    { "title": "Fix prod. It's been down for 40 minutes.", "complexity": 3, "deadline_days": 1 }
+  ]
+}
