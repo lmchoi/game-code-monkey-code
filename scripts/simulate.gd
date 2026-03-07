@@ -13,7 +13,7 @@ func _process(_delta: float) -> bool:
 
 	_gm = get_root().get_node("GameManager")
 	_tm = get_root().get_node("TaskManager")
-	_gm.review_ready.connect(_tm.unlock_tier2)
+	_gm.review_ready.connect(_tm.unlock_next_tier)
 
 	var strategies = {
 		"always_hustle": always_hustle,

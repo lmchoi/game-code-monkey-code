@@ -29,6 +29,6 @@ func _add_label(parent: Control, text: String, size: int) -> void:
 	parent.add_child(label)
 
 func _on_continue() -> void:
-	TaskManager.unlock_tier2()
+	TaskManager.unlock_next_tier()
 	continued.emit()
 	queue_free()
