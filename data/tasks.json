@@ -12,10 +12,22 @@
     { "title": "Refactor the module that predates the last three CTOs", "complexity": 2, "deadline_days": 5 }
   ],
   "tier2": [
-    { "title": "Rebuild the auth system over the weekend", "complexity": 3, "deadline_days": 3 },
+    { "title": "Rebuild the auth system over the weekend", "complexity": 3, "deadline_days": 4 },
+    { "title": "Migrate to microservices. No docs, no rollback.", "complexity": 3, "deadline_days": 5 },
+    { "title": "Rewrite the payment service before the audit", "complexity": 3, "deadline_days": 4 },
+    { "title": "Integrate the third-party API with no documentation", "complexity": 3, "deadline_days": 5 },
+    { "title": "Port the monolith to serverless. In one sprint.", "complexity": 3, "deadline_days": 4 },
+    { "title": "Fix the race condition that only happens on Fridays", "complexity": 3, "deadline_days": 5 },
+    { "title": "Add real-time sync. The backend isn't ready.", "complexity": 3, "deadline_days": 4 },
+    { "title": "Scale search to handle 10x traffic by Tuesday", "complexity": 3, "deadline_days": 4 },
+    { "title": "Implement SSO before the enterprise demo", "complexity": 3, "deadline_days": 5 },
+    { "title": "Build the new onboarding flow by end of sprint", "complexity": 3, "deadline_days": 4 }
+  ],
+  "tier3": [
     { "title": "Reduce load time by 80%. No new infra budget.", "complexity": 3, "deadline_days": 2 },
     { "title": "Fix the recursive memory leak in production", "complexity": 3, "deadline_days": 2 },
     { "title": "Make the app GDPR compliant by Monday", "complexity": 3, "deadline_days": 2 },
-    { "title": "Fix prod. It's been down for 40 minutes.", "complexity": 3, "deadline_days": 1 }
+    { "title": "Fix prod. It's been down for 40 minutes.", "complexity": 3, "deadline_days": 1 },
+    { "title": "Patch the security breach. It's live right now.", "complexity": 3, "deadline_days": 1 }
   ]
 }
