@@ -14,5 +14,6 @@
   "ship_minimum_progress": 50,
   "ship_vibe_green": 80,
   "ship_vibe_yellow": 60,
-  "max_overdue_days": 3
+  "max_overdue_days": 3,
+  "review_day": 30
 }
