@@ -15,6 +15,7 @@ func log(fields: Dictionary) -> void:
 		return
 	var entry: Dictionary = fields.duplicate()
 	entry["run_id"] = run_id
+	entry["ts"] = int(Time.get_unix_time_from_system())
 
 	var json_line: String = JSON.stringify(entry)
 	var file: FileAccess = FileAccess.open(log_path, FileAccess.READ_WRITE)

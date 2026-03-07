@@ -57,6 +57,7 @@ def extract_metrics(run_id, events):
         "sloppy_ship_count": sum(1 for s in ships if s.get("bugs_added", 0) > 0),
         "total_bugs_added": sum(s.get("bugs_added", 0) for s in ships),
         "task_count": len(dict.fromkeys(a["task"] for a in actions if "task" in a)),
+        "duration_secs": game_over.get("ts", 0) - run_id if game_over.get("ts") else None,
     }
 
 
@@ -86,10 +87,12 @@ def save_metrics(metrics_path, new_metrics_by_run):
 
 
 def format_run(m):
+    dur = m.get("duration_secs")
+    dur_str = f"  |  {dur // 60}m {dur % 60}s" if dur else ""
     lines = [f"run {m['run_id']}"]
     lines.append(
         f"  outcome:  {m['outcome']}  |  day {m['day']}"
-        f"  |  ${m['money']}  |  {m['bugs']} bugs  |  {m['strikes']} strikes"
+        f"  |  ${m['money']}  |  {m['bugs']} bugs  |  {m['strikes']} strikes{dur_str}"
     )
     lines.append(
         f"  actions:  {m['work_count']} work  /  {m['ship_count']} ship  /  {m['hustle_count']} hustle"
@@ -121,6 +124,10 @@ def balance_notes(all_metrics):
         bug_range = f"{min(m['bugs'] for m in wins)}–{max(m['bugs'] for m in wins)}"
         lines.append(f"  avg win day:      {avg_day:.1f}  (range {day_range})")
         lines.append(f"  avg bugs at win:  {avg_bugs:.1f}  (range {bug_range})")
+    timed = [m for m in all_metrics if m.get("duration_secs")]
+    if timed:
+        avg_dur = sum(m["duration_secs"] for m in timed) / len(timed)
+        lines.append(f"  avg session:      {int(avg_dur) // 60}m {int(avg_dur) % 60}s  ({len(timed)} timed runs)")
     return "\n".join(lines)
 
 

@@ -102,19 +102,6 @@ The following exist in the design but are not implemented in V1:
 
 ---
 
-## Ideas
+## Playtesting Notes
 
-### Time pressure / game length cap
-
-Simulation findings (2026-03-07): pure-work strategies (`diligent_worker`, `ship_asap`) win 100% of
-runs at a deterministic day 51. There is no time pressure — a patient player cannot lose. Meanwhile,
-`hustle_then_ship` wins at day 22 but only 35% of the time due to detection risk.
-
-**Idea:** add a hard game-over at day ~30 (or a soft performance-review strike if not at X% of the
-money goal). This would:
-- Make pure-work unviable on its own — day 51 is out of reach
-- Make some hustling mandatory, raising the stakes
-- Make `hustle_then_ship`-style play the intended path, with detection risk as the core tension
-
-Soft variant: at day 30, a "performance review" adds a strike if money < some threshold. Keeps the
-game alive but punishes slowness without a hard cutoff.
+See [PLAYTESTING.md](PLAYTESTING.md) for observations and design ideas from real play sessions.
