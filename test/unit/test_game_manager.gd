@@ -227,3 +227,15 @@ func test_review_ready_not_emitted_if_game_over():
 	watch_signals(game_manager)
 	game_manager.day = int(game_manager.balance.review_day)
 	assert_signal_not_emitted(game_manager, "review_ready")
+
+func test_review_ready_emits_at_review2_day():
+	game_manager.balance["review2_day"] = 60
+	watch_signals(game_manager)
+	game_manager.day = 60
+	assert_signal_emitted(game_manager, "review_ready")
+
+func test_review_ready_not_emitted_between_reviews():
+	game_manager.balance["review2_day"] = 60
+	watch_signals(game_manager)
+	game_manager.day = 45
+	assert_signal_not_emitted(game_manager, "review_ready")
