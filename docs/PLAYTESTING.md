@@ -30,3 +30,22 @@ more time *in* that tension zone, not more preamble before it.
   Keeps the game alive but punishes slowness without a hard cutoff.
 - Alternatively, extend the game intentionally so the crunch zone is longer rather than
   arriving later — more time in the tension window rather than more preamble before it.
+
+---
+
+## 2026-03-07 — Pacing levers (post run 1772867788)
+
+**Source:** real run `1772867788` (win, day 25, 37s session — hustle-heavy, 0 bugs)
+
+37 seconds is a full game. Way too short even accounting for fast clicking — the game has no
+meaningful friction or ramp-up. First 1–2 minutes should feel like a warm-up; stakes should
+build from there.
+
+**Proposed levers (player feedback):**
+
+- **Raise the win threshold** — $5,000 is too reachable too fast. A much higher number
+  (e.g. $15,000–$20,000) would make the game arc longer and payday math more meaningful.
+- **More tasks, harder tasks** — the task pool needs depth. Longer complexity curves mean
+  more days spent in work/ship decisions before money accumulates.
+- **Intentional warm-up phase** — the first few tasks should be low-stakes by design,
+  letting the player learn the loop before detection risk and bug pressure compound.
