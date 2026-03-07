@@ -33,6 +33,8 @@ var day: int = 1:
 var tasks_shipped: int = 0
 var total_bugs_added: int = 0
 var sloppy_ships: int = 0
+var tasks_on_time: int = 0
+var tasks_late: int = 0
 
 func calculate_bugs_for_ship(progress: float) -> int:
 	return roundi((TaskManager.TASK_MAX_PROGRESS - progress) * balance.bugs_per_incomplete_percent)
@@ -72,7 +74,13 @@ func do_ship() -> void:
 	if progress_at_ship < balance.ship_vibe_green:
 		sloppy_ships += 1
 
+	var was_late = _is_task_overdue(day, TaskManager.current_task["deadline_day"])
 	TaskManager.ship_current(day)
+	if was_late:
+		tasks_late += 1
+	else:
+		tasks_on_time += 1
+
 	_do_bookkeeping()
 
 	GameLogger.log({
@@ -82,6 +90,7 @@ func do_ship() -> void:
 		"bugs": bugs,
 		"bugs_added": bugs_added,
 		"progress_at_ship": progress_at_ship,
+		"was_late": was_late,
 		"sloppy": progress_at_ship < balance.ship_vibe_green,
 		"task": TaskManager.current_task["title"]
 	})
@@ -165,6 +174,8 @@ func reset() -> void:
 	tasks_shipped = 0
 	total_bugs_added = 0
 	sloppy_ships = 0
+	tasks_on_time = 0
+	tasks_late = 0
 	TaskManager.reset()
 	GameLogger.new_run()
 

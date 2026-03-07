@@ -182,3 +182,29 @@ func test_sloppy_ships_resets():
 	game_manager.do_ship()
 	game_manager.reset()
 	assert_eq(game_manager.sloppy_ships, 0, "sloppy_ships should reset")
+
+func test_tasks_on_time_increments_before_deadline():
+	game_manager.day = 1
+	TaskManager.current_task["deadline_day"] = 5
+	game_manager.do_ship()
+	assert_eq(game_manager.tasks_on_time, 1, "tasks_on_time should increment")
+
+func test_tasks_late_increments_after_deadline():
+	game_manager.day = 10
+	TaskManager.current_task["deadline_day"] = 5
+	game_manager.do_ship()
+	assert_eq(game_manager.tasks_late, 1, "tasks_late should increment")
+
+func test_tasks_on_time_resets():
+	game_manager.day = 1
+	TaskManager.current_task["deadline_day"] = 5
+	game_manager.do_ship()
+	game_manager.reset()
+	assert_eq(game_manager.tasks_on_time, 0, "tasks_on_time should reset")
+
+func test_tasks_late_resets():
+	game_manager.day = 10
+	TaskManager.current_task["deadline_day"] = 5
+	game_manager.do_ship()
+	game_manager.reset()
+	assert_eq(game_manager.tasks_late, 0, "tasks_late should reset")
