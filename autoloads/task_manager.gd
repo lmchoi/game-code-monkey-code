@@ -12,7 +12,9 @@ var _tasks: Array = []
 var _current_index: int = 0
 var _base_tasks: Array = []  ## tutorial + tier1; restored on reset
 var _tier2_tasks: Array = []  ## parsed once at startup, appended on unlock
+var _tier3_tasks: Array = []  ## parsed once at startup, appended on unlock
 var _tier2_unlocked: bool = false
+var _tier3_unlocked: bool = false
 
 ## Loads tutorial tasks and tier1 pool. Tier2 is not added to _tasks
 ## until unlock_tier2() is called.
@@ -23,6 +25,7 @@ func _ready() -> void:
 	var pool = _parse_tasks_file("res://data/tasks.json")
 	_base_tasks = tutorial + pool.get("tier1", [])
 	_tier2_tasks = pool.get("tier2", [])
+	_tier3_tasks = pool.get("tier3", [])
 	_tasks = _base_tasks.duplicate(true)
 	_assign_task(0, GameManager.day)
 
@@ -88,10 +91,26 @@ func unlock_tier2() -> void:
 	_tier2_unlocked = true
 	_tasks.append_array(_tier2_tasks)
 
-## Resets to the start of the tutorial. Strips tier2 from _tasks.
+## Appends tier3 tasks to the sequence. Idempotent — safe to call multiple times.
+func unlock_tier3() -> void:
+	if _tier3_unlocked:
+		return
+	_tier3_unlocked = true
+	_tasks.append_array(_tier3_tasks)
+
+## Unlocks the next tier in sequence: tier2 first, then tier3.
+## Called by the review dialog — idempotent at each stage.
+func unlock_next_tier() -> void:
+	if not _tier2_unlocked:
+		unlock_tier2()
+	elif not _tier3_unlocked:
+		unlock_tier3()
+
+## Resets to the start of the tutorial. Strips tier2 and tier3 from _tasks.
 func reset() -> void:
 	_tasks = _base_tasks.duplicate(true)
 	_tier2_unlocked = false
+	_tier3_unlocked = false
 	_current_index = 0
 	current_progress = 0.0
 	_assign_task(0, 1)

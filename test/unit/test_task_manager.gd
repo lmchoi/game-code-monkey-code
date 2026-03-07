@@ -109,6 +109,41 @@ func test_ship_current_refreshes_deadline_on_pool_exhausted():
 	assert_eq(task_manager.current_task["deadline_day"], expected,
 		"Deadline should refresh relative to ship day on pool exhaustion")
 
+func test_unlock_tier3_appends_tier3_tasks():
+	task_manager.unlock_tier2()
+	var size_before = task_manager._tasks.size()
+	task_manager.unlock_tier3()
+	assert_gt(task_manager._tasks.size(), size_before, "Should have more tasks after tier3 unlock")
+
+func test_unlock_tier3_is_idempotent():
+	task_manager.unlock_tier2()
+	task_manager.unlock_tier3()
+	var size_after_first = task_manager._tasks.size()
+	task_manager.unlock_tier3()
+	assert_eq(task_manager._tasks.size(), size_after_first, "unlock_tier3 should be idempotent")
+
+func test_unlock_next_tier_unlocks_tier2_first():
+	var size_before = task_manager._tasks.size()
+	task_manager.unlock_next_tier()
+	assert_gt(task_manager._tasks.size(), size_before, "Should unlock tier2 first")
+	assert_true(task_manager._tier2_unlocked, "tier2 should be unlocked")
+	assert_false(task_manager._tier3_unlocked, "tier3 should not be unlocked yet")
+
+func test_unlock_next_tier_unlocks_tier3_when_tier2_done():
+	task_manager.unlock_tier2()
+	var size_before = task_manager._tasks.size()
+	task_manager.unlock_next_tier()
+	assert_gt(task_manager._tasks.size(), size_before, "Should unlock tier3 next")
+	assert_true(task_manager._tier3_unlocked, "tier3 should be unlocked")
+
+func test_reset_resets_tier3_unlock():
+	var tier1_size = task_manager._tasks.size()
+	task_manager.unlock_tier2()
+	task_manager.unlock_tier3()
+	task_manager.reset()
+	assert_eq(task_manager._tasks.size(), tier1_size, "After reset, tier2+tier3 tasks should be removed")
+	assert_false(task_manager._tier3_unlocked, "tier3_unlocked should be false after reset")
+
 func test_load_tasks_json_fallback_empty():
 	# Create a temporary JSON file with invalid shape (e.g., int)
 	var path = "user://test_invalid.json"
