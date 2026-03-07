@@ -9,8 +9,10 @@ Randomisation is deferred — the sequence is fixed and curated for now.
 ## What's Already Built
 
 - `data/tutorial_tasks.json` — 3 fixed tasks, sequential, hold on last
-- `task_manager.gd` — loads tutorial tasks, advances by index, holds on last
+- `data/tasks.json` — flat array of 15 tasks, appended after tutorial, sequential, hold on last
+- `task_manager.gd` — loads both files, advances sequentially, holds on last, logs `task_pool_exhausted` event
 - `TaskManager.reset()` — resets index to 0, progress to 0, assigns task 0
+- `bug_spiral_threshold` already set to 50 in `balance.json`
 
 ---
 
@@ -94,7 +96,7 @@ Write before implementing commit 2:
 
 ## Open Questions
 
-- **Review trigger:** does tier 1 → review happen at day 30, or when tier 1 is exhausted, or whichever comes first?
+- **Review trigger:** day 30, full stop. Tier 1 holds on last task if exhausted before day 30. ✅ Locked.
 - **Task count per tier:** 8 is the target. More is a pure data change.
 - **Complexity within tiers:** tier 1 = complexity 1–2, tier 2 = complexity 2–3. Hardcoded via data.
 - **Randomisation:** deferred. Add in a later pass once the authored sequence feels right.
@@ -103,15 +105,26 @@ Write before implementing commit 2:
 
 ## Suggested Commit Order
 
-1. `data/tasks.json` — tier 1 and tier 2 data, no code change
-2. Sequence logic in `task_manager.gd` + GUT tests (TDD first)
-3. `balance.json` — `bug_spiral_threshold: 50`, `win_goal: 10000`
+1. `data/tasks.json` — restructure flat array into `{tier1, tier2}` (data only, no code change)
+2. `tasks_shipped` counter in `GameManager` + test
+3. `total_bugs_added` counter in `GameManager` + test
+4. `sloppy_ships` counter in `GameManager` + test
+5. `tasks_on_time` / `tasks_late` counters in `GameManager` + test
+6. Sequence logic in `task_manager.gd` + tests (TDD first)
+7. Review dialog — reads from counters, fires at day 30
+8. `balance.json` — `win_goal: 10000`
+
+Each commit is independently testable. Commits 2–5 are pure GameManager state —
+no UI, no sequence logic. Commit 6 depends on the restructured data from commit 1.
+Commit 7 depends on all counters being in place.
 
 ---
 
 ## Files Touched
 
-- `data/tasks.json` (new)
+- `data/tasks.json` (restructure)
+- `autoloads/game_manager.gd`
 - `autoloads/task_manager.gd`
 - `data/balance.json`
+- `test/unit/test_game_manager.gd`
 - `test/unit/test_task_manager.gd`
