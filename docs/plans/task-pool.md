@@ -1,6 +1,8 @@
 # Task Pool — Feature Plan
 
-The current build has 3 fixed tutorial tasks that recycle on the last one. Every run is identical and the difficulty curve never builds. This feature replaces the recycling behaviour with a proper random task pool, making runs feel different and enabling the intended progression.
+The current build has 3 fixed tutorial tasks that recycle on the last one. This feature extends
+the sequence with authored tier 1 and tier 2 task lists, separated by the day 30 review.
+Randomisation is deferred — the sequence is fixed and curated for now.
 
 ---
 
@@ -12,96 +14,98 @@ The current build has 3 fixed tutorial tasks that recycle on the last one. Every
 
 ---
 
-## What Needs Building
+## Structure
 
-### 1 — `data/tasks.json` — the pool
-
-A separate file from `tutorial_tasks.json`. Tutorial tasks stay fixed and sequential — the pool is drawn from after them.
-
-Each task needs one new field: `tier` (1 = early, 2 = mid, 3 = late).
-
-```json
-[
-  { "title": "Rename a variable to fix the bug", "complexity": 1, "deadline_days": 4, "tier": 1 },
-  { "title": "Add a loading spinner to the dashboard", "complexity": 1, "deadline_days": 3, "tier": 1 },
-  { "title": "Write unit tests for code that can't be tested", "complexity": 2, "deadline_days": 4, "tier": 1 },
-  { "title": "Migrate the database. No rollback plan.", "complexity": 2, "deadline_days": 3, "tier": 2 },
-  { "title": "Rebuild the auth system over the weekend", "complexity": 3, "deadline_days": 3, "tier": 2 },
-  { "title": "Estimate the rewrite. In story points.", "complexity": 2, "deadline_days": 2, "tier": 2 },
-  { "title": "Make the app GDPR compliant by Monday", "complexity": 3, "deadline_days": 2, "tier": 3 },
-  { "title": "Fix prod. It's been down for 40 minutes.", "complexity": 3, "deadline_days": 1, "tier": 3 },
-  { "title": "Reduce load time by 80%. No new infra budget.", "complexity": 3, "deadline_days": 2, "tier": 3 }
-]
+```
+tutorial_tasks  →  tier 1 sequence  →  [day 30 review]  →  tier 2 sequence
 ```
 
-Aim for ~5 tasks per tier. The titles above are a starting point — tune for tone and variety.
-
-**This commit is data-only. No code change, no functional change.**
-
-### 2 — Pool draw logic in `task_manager.gd`
-
-After the tutorial (once `_current_index` would exceed `_tasks.size() - 1`), draw randomly from `_pool` filtered to eligible tiers.
-
-**Tier unlock thresholds** are driven by the day 30 review, not task count. The review outcome
-determines which tier the player graduates into for the rest of the game. This ties progression
-to playstyle rather than just grinding through tasks.
-
-Pre-review: tier 1 only. Post-review: tier 1+2 minimum, tier 3 unlocked by strong review outcome.
-Exact mapping of review grades → tier unlock TBD when review mechanic is built.
-
-**Repeat draws:** allowed. Pool is large enough for a 15-min run and tracking exhaustion adds complexity for little gain. Seed is not fixed — every run is different.
-
-**Draw logic (pseudocode):**
-```
-eligible = pool.filter(t => t.tier <= unlocked_tier(tasks_shipped))
-pick randomly from eligible
-```
-
-`tasks_shipped` is tracked in `GameManager` (needed for endings too — same var).
-
-**`reset()` update:** no new state to reset — draw is stateless (random each time).
-
-### 3 — Balance tuning
-
-With the current values, the bug spiral is unreachable in normal play:
-- `ship_minimum_progress = 50` → max 5 bugs per ship
-- `bug_spiral_threshold = 100` → needs 20 ships to spiral
-
-Recommended starting values for playtesting:
-
-```json
-"bug_spiral_threshold": 50
-```
-
-That makes the spiral reachable in ~10 bad ships — achievable in a real run without deliberate grinding. Tune further after playtesting.
+- Tutorial and tier 1 are sequential and fixed
+- Day 30 review fires when tier 1 is exhausted (or at day 30, whichever comes first — TBD)
+- Tier 2 is a separate fixed sequence, same for everyone for now
+- Tier 3 deferred — not building yet
 
 ---
 
-## GUT Tests (TDD for draw logic)
+## What Needs Building
+
+### 1 — `data/tasks.json` — tier 1 and tier 2 sequences
+
+Two arrays in one file: `tier1` and `tier2`. Both fixed and ordered.
+
+```json
+{
+  "tier1": [
+    { "title": "Rename a variable to fix the bug", "complexity": 1, "deadline_days": 4 },
+    { "title": "Add a loading spinner to the dashboard", "complexity": 1, "deadline_days": 3 },
+    { "title": "Write unit tests for code that can't be tested", "complexity": 2, "deadline_days": 4 },
+    { "title": "Migrate the database. No rollback plan.", "complexity": 2, "deadline_days": 3 },
+    { "title": "Estimate the rewrite. In story points.", "complexity": 2, "deadline_days": 3 }
+  ],
+  "tier2": [
+    { "title": "Rebuild the auth system over the weekend", "complexity": 3, "deadline_days": 3 },
+    { "title": "Make the app GDPR compliant by Monday", "complexity": 3, "deadline_days": 2 },
+    { "title": "Fix prod. It's been down for 40 minutes.", "complexity": 3, "deadline_days": 1 },
+    { "title": "Reduce load time by 80%. No new infra budget.", "complexity": 3, "deadline_days": 2 }
+  ]
+}
+```
+
+Aim for ~8 tasks per tier. Titles above are a starting point — tune for tone and variety.
+
+**This commit is data-only. No code change, no functional change.**
+
+### 2 — Sequence logic in `task_manager.gd`
+
+After the tutorial, advance sequentially through tier 1. After tier 1 is exhausted, hold on
+the last task until the day 30 review fires. After the review, switch to tier 2 and advance
+sequentially. Hold on the last tier 2 task if the player keeps going.
+
+No random draw. No repeat tracking needed.
+
+`tasks_shipped` tracked in `GameManager` (needed for review grading and endings).
+
+**`reset()` update:** reset tier index and active tier to tutorial.
+
+### 3 — Balance tuning
+
+```json
+"bug_spiral_threshold": 50,
+"win_goal": 10000
+```
+
+- `bug_spiral_threshold` down from 100 to 50 — makes the spiral reachable in ~10 bad ships
+- `win_goal` up from 5000 to 10000 — baby step toward a longer arc, tune further after playtesting
+
+---
+
+## GUT Tests
 
 Write before implementing commit 2:
 
-- Draw only returns tier 1 tasks when `tasks_shipped < tier2_unlock_tasks`
-- Draw returns tier 1 + 2 tasks when `tasks_shipped >= tier2_unlock_tasks`
-- Draw returns all tiers when `tasks_shipped >= tier3_unlock_tasks`
-- Draw never returns an empty result (pool always has eligible tasks)
+- After tutorial exhausted, next task comes from tier 1
+- Tier 1 advances sequentially
+- Tier 1 holds on last task when exhausted (until review fires)
+- After review, next task comes from tier 2
+- Tier 2 advances sequentially
+- Tier 2 holds on last task when exhausted
 
 ---
 
 ## Open Questions
 
-- **How many tasks per tier?** 5 is the starting target. If runs feel repetitive after 10+ plays, add more. Pure data change.
-- **Tier unlock thresholds** — `3` and `6` are guesses. Tune via playtesting (`balance.json` only).
-- **Task titles** — need enough variety and tone that back-to-back repeats don't feel wrong. Write ~8 per tier to give the random draw room.
-- **Does complexity need to scale within tiers?** Current approach: tier 1 = complexity 1-2, tier 2 = complexity 2-3, tier 3 = complexity 3. Hardcoded via data, not logic.
+- **Review trigger:** does tier 1 → review happen at day 30, or when tier 1 is exhausted, or whichever comes first?
+- **Task count per tier:** 8 is the target. More is a pure data change.
+- **Complexity within tiers:** tier 1 = complexity 1–2, tier 2 = complexity 2–3. Hardcoded via data.
+- **Randomisation:** deferred. Add in a later pass once the authored sequence feels right.
 
 ---
 
 ## Suggested Commit Order
 
-1. `data/tasks.json` — pool data, no code change
-2. Pool draw logic in `task_manager.gd` + GUT tests (TDD first)
-3. `balance.json` — lower `bug_spiral_threshold` to 50, raise `win_threshold` to 10000 (baby step from 5000, target is higher but needs playtesting)
+1. `data/tasks.json` — tier 1 and tier 2 data, no code change
+2. Sequence logic in `task_manager.gd` + GUT tests (TDD first)
+3. `balance.json` — `bug_spiral_threshold: 50`, `win_goal: 10000`
 
 ---
 
