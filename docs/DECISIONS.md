@@ -11,6 +11,8 @@ Decisions being actively discussed or reconsidered. Once resolved, update the GD
 | 🟡 Open | `[ARCHITECTURE]` | Post-core-loop | [hustle-varied-tasks](#open-hustle-varied-tasks) |
 | 🟡 Open | `[DESIGN]` | Playtest | [game-duration](#open-game-duration) |
 | 🟡 Open | `[DESIGN]` | Post-core-loop | [day-30-review](#open-day-30-review) |
+| 🟡 Open | `[BALANCE]` | Playtest | [hustle-detection-balance](#open-hustle-detection-balance) |
+| 🟡 Open | `[BALANCE]` | Playtest | [income-scaling](#open-income-scaling) |
 | 🟡 Open | `[DESIGN]` | Playtest | [bug-feedback-on-ship](#open-bug-feedback-on-ship) |
 | ✅ Closed | `[DESIGN]` | Pre-build | [work-on-complete-task](#closed-work-on-complete-task) |
 | ✅ Closed | `[DESIGN]` | Pre-build | [ducks-v1](#closed-ducks-v1) |
@@ -108,6 +110,36 @@ sensitivity etc.) rather than funnelling into one of three archetypes. More mix-
 - Hustle detection during warm-up: parked, defer until after core loop is extended.
 
 **Status:** Direction set, not building until game length and task pool are expanded first.
+
+---
+
+### OPEN: hustle-detection-balance
+
+**Question:** Is the detection risk / payout ratio for HUSTLE punishing enough?
+
+**Findings (2026-03-07):** Run 1772867788 — 14 hustle out of 25 actions, 1 detection, 1 strike, won
+with 0 bugs. Hustle-heavy play worked cleanly. Detection didn't change strategy.
+
+**Status:** Parked. Revisit once game length is extended — may self-correct when detection
+consequences compound over a longer arc.
+
+---
+
+### OPEN: income-scaling
+
+**Question:** Should salary and hustle pay scale over time, or stay flat?
+
+**Current:** Both are flat for the entire game ($500/5 days salary, $200/day hustle).
+
+**Problem:** In a ~300-day game, the same numbers from day 1 to day 300 makes the late game
+feel identical to the early game. No sense of stakes growing.
+
+**Options:**
+- Salary scales with performance review outcomes (promotion = pay rise)
+- Hustle pay varies per opportunity rather than fixed $200
+- Both stay flat — progression comes from task difficulty, not income
+
+**Status:** Parked. Don't decide until game length and review mechanic are implemented.
 
 ---
 
