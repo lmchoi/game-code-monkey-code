@@ -81,6 +81,34 @@ temporal progression, nothing that changes just because time has passed.
 - **Performance reviews** — periodic checkpoints (e.g. every 15 days) where money below a
   threshold adds a strike. Forces the player to not just play it safe indefinitely.
 
+### Day 30 review — open question (2026-03-07)
+
+Target game length: ~10 minutes. At current pace (~1.5s/action, 1 action/day) that's ~400 days.
+A 300-day game is the working target, which implies a win threshold around $50,000.
+
+At day 30 with mixed play, a player would have ~$5,000 — exactly the current win threshold.
+That's an interesting coincidence: day 30 is roughly where the current game ends.
+
+**Open question: does the player know the real win target from the start, or is the review a surprise?**
+
+- **Transparent:** player sees $50k goal upfront, day 30 review is a checkpoint ("how are you tracking")
+- **Surprise:** player thinks they're close to winning, then the review reframes the scope — "nice work,
+  but you've only just started." Higher narrative impact, but could feel unfair if not telegraphed.
+
+**New idea: the review unlocks a path based on how you played the first 30 days.**
+
+The warm-up isn't neutral — the boss is watching. Your behaviour in days 1–30 determines what
+the review reveals and what becomes available after it. Examples:
+
+- Shipped clean, low bugs → **promoted**: higher salary, harder tasks, more scrutiny from above
+- Hustled a lot without getting caught → **trusted**: more hustle opportunities, higher pay, but
+  detection consequences get more severe
+- Got caught / too many bugs → **on thin ice**: stricter deadlines, less tolerance for sloppiness
+
+This reframes the whole opening: the player *thinks* they're learning the game, but they're
+actually setting their trajectory. Replay value comes from trying different paths.
+The review becomes a reveal, not just a checkpoint.
+
 **Reactive levers to strengthen:**
 
 - **Reputation decay** — getting detected should have a lingering effect beyond the strike,
