@@ -51,6 +51,21 @@ A narrative event that marks the end of the warm-up. The player's behaviour in d
 - Hustled without getting caught → **trusted**: more hustle pay, but detection consequences worse
 - Got caught / too many bugs → **on thin ice**: stricter deadlines, less tolerance
 
+**Report card — what the boss grades (visible work only):**
+
+| Grade | Measures |
+|-------|----------|
+| Quality | Ship completion % at time of ship, bugs added across all ships |
+| Output | Tasks completed, weighted by complexity |
+| Timeliness | Tasks delivered on time vs overdue, overdue days accumulated |
+
+Hustle is not a graded category — the boss grades what they *know*. Strikes and detection
+events colour their perception but don't appear explicitly on the card.
+
+Grades combine to determine the path unlock. High quality + high output + on time = promotion.
+Each grade could independently unlock something rather than funnelling into one of three archetypes
+— more mix-and-match, more replayability.
+
 **Presentation:** dialogue/narrative, not a stats screen. Boss calls you in (Slack message,
 meeting invite, whatever fits the tone). The vibe is clear; exact mechanical changes
 reveal themselves through play.
@@ -63,6 +78,7 @@ Examples:
 **Open question:** does the player know the real win target ($50k) from the start, or does
 the review reframe the scope as a surprise? Surprise has higher narrative impact but risks
 feeling unfair if not telegraphed at all.
+
 
 ---
 
