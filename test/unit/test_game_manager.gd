@@ -136,3 +136,27 @@ func test_tasks_shipped_resets():
 	game_manager.do_ship()
 	game_manager.reset()
 	assert_eq(game_manager.tasks_shipped, 0, "tasks_shipped should reset")
+
+func test_total_bugs_added_increases_on_sloppy_ship():
+	TaskManager.current_progress = 50.0
+	game_manager.do_ship()
+	assert_gt(game_manager.total_bugs_added, 0, "total_bugs_added should increase on sloppy ship")
+
+func test_total_bugs_added_accumulates():
+	TaskManager.current_progress = 50.0
+	game_manager.do_ship()
+	var first_ship_bugs = game_manager.total_bugs_added
+	TaskManager.current_progress = 50.0
+	game_manager.do_ship()
+	assert_eq(game_manager.total_bugs_added, first_ship_bugs * 2, "total_bugs_added should accumulate")
+
+func test_total_bugs_added_zero_on_clean_ship():
+	TaskManager.current_progress = 100.0
+	game_manager.do_ship()
+	assert_eq(game_manager.total_bugs_added, 0, "total_bugs_added should be zero on clean ship")
+
+func test_total_bugs_added_resets():
+	TaskManager.current_progress = 50.0
+	game_manager.do_ship()
+	game_manager.reset()
+	assert_eq(game_manager.total_bugs_added, 0, "total_bugs_added should reset")
