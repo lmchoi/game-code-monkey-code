@@ -3,7 +3,7 @@
 # Use GODOT4_BIN if defined, otherwise default to "godot"
 GODOT4_BIN ?= godot
 
-.PHONY: help check test simulate lint install install-gut install-hooks
+.PHONY: help check test simulate trace lint install install-gut install-hooks
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
@@ -30,3 +30,7 @@ test: ## Run GUT test suite headlessly
 
 simulate: ## Run strategy simulation and print outcome distributions
 	$(GODOT4_BIN) --headless --script scripts/simulate.gd 2>/dev/null
+
+STRATEGY ?= diligent_worker
+trace: ## Trace a single game run with turn-by-turn logging (STRATEGY=name)
+	$(GODOT4_BIN) --headless --script scripts/simulate.gd -- $(STRATEGY) 2>/dev/null
