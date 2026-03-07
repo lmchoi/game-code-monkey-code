@@ -48,6 +48,7 @@ func ship_current(current_day: int) -> void:
 		current_progress = 0.0
 		task_progress_changed.emit(current_progress)
 		task_changed.emit(current_task)
+		GameLogger.log({"event": "task_pool_exhausted", "day": current_day, "task": current_task["title"]})
 
 func reset() -> void:
 	_current_index = 0

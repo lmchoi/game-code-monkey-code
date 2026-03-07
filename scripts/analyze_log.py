@@ -57,6 +57,7 @@ def extract_metrics(run_id, events):
         "sloppy_ship_count": sum(1 for s in ships if s.get("bugs_added", 0) > 0),
         "total_bugs_added": sum(s.get("bugs_added", 0) for s in ships),
         "task_count": len(dict.fromkeys(a["task"] for a in actions if "task" in a)),
+        "task_loops": len([e for e in events if e.get("event") == "task_pool_exhausted"]),
         "duration_secs": game_over.get("ts", 0) - run_id if game_over.get("ts") else None,
     }
 
@@ -103,7 +104,10 @@ def format_run(m):
         lines.append(f"  overdue:  {m['auto_strike_count']} auto-strike(s)")
     if m["sloppy_ship_count"]:
         lines.append(f"  sloppy:   {m['sloppy_ship_count']} ship(s)  |  {m['total_bugs_added']} bugs added")
-    lines.append(f"  tasks:    {m['task_count']}")
+    tasks_str = f"  tasks:    {m['task_count']}"
+    if m.get("task_loops"):
+        tasks_str += f"  |  looped {m['task_loops']}x"
+    lines.append(tasks_str)
     return "\n".join(lines)
 
 
