@@ -42,14 +42,12 @@ Aim for ~5 tasks per tier. The titles above are a starting point — tune for to
 
 After the tutorial (once `_current_index` would exceed `_tasks.size() - 1`), draw randomly from `_pool` filtered to eligible tiers.
 
-**Tier unlock thresholds** live in `balance.json`:
+**Tier unlock thresholds** are driven by the day 30 review, not task count. The review outcome
+determines which tier the player graduates into for the rest of the game. This ties progression
+to playstyle rather than just grinding through tasks.
 
-```json
-"tier2_unlock_tasks": 3,
-"tier3_unlock_tasks": 6
-```
-
-These are the number of tasks shipped (tutorial + pool) needed to unlock each tier. Starting values — tune via playtesting.
+Pre-review: tier 1 only. Post-review: tier 1+2 minimum, tier 3 unlocked by strong review outcome.
+Exact mapping of review grades → tier unlock TBD when review mechanic is built.
 
 **Repeat draws:** allowed. Pool is large enough for a 15-min run and tracking exhaustion adds complexity for little gain. Seed is not fixed — every run is different.
 
@@ -103,7 +101,7 @@ Write before implementing commit 2:
 
 1. `data/tasks.json` — pool data, no code change
 2. Pool draw logic in `task_manager.gd` + GUT tests (TDD first)
-3. `balance.json` — lower `bug_spiral_threshold` to 50, add tier unlock thresholds
+3. `balance.json` — lower `bug_spiral_threshold` to 50, raise `win_threshold` to 10000 (baby step from 5000, target is higher but needs playtesting)
 
 ---
 
