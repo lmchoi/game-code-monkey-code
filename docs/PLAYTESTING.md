@@ -49,3 +49,41 @@ build from there.
   more days spent in work/ship decisions before money accumulates.
 - **Intentional warm-up phase** — the first few tasks should be low-stakes by design,
   letting the player learn the loop before detection risk and bug pressure compound.
+
+---
+
+## 2026-03-07 — Progression design
+
+The game needs values that *change as you progress*, not just more of the same.
+Currently almost everything is flat: salary, hustle pay, detection base rate, win threshold.
+The only progression is reactive (bugs slow your work, strikes raise detection) — there's no
+temporal progression, nothing that changes just because time has passed.
+
+**Two types of progression to design for:**
+
+- **Reactive** — changes driven by player choices (already partially exists: bug penalty, strike detection bonus)
+- **Temporal** — changes driven by time passing regardless of what the player does (mostly missing)
+
+**Proposed game phases:**
+
+| Phase | Days (approx) | Feel |
+|-------|---------------|------|
+| Onboarding | 1–10 | Learn the loop. Easy tasks, low stakes, no real risk. |
+| Grind | 10–25 | Stakes emerge. Tasks get harder, detection starts mattering. |
+| Crunch | 25+ | Every decision counts. Tight deadlines, compounding pressure. |
+
+**Temporal levers to introduce:**
+
+- **Boss suspicion** — a slow-rising ambient pressure, not just triggered by detection events.
+  Even clean play should feel the heat eventually.
+- **Task difficulty ramp** — complexity and deadline windows tighten every N days, independent
+  of player actions.
+- **Performance reviews** — periodic checkpoints (e.g. every 15 days) where money below a
+  threshold adds a strike. Forces the player to not just play it safe indefinitely.
+
+**Reactive levers to strengthen:**
+
+- **Reputation decay** — getting detected should have a lingering effect beyond the strike,
+  making the boss permanently more watchful.
+- **Sloppy ship memory** — bugs added from early ships compound into later task complexity,
+  making early sloppiness visibly punish late-game speed.
