@@ -18,6 +18,7 @@ func _process(_delta: float) -> bool:
 		"always_hustle": always_hustle,
 		"diligent_worker": diligent_worker,
 		"ship_asap": ship_asap,
+		"hustle_then_ship": hustle_then_ship,
 	}
 
 	var args = OS.get_cmdline_user_args()
@@ -45,6 +46,7 @@ func get_state() -> Dictionary:
 		"strikes": _gm.strikes,
 		"task_overdue": _gm.task_overdue,
 		"can_ship": _tm.current_progress >= _gm.balance.ship_minimum_progress,
+		"deadline_day": _tm.current_task["deadline_day"],
 	}
 
 func run_strategy(strategy: Callable, n: int) -> Dictionary:
@@ -71,6 +73,7 @@ func run_strategy(strategy: Callable, n: int) -> Dictionary:
 		tally["_win_avg_day"] = win_days.reduce(func(a, b): return a + b, 0.0) / win_days.size()
 		tally["_win_avg_bugs"] = win_bugs.reduce(func(a, b): return a + b, 0.0) / win_bugs.size()
 		tally["_win_avg_strikes"] = win_strikes.reduce(func(a, b): return a + b, 0.0) / win_strikes.size()
+		tally["_win_days"] = win_days
 	return tally
 
 func run_trace(strategy_name: String, strategy: Callable) -> void:
@@ -101,6 +104,19 @@ func print_results(name: String, tally: Dictionary) -> void:
 		print("  avg win day:         %.1f" % tally["_win_avg_day"])
 		print("  avg win bugs:        %.1f" % tally["_win_avg_bugs"])
 		print("  avg win strikes:     %.1f" % tally["_win_avg_strikes"])
+		var days: Array = tally["_win_days"]
+		var min_day = days.reduce(func(a, b): return min(a, b))
+		var max_day = days.reduce(func(a, b): return max(a, b))
+		const BUCKETS = 10
+		var bucket_size = max(1, ceili(float(max_day - min_day + 1) / BUCKETS))
+		var counts = {}
+		for d in days:
+			var bucket = min_day + (int(d - min_day) / bucket_size) * bucket_size
+			counts[bucket] = counts.get(bucket, 0) + 1
+		print("  win day distribution:")
+		for bucket in counts:
+			var bar = "#".repeat(roundi(20.0 * counts[bucket] / days.size()))
+			print("    day %3d-%3d  %s (%d%%)" % [bucket, bucket + bucket_size - 1, bar, roundi(100.0 * counts[bucket] / days.size())])
 
 # Strategies
 func always_hustle(_state: Dictionary) -> String:
@@ -114,4 +130,11 @@ func diligent_worker(state: Dictionary) -> String:
 func ship_asap(state: Dictionary) -> String:
 	if state.can_ship:
 		return "ship"
+	return "work"
+
+func hustle_then_ship(state: Dictionary) -> String:
+	if state.can_ship and state.day >= state.deadline_day:
+		return "ship"
+	if not state.task_overdue:
+		return "hustle"
 	return "work"
