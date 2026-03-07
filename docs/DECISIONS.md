@@ -117,11 +117,11 @@ sensitivity etc.) rather than funnelling into one of three archetypes. More mix-
 
 **Question:** Is the detection risk / payout ratio for HUSTLE punishing enough?
 
-**Findings (2026-03-07):** Run 1772867788 — 14 hustle out of 25 actions, 1 detection, 1 strike, won
-with 0 bugs. Hustle-heavy play worked cleanly. Detection didn't change strategy.
+**Findings (2026-03-07):**
+- **Playtest (Run 1772867788):** 14 hustle out of 25 actions, 1 detection, 1 strike, won. Detection didn't change strategy.
+- **Simulation (2026-03-07):** At a 10% base detection chance, the `hustle_then_ship` strategy has a very low win rate (~10% at the $7,500 target). The cumulative risk over a 30-50 day game makes hitting 3 strikes highly probable, turning the action into a "coin flip" for survival rather than a strategic trade-off.
 
-**Status:** Parked. Revisit once game length is extended — may self-correct when detection
-consequences compound over a longer arc.
+**Status:** Active. Consider lowering the base detection chance but increasing the penalty for consecutive hustles or overdue tasks to make it feel less like a "Game Over" lottery.
 
 ---
 
