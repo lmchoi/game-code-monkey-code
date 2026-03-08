@@ -8,7 +8,7 @@ This file provides foundational guidance for AI agents (Claude Code, Gemini CLI,
 
 **Code Monkey** — *"Office Space meets Universal Paperclips with duck-based resource allocation"*
 
-A darkly comedic turn-based game built in Godot 4.5 where you're a tech worker trapped in corporate hell. Each day pick one action — WORK, HUSTLE, or SHIP IT. Escape with $5,000 before bugs make work impossible or your boss catches you hustling.
+A darkly comedic turn-based game built in Godot 4.5 where you're a tech worker trapped in corporate hell. Each day pick one action — WORK, HUSTLE, or SHIP IT. Escape with $10,000 before work grinds to a halt under technical debt or your boss catches you hustling.
 
 ---
 
@@ -17,7 +17,7 @@ A darkly comedic turn-based game built in Godot 4.5 where you're a tech worker t
 **Design docs live in [docs/](docs/).**
 
 ### Core Concept
-A darkly comedic game. Each day pick a daily action (WORK / HUSTLE) and decide whether to ship the current task (SHIP IT — on the task card). Escape with $5,000 before bugs make work impossible or you get caught hustling. 10-15 min per run, replayable via distinct endings.
+A darkly comedic game. Each day pick a daily action (WORK / HUSTLE) and decide whether to ship the current task (SHIP IT — on the task card). Escape with $10,000 before work grinds to a halt under technical debt or you get caught hustling. 10-15 min per run, replayable via distinct endings.
 
 ### Core Loop
 1. **Pick action** — WORK (safe), HUSTLE (risky), or SHIP IT (permanent)
