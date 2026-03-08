@@ -220,3 +220,34 @@ func test_review_ready_not_emitted_between_reviews():
 	watch_signals(game_manager)
 	game_manager.day = 45
 	assert_signal_not_emitted(game_manager, "review_ready")
+
+# === GRADE TESTS ===
+
+func test_quality_grade_exceeds():
+	game_manager.balance["quality_grade_exceeds"] = 0.9
+	game_manager.tasks_shipped = 10
+	game_manager.sloppy_ships = 1 # 90% clean
+	assert_eq(game_manager.calculate_quality_grade(), "Exceeds Expectations")
+
+func test_quality_grade_meets():
+	game_manager.balance["quality_grade_exceeds"] = 0.9
+	game_manager.balance["quality_grade_meets"] = 0.6
+	game_manager.tasks_shipped = 10
+	game_manager.sloppy_ships = 4 # 60% clean
+	assert_eq(game_manager.calculate_quality_grade(), "Meets Expectations")
+
+func test_quality_grade_needs_improvement():
+	game_manager.balance["quality_grade_meets"] = 0.6
+	game_manager.tasks_shipped = 10
+	game_manager.sloppy_ships = 5 # 50% clean
+	assert_eq(game_manager.calculate_quality_grade(), "Needs Improvement")
+
+func test_quality_grade_all_sloppy():
+	game_manager.tasks_shipped = 5
+	game_manager.sloppy_ships = 5
+	assert_eq(game_manager.calculate_quality_grade(), "Needs Improvement")
+
+func test_quality_grade_zero_shipped():
+	game_manager.tasks_shipped = 0
+	game_manager.sloppy_ships = 0
+	assert_eq(game_manager.calculate_quality_grade(), "Needs Improvement")

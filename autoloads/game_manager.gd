@@ -43,6 +43,17 @@ var tasks_late: int = 0
 func calculate_bugs_for_ship(progress: float) -> int:
 	return roundi((TaskManager.TASK_MAX_PROGRESS - progress) * balance.bugs_per_incomplete_percent)
 
+func calculate_quality_grade() -> String:
+	if tasks_shipped == 0:
+		return "Needs Improvement"
+	
+	var clean_rate = 1.0 - (float(sloppy_ships) / tasks_shipped)
+	if clean_rate >= float(balance.get("quality_grade_exceeds", 0.9)):
+		return "Exceeds Expectations"
+	if clean_rate >= float(balance.get("quality_grade_meets", 0.6)):
+		return "Meets Expectations"
+	return "Needs Improvement"
+
 func calculate_progress_delta(complexity: int, bugs_count: int) -> float:
 	return TaskManager.TASK_MAX_PROGRESS / (complexity * (1.0 + bugs_count * balance.bug_penalty_per_bug))
 
