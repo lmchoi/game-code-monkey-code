@@ -54,6 +54,13 @@ func calculate_quality_grade() -> String:
 		return "Meets Expectations"
 	return "Needs Improvement"
 
+func calculate_output_grade() -> String:
+	if tasks_shipped >= int(balance.get("output_grade_exceeds", 8)):
+		return "Exceeds Expectations"
+	if tasks_shipped >= int(balance.get("output_grade_meets", 5)):
+		return "Meets Expectations"
+	return "Needs Improvement"
+
 func calculate_progress_delta(complexity: int, bugs_count: int) -> float:
 	return TaskManager.TASK_MAX_PROGRESS / (complexity * (1.0 + bugs_count * balance.bug_penalty_per_bug))
 

@@ -251,3 +251,23 @@ func test_quality_grade_zero_shipped():
 	game_manager.tasks_shipped = 0
 	game_manager.sloppy_ships = 0
 	assert_eq(game_manager.calculate_quality_grade(), "Needs Improvement")
+
+func test_output_grade_exceeds():
+	game_manager.balance["output_grade_exceeds"] = 8
+	game_manager.tasks_shipped = 8
+	assert_eq(game_manager.calculate_output_grade(), "Exceeds Expectations")
+
+func test_output_grade_meets():
+	game_manager.balance["output_grade_exceeds"] = 8
+	game_manager.balance["output_grade_meets"] = 5
+	game_manager.tasks_shipped = 5
+	assert_eq(game_manager.calculate_output_grade(), "Meets Expectations")
+
+func test_output_grade_needs_improvement():
+	game_manager.balance["output_grade_meets"] = 5
+	game_manager.tasks_shipped = 4
+	assert_eq(game_manager.calculate_output_grade(), "Needs Improvement")
+
+func test_output_grade_zero_shipped():
+	game_manager.tasks_shipped = 0
+	assert_eq(game_manager.calculate_output_grade(), "Needs Improvement")
