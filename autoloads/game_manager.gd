@@ -15,6 +15,7 @@ var strikes: int = 0:
 		strikes_changed.emit(strikes)
 var task_overdue: bool = false
 var overdue_days: int = 0
+var on_pip: bool = false
 
 var bugs: int = 0:
 	set(value):
@@ -167,7 +168,9 @@ func do_hustle() -> void:
 	day += 1
 
 func calculate_detection_chance(strike_count: int, overdue: bool) -> float:
-	var chance: float = balance.detection_base
+	if not on_pip:
+		return 0.0
+	var chance: float = balance.pip_detection_base
 	if overdue:
 		chance += balance.detection_overdue_bonus
 	if strike_count == 1:
@@ -215,6 +218,7 @@ func reset() -> void:
 	strikes = 0
 	task_overdue = false
 	overdue_days = 0
+	on_pip = false
 	game_over_reason = ""
 	tasks_shipped = 0
 	total_bugs_added = 0
@@ -228,6 +232,11 @@ func reset() -> void:
 func _on_task_assigned(_task: Dictionary) -> void:
 	task_overdue = false
 	overdue_days = 0
+
+func any_grade_needs_improvement() -> bool:
+	return (calculate_quality_grade() == "Needs Improvement"
+		or calculate_output_grade() == "Needs Improvement"
+		or calculate_timeliness_grade() == "Needs Improvement")
 
 func _constraint_phase() -> void:
 	pass

@@ -70,7 +70,9 @@ func test_hustle_adds_income():
 
 func test_hustle_computes_overdue_before_detection():
 	# Tutorial task 1 has deadline_day = 4 (day 1 + 3). Day 10 is overdue.
-	# detection_base = 0 so only overdue bonus can trigger detection.
+	# on_pip required for detection to fire; overdue bonus pushes chance to 1.0.
+	gm.on_pip = true
+	gm.balance["pip_detection_base"] = 0.0
 	gm.balance["detection_overdue_bonus"] = 1.0
 	gm.day = 10
 	gm.do_hustle()
