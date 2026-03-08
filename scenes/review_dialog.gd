@@ -14,6 +14,7 @@ func _ready() -> void:
 
 	_add_label(vbox, "Performance Review", 28)
 	_add_label(vbox, "Tasks shipped: %d" % GameManager.tasks_shipped, 20)
+	_add_label(vbox, "Output Grade: %s" % GameManager.calculate_output_grade(), 22)
 	_add_label(vbox, "On time: %d" % GameManager.tasks_on_time, 20)
 	_add_label(vbox, "Late: %d" % GameManager.tasks_late, 20)
 	_add_label(vbox, "Bugs added: %d" % GameManager.total_bugs_added, 20)
