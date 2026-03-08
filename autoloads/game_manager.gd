@@ -46,33 +46,32 @@ func calculate_bugs_for_ship(progress: float) -> int:
 func calculate_quality_grade() -> String:
 	if tasks_shipped == 0:
 		return "Needs Improvement"
-	
-	var clean_rate = 1.0 - (float(sloppy_ships) / tasks_shipped)
-	if clean_rate >= float(balance.get("quality_grade_exceeds", 0.9)):
+
+	var clean_rate: float = 1.0 - (float(sloppy_ships) / tasks_shipped)
+	if clean_rate >= float(balance["quality_grade_exceeds"]):
 		return "Exceeds Expectations"
-	if clean_rate >= float(balance.get("quality_grade_meets", 0.6)):
+	if clean_rate >= float(balance["quality_grade_meets"]):
 		return "Meets Expectations"
 	return "Needs Improvement"
 
 func calculate_output_grade() -> String:
-	if tasks_shipped >= int(balance.get("output_grade_exceeds", 8)):
+	if tasks_shipped >= int(balance["output_grade_exceeds"]):
 		return "Exceeds Expectations"
-	if tasks_shipped >= int(balance.get("output_grade_meets", 5)):
+	if tasks_shipped >= int(balance["output_grade_meets"]):
 		return "Meets Expectations"
 	return "Needs Improvement"
 
 func calculate_timeliness_grade() -> String:
-	var total = tasks_on_time + tasks_late
+	var total: int = tasks_on_time + tasks_late
 	if total == 0:
 		return "Needs Improvement"
-	
-	var on_time_rate = float(tasks_on_time) / total
-	if on_time_rate >= float(balance.get("timeliness_grade_exceeds", 0.8)):
+
+	var on_time_rate: float = float(tasks_on_time) / total
+	if on_time_rate >= float(balance["timeliness_grade_exceeds"]):
 		return "Exceeds Expectations"
-	if on_time_rate >= float(balance.get("timeliness_grade_meets", 0.5)):
+	if on_time_rate >= float(balance["timeliness_grade_meets"]):
 		return "Meets Expectations"
 	return "Needs Improvement"
-
 func calculate_progress_delta(complexity: int, bugs_count: int) -> float:
 	return TaskManager.TASK_MAX_PROGRESS / (complexity * (1.0 + bugs_count * balance.bug_penalty_per_bug))
 

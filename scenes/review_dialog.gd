@@ -13,15 +13,21 @@ func _ready() -> void:
 	add_child(vbox)
 
 	_add_label(vbox, "Performance Review", 28)
+
+	vbox.add_child(HSeparator.new())
 	_add_label(vbox, "Tasks shipped: %d" % GameManager.tasks_shipped, 20)
-	_add_label(vbox, "Output Grade: %s" % GameManager.calculate_output_grade(), 22)
 	_add_label(vbox, "On time: %d" % GameManager.tasks_on_time, 20)
 	_add_label(vbox, "Late: %d" % GameManager.tasks_late, 20)
 	_add_label(vbox, "Bugs added: %d" % GameManager.total_bugs_added, 20)
 	_add_label(vbox, "Sloppy ships: %d" % GameManager.sloppy_ships, 20)
-	_add_label(vbox, "Quality Grade: %s" % GameManager.calculate_quality_grade(), 22)
-	_add_label(vbox, "Your performance is noted.", 20)
 
+	vbox.add_child(HSeparator.new())
+	_add_label(vbox, "Output: %s" % GameManager.calculate_output_grade(), 24)
+	_add_label(vbox, "Timeliness: %s" % GameManager.calculate_timeliness_grade(), 24)
+	_add_label(vbox, "Quality: %s" % GameManager.calculate_quality_grade(), 24)
+
+	vbox.add_child(HSeparator.new())
+	_add_label(vbox, "Your performance is noted.", 20)
 	popup_centered()
 
 func _add_label(parent: Control, text: String, size: int) -> void:
