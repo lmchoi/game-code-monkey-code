@@ -11,3 +11,6 @@ Feature plans and build steps. Each doc covers one feature arc from design to co
 | [logging.md](logging.md) | ✅ Implemented | Structured event logging for balance analysis |
 | [simulation.md](simulation.md) | ✅ Implemented | Headless strategy simulation |
 | [progression.md](progression.md) | 🔧 Partial | Day 30/60 review wired; path unlocks and grade consequences not yet built |
+| [review-grades.md](review-grades.md) | 💡 Idea | Grade display + mechanical consequences at day 30/60 reviews |
+| [task-types.md](task-types.md) | 💡 Idea | Task type field with distinct ship consequences (high-visibility, legacy, bonus) |
+| [golden-handcuffs.md](golden-handcuffs.md) | 💡 Idea | Promotion trap ending for pure-WORK players; depends on review grades |

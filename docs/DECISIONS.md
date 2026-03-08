@@ -19,6 +19,7 @@ Decisions being actively discussed or reconsidered. Once resolved, update the GD
 | 🟡 Open | `[ARCHITECTURE]` | Post-tier2 | [refactor-action](#open-refactor-action) |
 | 🟡 Open | `[DESIGN]` | Later | [random-events](#open-random-events) |
 | 🟡 Open | `[DESIGN]` | Later | [crunch-action](#open-crunch-action) |
+| ✅ Closed | `[DESIGN]` | Playtest | [bug-spiral-game-over](#closed-bug-spiral-game-over) |
 | ✅ Closed | `[DESIGN]` | Pre-build | [work-on-complete-task](#closed-work-on-complete-task) |
 | ✅ Closed | `[DESIGN]` | Pre-build | [ducks-v1](#closed-ducks-v1) |
 | ✅ Closed | `[DESIGN]` | Pre-build | [promotion-mechanic](#closed-promotion-mechanic) |
@@ -329,6 +330,9 @@ New resource/state to track. Rewards focus, punishes context-switching. Creates 
 
 ---
 
+### CLOSED: bug-spiral-game-over
+Removed. Bugs as a hard game-over (`bug_spiral_threshold`) is artificial. Bugs instead apply systemic pressure: they slow work (existing penalty), and will trigger production outage events (random-events plan). No artificial ceiling — the player digs their own grave gradually.
+
 ### CLOSED: tagline
 Dropped from GDD. Keep for marketing/pitch copy only (ONE-PAGER.md).
 
@@ -363,7 +367,7 @@ When task hits 100%, WORK is disabled. SHIP IT on the task card is highlighted. 
 Parked. Ducks need moral choice triggers (outages, blame coworker) to feel meaningful — without them they're just a slow counter. V1 core loop is money + bugs only. Ducks are one afternoon to add: one integer, one drain check on ship, one loss condition. Add in second pass once moral choice moments exist.
 
 ### CLOSED: promotion-mechanic
-Parked for V1. Golden handcuffs as a *concept* stays — pure WORK players get trapped by accumulating bugs and slow progress. Promotion as a *mechanic* (complete X tasks → manager → game over) is the dramatic version, added in a second pass. If playtesting reveals the trap isn't felt without promotion, add it then.
+Now planned. Golden handcuffs ending requires review grades + mechanical consequences to land — promotion gives a false sense of security (salary rise, harder tasks, more scrutiny) that traps pure WORK players. Depends on `review-grades.md` plan completing first. See `docs/plans/golden-handcuffs.md`.
 
 ### CLOSED: post-ship-flow
 Shipping ends the day. One action per day — if you ship, that's your day. New task appears, day advances. No WORK or HUSTLE on the same day. Easy to switch to "free ship" later — one boolean in the day loop.
