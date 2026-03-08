@@ -1,6 +1,6 @@
 # Review Grades — Feature Plan
 
-**Status:** 💡 Idea
+**Status:** 🔨 In Progress
 
 Two phases: first show grades at review (display only), then wire mechanical consequences.
 Both reviews (day 30, day 60) use the same grade system.
@@ -124,14 +124,46 @@ Phase 2 should follow Phase 1 quickly — grades feel hollow without consequence
 
 ---
 
-## Suggested Commit Order
+## Phase 1 — Commit Plan
 
-1. `calculate_quality_grade()` in `GameManager` + GUT tests (TDD)
-2. Quality grade display in `review_dialog.tscn` / `review_dialog.gd`
-3. `calculate_output_grade()` in `GameManager` + GUT tests (TDD)
-4. Output grade display in `review_dialog.tscn` / `review_dialog.gd`
-5. `calculate_timeliness_grade()` in `GameManager` + GUT tests (TDD)
-6. Timeliness grade display in `review_dialog.tscn` / `review_dialog.gd`
-7. Phase 2: consequence modifiers in `GameManager` + GUT tests (TDD)
-8. Apply consequences in `review_dialog.gd`
-9. `balance.json` — all thresholds and modifier values
+### Commit 1 — `balance.json` grade thresholds
+Add the six threshold keys to `data/balance.json`. No logic yet — just data.
+```
+feat: add grade threshold keys to balance.json
+```
+
+### Commit 2 — `calculate_quality_grade()` + tests
+TDD: write failing tests first, then implement in `autoloads/game_manager.gd`.
+- Returns "Exceeds Expectations" / "Meets Expectations" / "Needs Improvement"
+- Guards zero tasks_shipped
+```
+feat: add calculate_quality_grade() to GameManager
+```
+
+### Commit 3 — Quality grade in review dialog
+Add grade label to `scenes/review_dialog.tscn` / `scenes/review_dialog.gd`, below the existing raw counters. `/check` + `/look` to verify.
+```
+feat: show quality grade in review dialog
+```
+
+### Commit 4 — `calculate_output_grade()` + tests
+TDD: failing tests first, then implement. Raw count vs thresholds, zero guard.
+```
+feat: add calculate_output_grade() to GameManager
+```
+
+### Commit 5 — Output grade in review dialog
+```
+feat: show output grade in review dialog
+```
+
+### Commit 6 — `calculate_timeliness_grade()` + tests
+TDD: failing tests first, then implement. Ratio guard for zero tasks.
+```
+feat: add calculate_timeliness_grade() to GameManager
+```
+
+### Commit 7 — Timeliness grade in review dialog
+```
+feat: show timeliness grade in review dialog
+```
