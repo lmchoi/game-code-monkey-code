@@ -8,6 +8,7 @@ extends Control
 @onready var _day_label: Label = $MainLayout/TopBar/HBoxContainer/DayLabel
 @onready var _bug_label: Label = $MainLayout/TopBar/HBoxContainer/BugLabel
 @onready var _strike_label: Label = $MainLayout/TopBar/HBoxContainer/StrikeLabel
+@onready var _pip_label: Label = $MainLayout/TopBar/HBoxContainer/PipLabel
 @onready var _money_label: Label = $MainLayout/TopBar/HBoxContainer/MoneyLabel
 @onready var _ship_button: Button = $MainLayout/TaskCard/CardContent/ShipButton
 @onready var _work_button: Button = $MainLayout/ActionButtons/WorkButton
@@ -25,6 +26,7 @@ func _ready() -> void:
 	_ship_button.pressed.connect(GameManager.do_ship)
 	_work_button.pressed.connect(GameManager.do_work)
 	_hustle_button.pressed.connect(GameManager.do_hustle)
+	_pip_label.text = "⚠️ PIP"
 	GameManager.day_changed.emit(GameManager.day)
 	GameManager.money_changed.emit(GameManager.money)
 	TaskManager.task_changed.emit(TaskManager.current_task)
@@ -45,8 +47,6 @@ func _on_strikes_changed(new_strikes: int) -> void:
 	_strike_label.visible = new_strikes > 0
 	if new_strikes == 1:
 		_strike_label.text = "⚠️ 1 (Warning)"
-	elif new_strikes == 2:
-		_strike_label.text = "⚠️ 2 (PIP)"
 	else:
 		_strike_label.text = "⚠️ %d" % new_strikes
 
@@ -66,6 +66,7 @@ func _on_review_ready() -> void:
 	add_child(dialog)
 
 func _on_review_continued() -> void:
+	_pip_label.visible = GameManager.on_pip
 	TaskManager.task_progress_changed.emit(TaskManager.current_progress)
 
 func _on_task_progress_changed(progress: float) -> void:

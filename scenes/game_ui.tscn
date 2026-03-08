@@ -31,6 +31,10 @@ theme_type_variation = "TopBarLabel"
 visible = false
 theme_type_variation = "TopBarLabel"
 
+[node name="PipLabel" type="Label" parent="MainLayout/TopBar/HBoxContainer"]
+visible = false
+theme_type_variation = "TopBarLabel"
+
 [node name="MoneyLabel" type="Label" parent="MainLayout/TopBar/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
