@@ -1,6 +1,6 @@
 # Task Types — Feature Plan
 
-**Status:** 💡 Idea
+**Status:** 📐 Planned
 
 Add a `type` field to tasks in `data/tasks.json`. Each type has a distinct mechanical consequence
 on ship, teaching new rules gradually across the tier progression.
@@ -15,7 +15,24 @@ rules already understood.
 
 ---
 
-## Task Types
+## Introduction Pacing
+
+Types are introduced one at a time, following task sequence — not tied to reviews or tier boundaries.
+
+| Task number (approx) | Type introduced |
+|----------------------|-----------------|
+| 1–14 | `standard` only — player learns the basic loop |
+| ~15 | First typed task (type TBD via playtesting) |
+| ~25 | Second type introduced |
+| ~35 | Third type introduced |
+
+Exact task numbers are tunable in `data/tasks.json` by where typed tasks appear in the draw sequence. The ~10-task gap gives the player enough time to encounter the new rule, form an expectation, and then be surprised by the next one.
+
+Whether the player sees the type on the task card before committing is **open** — defer until playtesting reveals whether hidden types feel unfair.
+
+---
+
+## Task Types (candidates — exact set TBD via playtesting)
 
 | Type | Mechanic |
 |------|----------|

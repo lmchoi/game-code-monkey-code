@@ -15,11 +15,13 @@ Decisions being actively discussed or reconsidered. Once resolved, update the GD
 | 🟡 Open | `[BALANCE]` | Playtest | [income-scaling](#open-income-scaling) |
 | 🟡 Open | `[BALANCE]` | Pre-win-goal-raise | [sim-calibration](#open-sim-calibration) |
 | 🟡 Open | `[DESIGN]` | Playtest | [bug-feedback-on-ship](#open-bug-feedback-on-ship) |
-| 🟡 Open | `[DESIGN]` | Post-tier2 | [task-types-tradeoffs](#open-task-types-tradeoffs) |
-| 🟡 Open | `[DESIGN]` | Post-tier2 | [review-upgrades](#open-review-upgrades) |
-| 🟡 Open | `[ARCHITECTURE]` | Post-tier2 | [refactor-action](#open-refactor-action) |
+| ✅ Closed | `[DESIGN]` | Post-tier2 | [task-types-tradeoffs](#closed-task-types-tradeoffs) |
+| 🟠 Active | `[DESIGN]` | Post-tier2 | [review-upgrades](#open-review-upgrades) |
+| ✅ Closed | `[ARCHITECTURE]` | Post-tier2 | [refactor-action](#closed-refactor-action) |
 | 🟡 Open | `[DESIGN]` | Later | [random-events](#open-random-events) |
-| 🟡 Open | `[DESIGN]` | Later | [crunch-action](#open-crunch-action) |
+| ✅ Closed | `[DESIGN]` | Later | [crunch-action](#closed-crunch-action) |
+| 🟡 Open | `[DESIGN]` | Playtest | [progress-variance](#open-progress-variance) |
+| 🟡 Open | `[JUICE]` | Post-core-loop | [day-animation](#open-day-animation) |
 | ✅ Closed | `[DESIGN]` | Playtest | [bug-spiral-game-over](#closed-bug-spiral-game-over) |
 | ✅ Closed | `[DESIGN]` | Pre-build | [work-on-complete-task](#closed-work-on-complete-task) |
 | ✅ Closed | `[DESIGN]` | Pre-build | [ducks-v1](#closed-ducks-v1) |
@@ -175,22 +177,29 @@ Specifically:
 
 ---
 
-### OPEN: task-types-tradeoffs
+### CLOSED: task-types-tradeoffs
 
 **Question:** Should tier2 tasks have distinct types with mechanical tradeoffs, to warm the player up before tier3's impossible deadlines?
 
 **Priority:** 1 — highest impact, fits cleanest into current architecture (add `type` field to JSON).
 
-**Candidate types:**
+**Candidate types (not locked):**
 - *High-visibility* — sloppy ship triggers an immediate strike instead of just bugs; raises stakes without changing the deadline formula
 - *Legacy* — completing it reduces current bugs (rewarding clean play); introduces a reason to care about bug count beyond detection
 - *Bonus* — short deadline, cash bonus on ship; rewards risk-taking and teaches the crunch tradeoff early
 
 **Rationale:** Tier2 should teach new rules gradually. Type-specific consequences give each task a distinct identity without requiring new actions or UI. Tier3 then feels like a natural escalation of rules the player already knows.
 
+**Introduction pacing:** Types should be introduced one at a time, not all at once. Not necessarily tied to reviews — could follow task sequence instead (e.g. first typed task appears around task 15, then a new type every ~10 tasks). This keeps early tasks as a clean tutorial baseline and lets each type land as a surprise with room to breathe before the next one appears.
+
+**Open questions:**
+- Exact types still TBD — lock after playtesting reveals which mechanics feel most distinct.
+- Introduction trigger: fixed task number vs random draw vs review unlock? Fixed sequence is simplest and most controllable for pacing.
+- Does the player see the type on the task card before accepting it, or only after?
+
 **Implementation:** `type` field in `data/tasks.json`, read in `game_manager.gd` during `do_ship()`. No new UI required initially.
 
-**Status:** Open. Don't build until task-pool tier sequence is stable.
+**Status:** Closed. Exact types TBD via playtesting — refine in `docs/plans/task-types.md`.
 
 ---
 
@@ -200,19 +209,28 @@ Specifically:
 
 **Priority:** 2 — reuses the existing review dialog moment, adds replayability with minimal new infrastructure.
 
-**Candidate perks:**
+**Candidate perks — numerical modifiers (simple, but feel mechanical):**
 - +10% work progress per action
 - Reduced base detection chance
 - One free overdue forgiveness (no auto-strike)
 - Sloppy ships add fewer bugs
 
-**Rationale:** Makes the review feel like a meaningful inflection point rather than just a stat recap. Two upgrade moments (day 30, day 60) create a light meta-progression arc within a single run.
+**Candidate perks — strategic (change how you play, not just numbers):**
+- *Side hustle* — HUSTLE also advances current task by 25%. Removes the WORK/HUSTLE either-or.
+- *Flow state* — consecutive WORK days multiply progress (×1.2 on day 2, ×1.4 on day 3). Rewards focus, punishes any HUSTLE break.
+- *One-time clean ship* — next ship adds zero bugs regardless of progress. Use strategically on a high-visibility task.
+- *Deadline extension* — one task this run gets +2 days. Felt, not passive.
+- *Good impression* — one NI grade at the next review doesn't trigger PIP.
+- *Brownie points* — enter the next review with one grade already at Meets Expectations.
+
+**Rationale:** Makes the review feel like a meaningful inflection point rather than just a stat recap. Two upgrade moments (day 30, day 60) create a light meta-progression arc within a single run. Strategic perks are more interesting than numerical modifiers — they should make up at least half the pool.
 
 **Open questions:**
-- Does the player choose or is a perk assigned based on their review grade?
-- How many options are offered each time — 2 or 3?
+- Does the player choose from 2-3 options, or is a perk assigned based on their grade? Choice = build paths, assignment = narrative consequence. This changes what "interesting" means for each perk — settle before locking the list.
+- How many options offered each time — 2 or 3?
+- Should day 30 and day 60 draw from the same pool, or escalate in power?
 
-**Status:** Open. Don't build until review dialog is fully wired and playtested.
+**Status:** Active. Yes to review upgrades — perk pool and choice-vs-assignment still need settling before building. Create `docs/plans/review-upgrades.md` when ready.
 
 ---
 
@@ -306,7 +324,7 @@ New resource/state to track. Rewards focus, punishes context-switching. Creates 
 
 ---
 
-### OPEN: refactor-action
+### CLOSED: refactor-action
 
 **Question:** Should there be a fourth action — REFACTOR — that spends a day to reduce bugs with no task progress?
 
@@ -319,7 +337,9 @@ New resource/state to track. Rewards focus, punishes context-switching. Creates 
 - Must not become the dominant strategy; bug reduction amount needs careful tuning
 - Could overlap with legacy task type (see task-types-tradeoffs) — don't add both without differentiating them
 
-**Status:** Parked. Don't build until three-action loop is fully playtested and bugs feel like a real constraint.
+**Status:** Closed. Not building. Bug management handled through legacy task type and PIP pressure instead. Three actions is the right ceiling for this game's scope.
+
+**Related idea (also rejected):** Multi-stage tasks (design → develop → test) with per-stage ambiguity/bug mechanics. Same problem — shifts focus from hustle risk management to SDLC simulation. That's a different game. This game's identity is the hustle tension; anything that pulls attention toward code hygiene management dilutes it.
 
 ---
 
@@ -340,7 +360,32 @@ New resource/state to track. Rewards focus, punishes context-switching. Creates 
 
 ---
 
-### OPEN: crunch-action
+### OPEN: progress-variance
+
+**Question:** Should WORK progress per action be deterministic (fixed formula) or have a random component?
+
+**Current:** Deterministic — `complexity × 10` per WORK action, modified by bug penalty. Completely predictable.
+
+**Problem:** A player who knows the formula can count out exactly how many WORKs a task needs and optimise mechanically. No surprise, no drama within a single task. Predictability reduces tension.
+
+**Options:**
+- **Fixed (status quo):** `progress = complexity × 10 × bug_factor`. Clean math, easy to reason about, no randomness.
+- **Variance band:** `progress = base ± N%` — uniform random around the formula. Keeps expectations roughly correct, adds minor noise. Small variance (±10-20%) probably feels fair; large variance (±50%) feels like dice-rolling.
+- **Effort roll:** On each WORK action, roll high/medium/low outcome (e.g. 60% medium, 20% each). Medium = formula, high/low = formula ×1.3 / ×0.7. Communicable to the player as a "focus" outcome.
+
+**Considerations:**
+- Predictability is a design tool — it lets players form strategies. Randomness is also a tool — it keeps players on edge. They must coexist at the right ratio.
+- If day animation (see `day-animation`) reveals the roll, variance feels fair. Without feedback it feels arbitrary.
+- Variance bands interact with deadline pressure: a run of bad rolls on a tight task should hurt, not just be noise.
+- Don't add variance before the animation exists — opaque randomness is frustrating.
+
+**Lean:** Defer until day animation is in place. If animation makes variance visible and feel earned, a ±15% band is the simplest first version.
+
+**Status:** Open. Resolve after `day-animation` is settled.
+
+---
+
+### CLOSED: crunch-action
 
 **Question:** Should CRUNCH be a fifth action — double progress today, +1 bug regardless of quality?
 
@@ -348,7 +393,7 @@ New resource/state to track. Rewards focus, punishes context-switching. Creates 
 
 **Distinction from HUSTLE:** HUSTLE earns money with detection risk. CRUNCH earns progress with quality risk. They should feel like different kinds of desperation.
 
-**Status:** Parked. Revisit after random-events and task-types are in, when the action space is better understood.
+**Status:** Closed. Not building. Same problem as refactor-action — a speed/quality tradeoff pulls focus toward codebase management rather than hustle risk. Dilutes the game's identity. Three actions is the ceiling.
 
 ---
 
@@ -430,3 +475,24 @@ SHIP IT button currently shows no quality signal — just enabled/disabled at 50
 ### OPEN: payday-feedback
 Payday is currently silent — money just jumps in the top bar. No explicit signal to the player.
 `[JUICE]` — a brief toast or flash ("PAYDAY 💸") would make the moment land. Doesn't affect balance, pure feel. Add after core loop is playtested.
+
+### OPEN: day-animation
+
+**Question:** Should day resolution play out as an animated sequence (~5s) rather than resolving instantly?
+
+**Idea:** After the player picks an action, the day "plays out" — a short animated sequence showing each event in the day-sequence order (constraint phase → action result → consequence phase → bookkeeping). Each event appears as a brief beat with visible feedback (progress ticking up, money flashing, a detection roll spinning). Random events (once implemented) would appear mid-sequence as interruptions.
+
+**Why it matters:**
+- Turns a single button press into a moment of anticipation — player watches their fate unfold.
+- Creates a natural window to surface random events without jarring the flow. The sequence *expects* something to happen; a random event just appears in its slot.
+- Pairs with progress variance (see `progress-variance`) — an "effort roll" at the start of the sequence is far more legible than a silent number change.
+- Reinforces the "day in the life" feeling — each day has weight, not just a stat update.
+
+**Concerns:**
+- 5 seconds × 300 days = 25 minutes of animation. Must be skippable (tap to complete instantly).
+- If skippable, the payoff only lands if the player *wants* to watch — which means the animation must feel good, not just functional.
+- Adds UI complexity: need an animation state machine that is separate from game logic. Logic must still resolve atomically; animation reads results and presents them.
+
+**Implementation note:** Resolve all logic first (existing code path), then play the animation against the resolved state. Never tie logic timing to animation timing.
+
+**Status:** Open. Don't build until core loop is validated and `random-events` or `progress-variance` create content worth animating.
