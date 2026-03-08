@@ -14,6 +14,11 @@ Decisions being actively discussed or reconsidered. Once resolved, update the GD
 | 🟡 Open | `[BALANCE]` | Playtest | [hustle-detection-balance](#open-hustle-detection-balance) |
 | 🟡 Open | `[BALANCE]` | Playtest | [income-scaling](#open-income-scaling) |
 | 🟡 Open | `[DESIGN]` | Playtest | [bug-feedback-on-ship](#open-bug-feedback-on-ship) |
+| 🟡 Open | `[DESIGN]` | Post-tier2 | [task-types-tradeoffs](#open-task-types-tradeoffs) |
+| 🟡 Open | `[DESIGN]` | Post-tier2 | [review-upgrades](#open-review-upgrades) |
+| 🟡 Open | `[ARCHITECTURE]` | Post-tier2 | [refactor-action](#open-refactor-action) |
+| 🟡 Open | `[DESIGN]` | Later | [random-events](#open-random-events) |
+| 🟡 Open | `[DESIGN]` | Later | [crunch-action](#open-crunch-action) |
 | ✅ Closed | `[DESIGN]` | Pre-build | [work-on-complete-task](#closed-work-on-complete-task) |
 | ✅ Closed | `[DESIGN]` | Pre-build | [ducks-v1](#closed-ducks-v1) |
 | ✅ Closed | `[DESIGN]` | Pre-build | [promotion-mechanic](#closed-promotion-mechanic) |
@@ -143,6 +148,47 @@ feel identical to the early game. No sense of stakes growing.
 
 ---
 
+### OPEN: task-types-tradeoffs
+
+**Question:** Should tier2 tasks have distinct types with mechanical tradeoffs, to warm the player up before tier3's impossible deadlines?
+
+**Priority:** 1 — highest impact, fits cleanest into current architecture (add `type` field to JSON).
+
+**Candidate types:**
+- *High-visibility* — sloppy ship triggers an immediate strike instead of just bugs; raises stakes without changing the deadline formula
+- *Legacy* — completing it reduces current bugs (rewarding clean play); introduces a reason to care about bug count beyond detection
+- *Bonus* — short deadline, cash bonus on ship; rewards risk-taking and teaches the crunch tradeoff early
+
+**Rationale:** Tier2 should teach new rules gradually. Type-specific consequences give each task a distinct identity without requiring new actions or UI. Tier3 then feels like a natural escalation of rules the player already knows.
+
+**Implementation:** `type` field in `data/tasks.json`, read in `game_manager.gd` during `do_ship()`. No new UI required initially.
+
+**Status:** Open. Don't build until task-pool tier sequence is stable.
+
+---
+
+### OPEN: review-upgrades
+
+**Question:** At the day 30 and day 60 reviews, should the player pick a perk that modifies the rest of the run?
+
+**Priority:** 2 — reuses the existing review dialog moment, adds replayability with minimal new infrastructure.
+
+**Candidate perks:**
+- +10% work progress per action
+- Reduced base detection chance
+- One free overdue forgiveness (no auto-strike)
+- Sloppy ships add fewer bugs
+
+**Rationale:** Makes the review feel like a meaningful inflection point rather than just a stat recap. Two upgrade moments (day 30, day 60) create a light meta-progression arc within a single run.
+
+**Open questions:**
+- Does the player choose or is a perk assigned based on their review grade?
+- How many options are offered each time — 2 or 3?
+
+**Status:** Open. Don't build until review dialog is fully wired and playtested.
+
+---
+
 ### OPEN: bug-feedback-on-ship
 
 **Question:** What does the player see when they're about to SHIP IT — exact bug count, a range, a vibe indicator, or nothing?
@@ -230,6 +276,52 @@ New resource/state to track. Rewards focus, punishes context-switching. Creates 
 **Approach:** Start fixed. Add variety in a second pass after core loop is validated via playtesting.
 
 **Status:** Parked. Don't build until fixed HUSTLE is working and fun.
+
+---
+
+### OPEN: refactor-action
+
+**Question:** Should there be a fourth action — REFACTOR — that spends a day to reduce bugs with no task progress?
+
+**Priority:** 3 — pure decision depth, no random elements, easy to test and balance. Creates a genuine tradeoff when bugs are climbing toward detection risk.
+
+**Mechanic:** REFACTOR costs a day, reduces bugs by a fixed amount (e.g. -5), no progress on current task. Gives players a meaningful choice when bug count is high: keep working and risk bad ships, or pause to clean up.
+
+**Considerations:**
+- Currently WORK is the only "safe" action — REFACTOR adds a second risk-free option but with an opportunity cost
+- Must not become the dominant strategy; bug reduction amount needs careful tuning
+- Could overlap with legacy task type (see task-types-tradeoffs) — don't add both without differentiating them
+
+**Status:** Parked. Don't build until three-action loop is fully playtested and bugs feel like a real constraint.
+
+---
+
+### OPEN: random-events
+
+**Question:** Should random events fire during a run — production outages, coworker requests, code reviews — creating unplanned disruptions?
+
+**Priority:** 4 — highest drama potential but biggest disruption to the architecture. Needs an event queue and a new branch in the day loop constraint phase (already stubbed as empty in the day-sequence decision).
+
+**Candidate events:**
+- *Production outage* — forced WORK day with no progress on current task; disrupts planning
+- *Help a coworker* — optional; skip your progress today, reduce detection chance for N days
+- *Code review* — bug count is inspected; above threshold, automatic strike
+
+**Rationale:** Random events are the most effective tool against dry runs — each day becomes potentially surprising. The constraint phase is already in the architecture for exactly this purpose.
+
+**Status:** Parked. Don't build until core loop (including task types and refactor) is stable and validated.
+
+---
+
+### OPEN: crunch-action
+
+**Question:** Should CRUNCH be a fifth action — double progress today, +1 bug regardless of quality?
+
+**Priority:** 5 — tempting near-deadline option but overlaps significantly with HUSTLE's risk/reward identity. Needs careful differentiation before building.
+
+**Distinction from HUSTLE:** HUSTLE earns money with detection risk. CRUNCH earns progress with quality risk. They should feel like different kinds of desperation.
+
+**Status:** Parked. Revisit after random-events and task-types are in, when the action space is better understood.
 
 ---
 
