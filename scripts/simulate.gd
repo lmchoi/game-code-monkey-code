@@ -5,6 +5,8 @@ const N_RUNS = 1000
 var _gm: Node
 var _tm: Node
 var _ran: bool = false
+var _current_run_grades: Array = []
+var _trace_mode: bool = false
 
 func _process(_delta: float) -> bool:
 	if _ran:
@@ -13,7 +15,7 @@ func _process(_delta: float) -> bool:
 
 	_gm = get_root().get_node("GameManager")
 	_tm = get_root().get_node("TaskManager")
-	_gm.review_ready.connect(_tm.unlock_next_tier)
+	_gm.review_ready.connect(_on_review)
 
 	var strategies = {
 		"always_hustle": always_hustle,
@@ -50,6 +52,20 @@ func get_state() -> Dictionary:
 		"deadline_day": _tm.current_task["deadline_day"],
 	}
 
+func _on_review() -> void:
+	var grades = {
+		"quality": _gm.calculate_quality_grade(),
+		"output": _gm.calculate_output_grade(),
+		"timeliness": _gm.calculate_timeliness_grade(),
+	}
+	if _trace_mode:
+		print("  --- period %d review ---  Quality: %s  Output: %s  Timeliness: %s" % [
+			_current_run_grades.size() + 1,
+			grades.quality, grades.output, grades.timeliness])
+	_gm.reset_review_counters()
+	_tm.unlock_next_tier()
+	_current_run_grades.append(grades)
+
 func run_strategy(strategy: Callable, n: int) -> Dictionary:
 	var tally = {}
 	var win_days: Array = []
@@ -58,7 +74,10 @@ func run_strategy(strategy: Callable, n: int) -> Dictionary:
 	var all_days: Array = []
 	var days_per_outcome = {} # outcome -> Array
 	
+	var grade_tally: Dictionary = {}
+
 	for _i in n:
+		_current_run_grades = []
 		_gm.reset()
 		var safety = 0
 		while _gm.game_over_reason == "" and safety < 1000:
@@ -70,15 +89,26 @@ func run_strategy(strategy: Callable, n: int) -> Dictionary:
 		var outcome = _gm.game_over_reason if _gm.game_over_reason != "" else "timeout"
 		tally[outcome] = tally.get(outcome, 0) + 1
 		all_days.append(_gm.day)
-		
+
+		for period_idx in _current_run_grades.size():
+			var p = period_idx + 1
+			var snap = _current_run_grades[period_idx]
+			for metric in snap:
+				var key = "p%d_%s" % [p, metric]
+				if not grade_tally.has(key):
+					grade_tally[key] = {}
+				grade_tally[key][snap[metric]] = grade_tally[key].get(snap[metric], 0) + 1
+
 		if not days_per_outcome.has(outcome):
 			days_per_outcome[outcome] = []
 		days_per_outcome[outcome].append(_gm.day)
-		
+
 		if outcome == "win":
 			win_days.append(_gm.day)
 			win_bugs.append(_gm.bugs)
 			win_strikes.append(_gm.strikes)
+
+	tally["_grades"] = grade_tally
 	
 	if all_days.size() > 0:
 		tally["_avg_day"] = all_days.reduce(func(a, b): return a + b, 0.0) / all_days.size()
@@ -96,6 +126,8 @@ func run_strategy(strategy: Callable, n: int) -> Dictionary:
 
 func run_trace(strategy_name: String, strategy: Callable) -> void:
 	print("=== trace: %s ===" % strategy_name)
+	_trace_mode = true
+	_current_run_grades = []
 	_gm.reset()
 	var safety = 0
 	while _gm.game_over_reason == "" and safety < 500:
@@ -139,6 +171,31 @@ func print_results(name: String, tally: Dictionary) -> void:
 		for bucket in counts:
 			var bar = "#".repeat(roundi(20.0 * counts[bucket] / days.size()))
 			print("    day %3d-%3d  %s (%d%%)" % [bucket, bucket + bucket_size - 1, bar, roundi(100.0 * counts[bucket] / days.size())])
+
+	var grade_tally: Dictionary = tally.get("_grades", {})
+	const METRICS = ["quality", "output", "timeliness"]
+	const LABELS = ["Exceeds Expectations", "Meets Expectations", "Needs Improvement"]
+	const SHORT = {"Exceeds Expectations": "Exceeds", "Meets Expectations": "Meets", "Needs Improvement": "Needs"}
+	for p in [1, 2]:
+		var has_period = false
+		for metric in METRICS:
+			if grade_tally.has("p%d_%s" % [p, metric]):
+				has_period = true
+				break
+		if not has_period:
+			continue
+		var period_total = 0
+		var first_metric = grade_tally.get("p%d_%s" % [p, METRICS[0]], {})
+		for v in first_metric.values():
+			period_total += v
+		print("  review grades (period %d, n=%d):" % [p, period_total])
+		for metric in METRICS:
+			var counts_m: Dictionary = grade_tally.get("p%d_%s" % [p, metric], {})
+			var parts = []
+			for label in LABELS:
+				var cnt = counts_m.get(label, 0)
+				parts.append("%s %d%%" % [SHORT[label], roundi(100.0 * cnt / period_total)])
+			print("    %-12s %s" % [metric + ":", "  ".join(parts)])
 
 # Strategies
 func always_hustle(_state: Dictionary) -> String:
