@@ -13,6 +13,7 @@ Decisions being actively discussed or reconsidered. Once resolved, update the GD
 | 🟡 Open | `[DESIGN]` | Post-core-loop | [day-30-review](#open-day-30-review) |
 | ✅ Closed | `[BALANCE]` | Playtest | [hustle-detection-balance](#open-hustle-detection-balance) |
 | 🟡 Open | `[BALANCE]` | Playtest | [income-scaling](#open-income-scaling) |
+| 🟡 Open | `[BALANCE]` | Pre-win-goal-raise | [sim-calibration](#open-sim-calibration) |
 | 🟡 Open | `[DESIGN]` | Playtest | [bug-feedback-on-ship](#open-bug-feedback-on-ship) |
 | 🟡 Open | `[DESIGN]` | Post-tier2 | [task-types-tradeoffs](#open-task-types-tradeoffs) |
 | 🟡 Open | `[DESIGN]` | Post-tier2 | [review-upgrades](#open-review-upgrades) |
@@ -155,6 +156,22 @@ feel identical to the early game. No sense of stakes growing.
 - Both stay flat — progression comes from task difficulty, not income
 
 **Status:** Parked. Don't decide until game length and review mechanic are implemented.
+
+---
+
+### OPEN: sim-calibration
+
+**Question:** What `win_goal` and grade thresholds produce the right game length and balance?
+
+**Idea:** Before raising `win_goal`, use `make simulate` to find the breakpoint where extreme
+strategies (`ship_asap`, `hustle_then_ship`) start dying to `fired_pip`. That gives a concrete
+range for game length and confirms grade thresholds are applying pressure at the right moments.
+
+Specifically:
+- At what `win_goal` does `ship_asap` fail to win before the day 60 `fired_pip`?
+- Do the output/timeliness thresholds feel right for `hustle_then_ship` at that length?
+
+**Status:** Parked. Do before raising `win_goal`.
 
 ---
 
