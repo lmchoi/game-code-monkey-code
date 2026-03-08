@@ -11,7 +11,7 @@ Decisions being actively discussed or reconsidered. Once resolved, update the GD
 | 🟡 Open | `[ARCHITECTURE]` | Post-core-loop | [hustle-varied-tasks](#open-hustle-varied-tasks) |
 | 🟡 Open | `[DESIGN]` | Playtest | [game-duration](#open-game-duration) |
 | 🟡 Open | `[DESIGN]` | Post-core-loop | [day-30-review](#open-day-30-review) |
-| 🟡 Open | `[BALANCE]` | Playtest | [hustle-detection-balance](#open-hustle-detection-balance) |
+| ✅ Closed | `[BALANCE]` | Playtest | [hustle-detection-balance](#open-hustle-detection-balance) |
 | 🟡 Open | `[BALANCE]` | Playtest | [income-scaling](#open-income-scaling) |
 | 🟡 Open | `[DESIGN]` | Playtest | [bug-feedback-on-ship](#open-bug-feedback-on-ship) |
 | 🟡 Open | `[DESIGN]` | Post-tier2 | [task-types-tradeoffs](#open-task-types-tradeoffs) |
@@ -127,7 +127,16 @@ sensitivity etc.) rather than funnelling into one of three archetypes. More mix-
 - **Playtest (Run 1772867788):** 14 hustle out of 25 actions, 1 detection, 1 strike, won. Detection didn't change strategy.
 - **Simulation (2026-03-07):** At a 10% base detection chance, the `hustle_then_ship` strategy has a very low win rate (~10% at the $7,500 target). The cumulative risk over a 30-50 day game makes hitting 3 strikes highly probable, turning the action into a "coin flip" for survival rather than a strategic trade-off.
 
-**Status:** Active. PIP (from review grades) is the primary mechanism for contextually raising detection — if you performed poorly at a review, you're being watched. This avoids a flat detection increase and makes the risk feel earned rather than random. Base detection chance may still need tuning after PIP is in and playtested. See `docs/plans/review-grades.md` Phase 2.
+**Decision (2026-03-08):** Detection base is 0 — hustle is safe until you earn scrutiny.
+Any "Needs Improvement" grade at a review puts the player on PIP; while on PIP, `pip_detection_base`
+applies to hustle rolls. PIP clears if the next review is all "Meets/Exceeds". A second "Needs
+Improvement" while already on PIP fires the player immediately (`fired_pip`).
+
+Two explicit balance keys: `detection_base: 0` and `pip_detection_base: 0.15`.
+Kept separate so other factors (e.g. consecutive hustle penalty) can be layered in later without
+conflating PIP with base risk.
+
+**Status:** Closed. See `docs/plans/review-grades.md` Phase 2 for commit plan.
 
 ---
 
