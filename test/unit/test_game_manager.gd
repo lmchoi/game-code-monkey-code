@@ -220,3 +220,40 @@ func test_review_ready_not_emitted_between_reviews():
 	watch_signals(game_manager)
 	game_manager.day = 45
 	assert_signal_not_emitted(game_manager, "review_ready")
+
+# === SNAPSHOT TESTS ===
+
+func test_reset_review_counters_pushes_snapshot():
+	game_manager.tasks_shipped = 5
+	game_manager.sloppy_ships = 1
+	game_manager.tasks_on_time = 4
+	game_manager.tasks_late = 1
+	game_manager.total_bugs_added = 3
+	game_manager.reset_review_counters()
+	assert_eq(game_manager.review_snapshots.size(), 1, "should have one snapshot")
+	var snap = game_manager.review_snapshots[0]
+	assert_eq(snap["tasks_shipped"], 5)
+	assert_eq(snap["sloppy_ships"], 1)
+	assert_eq(snap["tasks_on_time"], 4)
+	assert_eq(snap["tasks_late"], 1)
+	assert_eq(snap["total_bugs_added"], 3)
+
+func test_reset_review_counters_zeroes_period_vars():
+	game_manager.tasks_shipped = 5
+	game_manager.sloppy_ships = 2
+	game_manager.reset_review_counters()
+	assert_eq(game_manager.tasks_shipped, 0, "tasks_shipped should be zeroed")
+	assert_eq(game_manager.sloppy_ships, 0, "sloppy_ships should be zeroed")
+
+
+func test_reset_review_counters_accumulates_snapshots():
+	game_manager.tasks_shipped = 7
+	game_manager.reset_review_counters()
+	game_manager.tasks_shipped = 5
+	game_manager.reset_review_counters()
+	assert_eq(game_manager.review_snapshots.size(), 2, "should have two snapshots")
+
+func test_review_snapshots_cleared_on_game_reset():
+	game_manager.reset_review_counters()
+	game_manager.reset()
+	assert_eq(game_manager.review_snapshots.size(), 0, "review_snapshots should clear on reset")

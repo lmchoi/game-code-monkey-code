@@ -40,6 +40,22 @@ var sloppy_ships: int = 0
 var tasks_on_time: int = 0
 var tasks_late: int = 0
 
+var review_snapshots: Array = []
+
+func reset_review_counters() -> void:
+	review_snapshots.append({
+		"tasks_shipped": tasks_shipped,
+		"sloppy_ships": sloppy_ships,
+		"tasks_on_time": tasks_on_time,
+		"tasks_late": tasks_late,
+		"total_bugs_added": total_bugs_added,
+	})
+	tasks_shipped = 0
+	total_bugs_added = 0
+	sloppy_ships = 0
+	tasks_on_time = 0
+	tasks_late = 0
+
 func calculate_bugs_for_ship(progress: float) -> int:
 	return roundi((TaskManager.TASK_MAX_PROGRESS - progress) * balance.bugs_per_incomplete_percent)
 
@@ -205,6 +221,7 @@ func reset() -> void:
 	sloppy_ships = 0
 	tasks_on_time = 0
 	tasks_late = 0
+	review_snapshots = []
 	TaskManager.reset()
 	GameLogger.new_run()
 
