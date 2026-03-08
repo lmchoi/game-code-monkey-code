@@ -127,7 +127,7 @@ sensitivity etc.) rather than funnelling into one of three archetypes. More mix-
 - **Playtest (Run 1772867788):** 14 hustle out of 25 actions, 1 detection, 1 strike, won. Detection didn't change strategy.
 - **Simulation (2026-03-07):** At a 10% base detection chance, the `hustle_then_ship` strategy has a very low win rate (~10% at the $7,500 target). The cumulative risk over a 30-50 day game makes hitting 3 strikes highly probable, turning the action into a "coin flip" for survival rather than a strategic trade-off.
 
-**Status:** Active. Consider lowering the base detection chance but increasing the penalty for consecutive hustles or overdue tasks to make it feel less like a "Game Over" lottery.
+**Status:** Active. PIP (from review grades) is the primary mechanism for contextually raising detection — if you performed poorly at a review, you're being watched. This avoids a flat detection increase and makes the risk feel earned rather than random. Base detection chance may still need tuning after PIP is in and playtested. See `docs/plans/review-grades.md` Phase 2.
 
 ---
 
