@@ -1,6 +1,6 @@
 # Review Grades — Feature Plan
 
-**Status:** 🔨 In Progress
+**Status:** Phase 1 ✅ Done · Phase 2 🔨 In Progress
 
 Two phases: first show grades at review (display only), then wire mechanical consequences.
 Both reviews (day 30, day 60) use the same grade system.
@@ -84,35 +84,57 @@ No new scene needed — add grade labels to the existing layout.
 
 ---
 
-## Phase 2 — Mechanical Consequences
+## Phase 2 — PIP Mechanic
 
-Grades translate into modifiers that affect the remainder of the run.
-Applied once at the review, persisted in `GameManager`.
+### Design
 
-Phase 2 should follow Phase 1 quickly — grades feel hollow without consequences.
+Hustle detection is **zero by default**. Any "Needs Improvement" grade at a review puts the player on a
+Performance Improvement Plan (PIP). While on PIP, hustle detection kicks in — the boss is watching.
 
-### Candidate consequences (to tune via playtesting)
+| State | Detection chance |
+|-------|-----------------|
+| Normal | 0 (base rate off) |
+| On PIP | `pip_detection_base` (explicit balance key) |
 
-| Grade result | Effect |
-|--------------|--------|
-| Quality: Exceeds | Bug penalty on work reduced slightly |
-| Quality: Needs Improvement | Bug penalty on work increased |
-| Output: Exceeds | Salary bonus (+$X per payday) |
-| Output: Needs Improvement | No salary change |
-| Timeliness: Exceeds | Detection base rate lowered |
-| Timeliness: Needs Improvement | Detection base rate raised |
+**PIP trigger:** any single "Needs Improvement" across any metric → `on_pip = true`.
+
+**PIP clears:** if all grades at the next review are "Meets" or "Exceeds" → `on_pip = false`.
+
+**Fired:** if still on PIP at next review and any grade is still "Needs Improvement" → `game_over("fired_pip")`.
+
+This is the simpler implementation (any NI while on PIP = fired, not per-metric tracking). Can be tightened
+to per-metric later if needed — the state change is small.
+
+### Balance keys
+
+```json
+"detection_base": 0,
+"pip_detection_base": 0.15
+```
+
+`detection_base` is kept explicit at 0 in case other factors are added later (e.g. consecutive hustle
+penalty). `pip_detection_base` is the separate rate that applies only while on PIP.
 
 ### Implementation
 
-- Add modifier fields to `GameManager` (e.g. `work_efficiency_modifier`, `detection_modifier`)
-- Consequences applied in `review_dialog.gd` `_on_continue_pressed()` after `unlock_next_tier()`
-- All modifier values in `balance.json`
+- Add `on_pip: bool = false` to `GameManager`
+- `_check_game_state("hustle")` uses `pip_detection_base` when `on_pip`, else 0
+- PIP flag evaluated in `_on_continue()` in `review_dialog.gd` after grades are read, before `reset_review_counters()`
+- `on_pip` resets in `reset()`
 
 ### GUT Tests
 
-- Applying Exceeds quality grade reduces bug penalty modifier
-- Applying Needs Improvement timeliness grade raises detection modifier
-- Modifiers persist after review (not reset until `game_over`)
+- `on_pip` set to true when any grade is "Needs Improvement"
+- `on_pip` cleared when all grades meet or exceed at next review
+- Hustle detection is 0 when not on PIP
+- Hustle detection uses `pip_detection_base` when on PIP
+- `game_over("fired_pip")` emitted when on PIP and any grade still "Needs Improvement"
+
+### Commit Plan
+
+1. `balance.json` — set `detection_base: 0`, add `pip_detection_base: 0.15`
+2. `on_pip` flag in `GameManager` + detection logic update + tests
+3. PIP evaluation in `review_dialog.gd` `_on_continue()` + fired_pip condition + tests
 
 ---
 
