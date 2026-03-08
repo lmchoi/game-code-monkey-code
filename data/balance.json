@@ -15,5 +15,11 @@
   "ship_vibe_yellow": 60,
   "max_overdue_days": 3,
   "review_day": 30,
-  "review2_day": 60
+  "review2_day": 60,
+  "quality_grade_exceeds": 0.9,
+  "quality_grade_meets": 0.6,
+  "output_grade_exceeds": 8,
+  "output_grade_meets": 5,
+  "timeliness_grade_exceeds": 0.8,
+  "timeliness_grade_meets": 0.5
 }
