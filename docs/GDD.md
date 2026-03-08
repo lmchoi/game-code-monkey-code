@@ -75,7 +75,7 @@ Players self-select their challenge via endings. No explicit difficulty modes ne
 | Resource | Start | Game Over |
 |----------|-------|-----------|
 | Money | $0 | — |
-| Bugs | 0 | 100+ = death spiral |
+| Bugs | 0 | Systemic slowdown (no hard limit) |
 | Day | 1 | — |
 
 ---
@@ -84,6 +84,7 @@ Players self-select their challenge via endings. No explicit difficulty modes ne
 
 **WORK**
 - Progress on task, scaled by complexity + bugs
+- Work Paralysis: At high bug counts (100+), corporate tasks become effectively unfinishable, leading to guaranteed overdue strikes.
 - Complexity shown on task card as 🍝 (1-3 bowls) — never as a number
 - Paid on payday (every 5 days)
 
@@ -108,7 +109,7 @@ WORK earns salary (payday every few days). HUSTLE earns side income (risky). Bot
 
 ## Loss Conditions
 
-- **Death Spiral** — bugs pile up until work becomes impossible
+- **Fired (hustle)** — caught by the boss too many times (3 strikes)
 - **Fired (deadline)** — task overdue too long and already on PIP
 
 ---
