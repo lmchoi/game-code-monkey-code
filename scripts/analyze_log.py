@@ -116,11 +116,9 @@ def balance_notes(all_metrics):
     if total == 0:
         return "\n--- no metrics found ---"
     wins = [m for m in all_metrics if m["outcome"] == "win"]
-    spirals = sum(1 for m in all_metrics if m["outcome"] == "bug_spiral")
 
     lines = ["\n--- balance notes ---"]
     lines.append(f"  real runs:        {total}")
-    lines.append(f"  bug spiral runs:  {spirals} / {total}")
     if wins:
         avg_day = sum(m["day"] for m in wins) / len(wins)
         avg_bugs = sum(m["bugs"] for m in wins) / len(wins)

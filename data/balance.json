@@ -1,6 +1,5 @@
 {
   "win_goal": 10000,
-  "bug_spiral_threshold": 100,
   "max_strikes": 3,
   "payday_interval": 5,
   "salary_per_payday": 500,

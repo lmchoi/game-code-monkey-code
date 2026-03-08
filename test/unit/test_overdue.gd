@@ -8,7 +8,6 @@ func before_each():
 	game_manager.balance = {
 		"max_overdue_days": 3,
 		"max_strikes": 3,
-		"bug_spiral_threshold": 50,
 		"win_goal": 5000,
 		"payday_interval": 5,
 		"salary_per_payday": 500,
