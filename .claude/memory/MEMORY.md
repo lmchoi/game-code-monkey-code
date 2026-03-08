@@ -100,16 +100,10 @@ Stray `.uid` files from the worktree may leak into main dir — delete before `g
 - After installing GUT on a fresh checkout, run `godot --headless --import` once to register class names
 - **NEVER call godot directly** — always use `make test`, `make check`, `make simulate`. The `/test`, `/check`, `/simulate` skills do this correctly (use `make …`).
 
-### Current build state (as of 2026-03-07)
-Task-pool plan (`docs/plans/task-pool.md`) steps done:
-- ✅ 1 — `data/tasks.json` restructured into `{tier1, tier2}`
-- ✅ 2 — `tasks_shipped` counter in GameManager
-- ✅ 3 — `total_bugs_added` counter in GameManager
-- ✅ 4 — `sloppy_ships` counter in GameManager
-- ✅ 5 — `tasks_on_time` / `tasks_late` counters in GameManager
-- ✅ 6 — tier-aware sequence logic in TaskManager (`unlock_tier2(day)`)
-- ⬜ 7 — Day 30 review dialog (reads counters, fires at day 30, calls `TaskManager.unlock_tier2()`)
-- ⬜ 8 — `balance.json` `win_goal: 10000`
+### Completed features (as of 2026-03-08)
+- ✅ Task-pool plan all steps done (tier1/tier2 sequence, counters, review dialog)
+- ✅ Review grades Phase 1 — Quality/Output/Timeliness display in review dialog
+- ✅ Review grades Phase 2 — PIP mechanic (merged)
 
 ### Git / PR workflow
 - Always create a feature branch before starting work — never commit directly to main.
@@ -130,3 +124,20 @@ GUT versions track Godot minor versions — they must be kept in sync.
 
 ### Squashing debug noise
 Before merging a PR, squash iterative fix/debug commits into the commit that introduced the thing being fixed. Only meaningful logical steps should survive as separate commits.
+
+### When things go wrong
+If there is a merge conflict, unexpected git state, or anything that starts to look messy — stop immediately and ask. Do not attempt to resolve or force through it.
+
+### Splitting a commit into two
+Use `git reset --soft HEAD~1` to unstage the last commit while keeping all changes staged.
+Then selectively unstage what belongs in the second commit (`git restore --staged <file>`),
+commit the first half, stage the rest, commit the second half.
+Do NOT edit files back and forth to create intermediate states — that's unnecessary complexity.
+
+### Current build state (as of 2026-03-08)
+Review grades (Phase 1 + Phase 2 PIP) complete. Key facts:
+- `detection_base = 0` — hustle safe by default
+- `pip_detection_base = 0.15` — applies only when `on_pip = true`
+- Any "Needs Improvement" grade at review → `on_pip = true`
+- Still NI while on PIP at next review → `fired_pip` (handled in `review_dialog.gd`)
+- `any_grade_needs_improvement()` is public (called from `review_dialog.gd`)
