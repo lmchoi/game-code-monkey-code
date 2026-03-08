@@ -61,6 +61,18 @@ func calculate_output_grade() -> String:
 		return "Meets Expectations"
 	return "Needs Improvement"
 
+func calculate_timeliness_grade() -> String:
+	var total = tasks_on_time + tasks_late
+	if total == 0:
+		return "Needs Improvement"
+	
+	var on_time_rate = float(tasks_on_time) / total
+	if on_time_rate >= float(balance.get("timeliness_grade_exceeds", 0.8)):
+		return "Exceeds Expectations"
+	if on_time_rate >= float(balance.get("timeliness_grade_meets", 0.5)):
+		return "Meets Expectations"
+	return "Needs Improvement"
+
 func calculate_progress_delta(complexity: int, bugs_count: int) -> float:
 	return TaskManager.TASK_MAX_PROGRESS / (complexity * (1.0 + bugs_count * balance.bug_penalty_per_bug))
 

@@ -271,3 +271,27 @@ func test_output_grade_needs_improvement():
 func test_output_grade_zero_shipped():
 	game_manager.tasks_shipped = 0
 	assert_eq(game_manager.calculate_output_grade(), "Needs Improvement")
+
+func test_timeliness_grade_exceeds():
+	game_manager.balance["timeliness_grade_exceeds"] = 0.8
+	game_manager.tasks_on_time = 8
+	game_manager.tasks_late = 2 # 80% on time
+	assert_eq(game_manager.calculate_timeliness_grade(), "Exceeds Expectations")
+
+func test_timeliness_grade_meets():
+	game_manager.balance["timeliness_grade_exceeds"] = 0.8
+	game_manager.balance["timeliness_grade_meets"] = 0.5
+	game_manager.tasks_on_time = 5
+	game_manager.tasks_late = 5 # 50% on time
+	assert_eq(game_manager.calculate_timeliness_grade(), "Meets Expectations")
+
+func test_timeliness_grade_needs_improvement():
+	game_manager.balance["timeliness_grade_meets"] = 0.5
+	game_manager.tasks_on_time = 4
+	game_manager.tasks_late = 6 # 40% on time
+	assert_eq(game_manager.calculate_timeliness_grade(), "Needs Improvement")
+
+func test_timeliness_grade_zero_shipped():
+	game_manager.tasks_on_time = 0
+	game_manager.tasks_late = 0
+	assert_eq(game_manager.calculate_timeliness_grade(), "Needs Improvement")
