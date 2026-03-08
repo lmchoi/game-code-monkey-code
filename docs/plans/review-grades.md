@@ -13,26 +13,74 @@ Show the player a report card at each review. Three grades, derived from existin
 
 ### Grades
 
-| Grade | Measures | Source |
-|-------|----------|--------|
-| Quality | Sloppy ship rate, bugs added | `sloppy_ships`, `total_bugs_added`, `tasks_shipped` |
-| Output | Tasks completed, weighted by complexity | `tasks_shipped` (complexity weight TBD) |
-| Timeliness | On-time vs late ships | `tasks_on_time`, `tasks_late` |
+| Grade | Measures | Calculation |
+|-------|----------|-------------|
+| Quality | Sloppy ship rate | `1 - (sloppy_ships / tasks_shipped)` |
+| Output | Tasks shipped in period | `tasks_shipped` (raw count vs thresholds) |
+| Timeliness | On-time vs late ships | `tasks_on_time / (tasks_on_time + tasks_late)` |
 
-Each grade: Good / Okay / Poor. Thresholds set in `balance.json`, tuned via playtesting.
+Output uses raw count, not a ratio. No complexity weighting yet — defer until tier 2 tasks are better understood.
+
+### Grade Labels (corporate language)
+
+- **Exceeds Expectations**
+- **Meets Expectations**
+- **Needs Improvement**
+
+### Thresholds
+
+Each metric has its own two thresholds in `balance.json`. Ratio above `exceeds` → Exceeds, above `meets` → Meets, else Needs Improvement.
+
+```json
+"quality_grade_exceeds": 0.9,
+"quality_grade_meets": 0.6,
+"output_grade_exceeds": 8,
+"output_grade_meets": 5,
+"timeliness_grade_exceeds": 0.8,
+"timeliness_grade_meets": 0.5
+```
+
+Output thresholds based on log analysis: wins ship ~9–10 tasks per 30-day period, 5–7 is solid, <5 is struggling. Starting values — tune via playtesting.
+
+### Edge Cases
+
+- `tasks_shipped = 0` → Quality and Timeliness return "Needs Improvement" (no division); Output returns "Needs Improvement"
+- `tasks_on_time + tasks_late = 0` → Timeliness returns "Needs Improvement"
 
 ### UI
 
-Extend `review_dialog.gd` and `review_dialog.tscn` to show grades alongside the existing counters.
+Extend `review_dialog.gd` and `review_dialog.tscn` to show grades alongside the existing raw counters.
 No new scene needed — add grade labels to the existing layout.
+
+### Implementation Order (one metric at a time)
+
+1. Quality grade — TDD: failing test → `calculate_quality_grade()` in `GameManager` → pass
+2. Quality grade display in review dialog
+3. Output grade — TDD: failing test → `calculate_output_grade()` in `GameManager` → pass
+4. Output grade display in review dialog
+5. Timeliness grade — TDD: failing test → `calculate_timeliness_grade()` in `GameManager` → pass
+6. Timeliness grade display in review dialog
 
 ### GUT Tests
 
-- `calculate_quality_grade()` returns correct grade for given inputs
-- `calculate_output_grade()` returns correct grade
-- `calculate_timeliness_grade()` returns correct grade
-- Edge: all tasks sloppy → Poor quality
-- Edge: zero tasks shipped → grades handle gracefully
+**Quality:**
+- Returns "Exceeds Expectations" when sloppy rate is low
+- Returns "Meets Expectations" when sloppy rate is mid
+- Returns "Needs Improvement" when sloppy rate is high
+- Edge: all tasks sloppy → Needs Improvement
+- Edge: zero tasks shipped → Needs Improvement (no crash)
+
+**Output:**
+- Returns "Exceeds Expectations" when tasks_shipped >= exceeds threshold
+- Returns "Meets Expectations" when tasks_shipped >= meets threshold
+- Returns "Needs Improvement" when tasks_shipped below meets threshold
+- Edge: zero tasks shipped → Needs Improvement
+
+**Timeliness:**
+- Returns "Exceeds Expectations" when mostly on time
+- Returns "Meets Expectations" when mixed
+- Returns "Needs Improvement" when mostly late
+- Edge: zero tasks shipped → Needs Improvement (no crash)
 
 ---
 
@@ -41,27 +89,29 @@ No new scene needed — add grade labels to the existing layout.
 Grades translate into modifiers that affect the remainder of the run.
 Applied once at the review, persisted in `GameManager`.
 
+Phase 2 should follow Phase 1 quickly — grades feel hollow without consequences.
+
 ### Candidate consequences (to tune via playtesting)
 
 | Grade result | Effect |
 |--------------|--------|
-| Quality: Good | Bug penalty on work reduced slightly |
-| Quality: Poor | Bug penalty on work increased |
-| Output: Good | Salary bonus (+$X per payday) |
-| Output: Poor | No salary change |
-| Timeliness: Good | Detection base rate lowered |
-| Timeliness: Poor | Detection base rate raised |
+| Quality: Exceeds | Bug penalty on work reduced slightly |
+| Quality: Needs Improvement | Bug penalty on work increased |
+| Output: Exceeds | Salary bonus (+$X per payday) |
+| Output: Needs Improvement | No salary change |
+| Timeliness: Exceeds | Detection base rate lowered |
+| Timeliness: Needs Improvement | Detection base rate raised |
 
 ### Implementation
 
-- Add modifier fields to `GameManager` (e.g. `work_efficiency_modifier`, `salary_bonus`, `detection_modifier`)
+- Add modifier fields to `GameManager` (e.g. `work_efficiency_modifier`, `detection_modifier`)
 - Consequences applied in `review_dialog.gd` `_on_continue_pressed()` after `unlock_next_tier()`
 - All modifier values in `balance.json`
 
 ### GUT Tests
 
-- Applying Good quality grade reduces bug penalty modifier
-- Applying Poor timeliness grade raises detection modifier
+- Applying Exceeds quality grade reduces bug penalty modifier
+- Applying Needs Improvement timeliness grade raises detection modifier
 - Modifiers persist after review (not reset until `game_over`)
 
 ---
@@ -76,8 +126,12 @@ Applied once at the review, persisted in `GameManager`.
 
 ## Suggested Commit Order
 
-1. `calculate_*_grade()` functions in `GameManager` + GUT tests (TDD)
-2. Grade display in `review_dialog.tscn` / `review_dialog.gd`
-3. Mechanical consequence modifiers in `GameManager` + GUT tests (TDD)
-4. Apply consequences in `review_dialog.gd`
-5. `balance.json` — grade thresholds and modifier values
+1. `calculate_quality_grade()` in `GameManager` + GUT tests (TDD)
+2. Quality grade display in `review_dialog.tscn` / `review_dialog.gd`
+3. `calculate_output_grade()` in `GameManager` + GUT tests (TDD)
+4. Output grade display in `review_dialog.tscn` / `review_dialog.gd`
+5. `calculate_timeliness_grade()` in `GameManager` + GUT tests (TDD)
+6. Timeliness grade display in `review_dialog.tscn` / `review_dialog.gd`
+7. Phase 2: consequence modifiers in `GameManager` + GUT tests (TDD)
+8. Apply consequences in `review_dialog.gd`
+9. `balance.json` — all thresholds and modifier values
