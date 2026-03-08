@@ -159,10 +159,6 @@ func _check_game_state(action: String = "") -> void:
 			game_over_reason = "fired_overdue"
 			game_over.emit(game_over_reason)
 			return
-	if bugs >= int(balance.bug_spiral_threshold):
-		game_over_reason = "bug_spiral"
-		game_over.emit("bug_spiral")
-		return
 	if money >= int(balance.win_goal):
 		game_over_reason = "win"
 		game_over.emit("win")

@@ -13,9 +13,6 @@ func _ready() -> void:
 	elif reason == "fired_overdue":
 		_ending_title.text = "TERMINATED FOR CAUSE"
 		_ending_quote.text = "Your performance did not meet expectations."
-	elif reason == "bug_spiral":
-		_ending_title.text = "DEATH SPIRAL"
-		_ending_quote.text = "100 bugs. Nothing works. Nothing ever worked."
 	else:
 		_ending_title.text = "THE PRAGMATIST"
 		_ending_quote.text = "You made reasonable decisions under unreasonable conditions. No one will remember."

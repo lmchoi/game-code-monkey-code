@@ -67,15 +67,13 @@ class TestAnalyzeLog(unittest.TestCase):
         all_metrics = [
             {"outcome": "win", "day": 10, "bugs": 2},
             {"outcome": "win", "day": 12, "bugs": 4},
-            {"outcome": "bug_spiral", "day": 5, "bugs": 10},
+            {"outcome": "fired_hustle", "day": 5, "bugs": 10},
         ]
         notes = balance_notes(all_metrics)
         # Check for values without being sensitive to exact spacing
         self.assertIn("real runs:", notes)
         # Split on label and check the next non-empty string is "3"
         self.assertEqual(notes.split("real runs:")[1].split()[0], "3")
-        self.assertIn("bug spiral runs:", notes)
-        self.assertIn("1 / 3", notes)
         self.assertIn("avg win day:", notes)
         self.assertIn("11.0", notes)
         self.assertIn("avg bugs at win:", notes)
