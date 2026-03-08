@@ -12,7 +12,7 @@ func _ready() -> void:
 	vbox.custom_minimum_size = Vector2(280, 0)
 	add_child(vbox)
 
-	_add_label(vbox, "30-Day Review", 28)
+	_add_label(vbox, "Performance Review", 28)
 	_add_label(vbox, "Tasks shipped: %d" % GameManager.tasks_shipped, 20)
 	_add_label(vbox, "On time: %d" % GameManager.tasks_on_time, 20)
 	_add_label(vbox, "Late: %d" % GameManager.tasks_late, 20)
