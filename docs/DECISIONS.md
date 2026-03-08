@@ -354,9 +354,16 @@ New resource/state to track. Rewards focus, punishes context-switching. Creates 
 - *Help a coworker* — optional; skip your progress today, reduce detection chance for N days
 - *Code review* — bug count is inspected; above threshold, automatic strike
 
+**Production outage trigger — two candidate mechanics (not locked):**
+
+1. **Bug % trigger:** each day, bugs contribute a rolling % chance of outage firing (e.g. `bugs * 2%` per day). Global pressure — the more bugs you've accumulated, the more likely something blows up. Realistic but opaque.
+2. **Task-level delayed outage:** sloppy ship on certain tasks sets a hidden timer — outage fires N days later regardless of current bug count. More attributable (player can trace it to a specific bad ship) and feels fairer. Pairs naturally with `critical` task type — a sloppy critical ship could guarantee a delayed outage rather than just a strike.
+
+Lean: option 2 for attributability. Could combine both: task-level for `critical` tasks, bug % as a background risk for everything else.
+
 **Rationale:** Random events are the most effective tool against dry runs — each day becomes potentially surprising. The constraint phase is already in the architecture for exactly this purpose.
 
-**Status:** Parked. Don't build until core loop (including task types and refactor) is stable and validated.
+**Status:** Parked. Don't build until task types are in and playtested — outage trigger mechanic depends on knowing which task types exist.
 
 ---
 
