@@ -18,6 +18,7 @@ func _ready() -> void:
 	_add_label(vbox, "Late: %d" % GameManager.tasks_late, 20)
 	_add_label(vbox, "Bugs added: %d" % GameManager.total_bugs_added, 20)
 	_add_label(vbox, "Sloppy ships: %d" % GameManager.sloppy_ships, 20)
+	_add_label(vbox, "Quality Grade: %s" % GameManager.calculate_quality_grade(), 22)
 	_add_label(vbox, "Your performance is noted.", 20)
 
 	popup_centered()
