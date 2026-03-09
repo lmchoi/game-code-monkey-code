@@ -36,16 +36,23 @@ playtesting reveals whether hidden types feel unfair.
 
 ## Task Types
 
-| Type | Description | Mechanic |
-|------|-------------|----------|
-| `standard` | Normal task | Existing behaviour. No change. |
-| `optics` | Bullshit business request — dumb, political, but the boss announced it in all-hands. Deadline is arbitrary and non-negotiable. | Ship late → immediate strike (deadline is political, not technical). Tight deadline in task data. |
-| `tech_debt` | Tedious cleanup nobody wants to do. No glory, but the codebase thanks you. | On ship, reduce current bug count by a fixed amount. The payoff for doing the boring work. |
-| `critical` | High-stakes task — the business is watching, and a bad ship will be noticed. | Sloppy ship → immediate strike. Quality is mandatory. |
+| Type | Complexity | Deadline | Mechanic |
+|------|------------|----------|----------|
+| `standard` | any | normal | Existing behaviour. No change. |
+| `optics` | low | tight | Ship late → immediate strike. Easy task, zero tolerance for lateness. |
+| `tech_debt` | high | tight | No special mechanic. The pain is the task itself — unglamorous, hard, time-consuming. |
+| `critical` | any | normal | Sloppy ship → immediate strike. Quality is mandatory. |
+| `compliance` | low | normal | Ship it → task done, -1 duck. Let it go overdue → strike risk, duck preserved. Only type where not shipping is a legitimate strategy. Tracked in recap. |
 
-**Narrative arc:** optics (timing pressure, carrot/stick) → tech_debt (cleanup payoff) → critical (quality pressure). Escalates from "don't be late" to "don't be sloppy."
+**Narrative arc:** optics (time pressure) → tech_debt (complexity pressure) → critical (quality pressure) → moral (conscience pressure).
 
-**Task descriptions:** Optics tasks should read as recognisably absurd corporate requests that devs will laugh at. Tech debt tasks should feel tedious and unglamorous. Critical tasks should feel high-stakes and stressful.
+**Task descriptions:** Optics tasks are low-complexity political requests devs will recognise ("Add 'AI-powered' to the landing page by EOD"). Tech debt tasks are tedious and unglamorous ("Migrate the legacy auth tables. No docs."). Critical tasks feel high-stakes ("Patch the payment service before the audit"). Moral tasks are ethically questionable requests the business frames as normal ("Scrape competitor pricing data. Don't log it.").
+
+**Recap / endings:** moral task acceptance rate is tracked and surfaces in the run recap and victory ending triggers. A player who always accepted moral tasks gets a different flavour than one who pushed back.
+
+**Dependency:** requires ducks mechanic (v1+). Don't build until ducks are implemented.
+
+**Parked idea:** probability of drawing a `tech_debt` task increases as bug count rises — the more you've shipped sloppily, the more cleanup lands in your queue. Don't build until weighted task draw logic exists.
 
 ---
 
@@ -69,8 +76,6 @@ match current_task.get("type", "standard"):
         if is_overdue:
             strikes += 1
             # existing overdue logic still runs
-    "tech_debt":
-        bugs = max(0, bugs - balance.get("tech_debt_bug_reduction", 5))
     "critical":
         if was_sloppy:
             strikes += 1
@@ -79,18 +84,15 @@ match current_task.get("type", "standard"):
 
 ### balance.json
 
-```json
-"tech_debt_bug_reduction": 5
-```
+No new keys required.
 
 ### GUT Tests
 
 - `optics` overdue ship adds a strike
 - `optics` on-time ship does not add extra strike
-- `tech_debt` ship reduces bug count
-- `tech_debt` ship does not reduce below 0
 - `critical` sloppy ship adds a strike
 - `critical` clean ship does not add a strike
+- `tech_debt` ship has no special consequence
 - `standard` ship behaviour unchanged
 
 ---
@@ -106,4 +108,4 @@ match current_task.get("type", "standard"):
 
 1. Add `type` field to all tasks in `data/tasks.json` (data only, including new optics/tech_debt/critical task titles)
 2. `do_ship()` type dispatch in `game_manager.gd` + GUT tests (TDD)
-3. `balance.json` — `tech_debt_bug_reduction`
+3. Task card label — coloured pill showing type name (e.g. "OPTICS", "TECH DEBT", "CRITICAL"), visible before the player commits. `/look` to verify.
