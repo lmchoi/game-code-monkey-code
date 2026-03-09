@@ -22,6 +22,7 @@ func _process(_delta: float) -> bool:
 		"diligent_worker": diligent_worker,
 		"ship_asap": ship_asap,
 		"hustle_then_ship": hustle_then_ship,
+		"hustle_ship_asap": hustle_ship_asap,
 	}
 
 	var args = OS.get_cmdline_user_args()
@@ -57,11 +58,12 @@ func _on_review() -> void:
 		"quality": _gm.calculate_quality_grade(),
 		"output": _gm.calculate_output_grade(),
 		"timeliness": _gm.calculate_timeliness_grade(),
+		"bugs": _gm.bugs,
 	}
 	if _trace_mode:
-		print("  --- period %d review ---  Quality: %s  Output: %s  Timeliness: %s  on_pip=%s" % [
+		print("  --- period %d review ---  Quality: %s  Output: %s  Timeliness: %s  bugs=%d  on_pip=%s" % [
 			_current_run_grades.size() + 1,
-			grades.quality, grades.output, grades.timeliness, _gm.on_pip])
+			grades.quality, grades.output, grades.timeliness, grades.bugs, _gm.on_pip])
 	_gm.apply_review_outcome()
 	_current_run_grades.append(grades)
 
@@ -73,8 +75,10 @@ func run_strategy(strategy: Callable, n: int) -> Dictionary:
 	var all_days: Array = []
 	var all_tasks: Array = []
 	var days_per_outcome = {} # outcome -> Array
+	var bugs_per_outcome = {} # outcome -> Array
 
 	var grade_tally: Dictionary = {}
+	var bugs_per_period: Dictionary = {}  # "p1" -> Array, "p2" -> Array
 
 	for _i in n:
 		_current_run_grades = []
@@ -94,7 +98,13 @@ func run_strategy(strategy: Callable, n: int) -> Dictionary:
 		for period_idx in _current_run_grades.size():
 			var p = period_idx + 1
 			var snap = _current_run_grades[period_idx]
+			var pkey = "p%d" % p
+			if not bugs_per_period.has(pkey):
+				bugs_per_period[pkey] = []
+			bugs_per_period[pkey].append(snap["bugs"])
 			for metric in snap:
+				if metric == "bugs":
+					continue
 				var key = "p%d_%s" % [p, metric]
 				if not grade_tally.has(key):
 					grade_tally[key] = {}
@@ -103,6 +113,9 @@ func run_strategy(strategy: Callable, n: int) -> Dictionary:
 		if not days_per_outcome.has(outcome):
 			days_per_outcome[outcome] = []
 		days_per_outcome[outcome].append(_gm.day)
+		if not bugs_per_outcome.has(outcome):
+			bugs_per_outcome[outcome] = []
+		bugs_per_outcome[outcome].append(_gm.bugs)
 
 		if outcome == "win":
 			win_days.append(_gm.day)
@@ -110,6 +123,8 @@ func run_strategy(strategy: Callable, n: int) -> Dictionary:
 			win_strikes.append(_gm.strikes)
 
 	tally["_grades"] = grade_tally
+	tally["_bugs_per_period"] = bugs_per_period
+	tally["_bugs_per_outcome"] = bugs_per_outcome
 	
 	if all_days.size() > 0:
 		tally["_avg_day"] = all_days.reduce(func(a, b): return a + b, 0.0) / all_days.size()
@@ -152,9 +167,12 @@ func print_results(name: String, tally: Dictionary) -> void:
 	
 	print("\n%s (n=%d):" % [name, n])
 	print("  Ending Type Breakdown:")
+	var bugs_per_outcome: Dictionary = tally.get("_bugs_per_outcome", {})
 	for outcome in outcome_keys:
 		var avg_day = tally.get("_avg_day_" + outcome, 0.0)
-		print("    %-20s %d%% (avg day %.1f)" % [outcome + ":", roundi(100.0 * tally[outcome] / n), avg_day])
+		var bugs_arr: Array = bugs_per_outcome.get(outcome, [])
+		var avg_bugs = bugs_arr.reduce(func(a, b): return a + b, 0.0) / max(1, bugs_arr.size())
+		print("    %-20s %d%% (avg day %.1f  avg bugs %.0f)" % [outcome + ":", roundi(100.0 * tally[outcome] / n), avg_day, avg_bugs])
 	
 	if tally.has("_avg_tasks"):
 		print("  avg tasks completed: %.1f" % tally["_avg_tasks"])
@@ -193,7 +211,12 @@ func print_results(name: String, tally: Dictionary) -> void:
 		var first_metric = grade_tally.get("p%d_%s" % [p, METRICS[0]], {})
 		for v in first_metric.values():
 			period_total += v
-		print("  review grades (period %d, n=%d):" % [p, period_total])
+		var bugs_arr: Array = tally.get("_bugs_per_period", {}).get("p%d" % p, [])
+		var avg_bugs_str = ""
+		if bugs_arr.size() > 0:
+			var avg_b = bugs_arr.reduce(func(a, b): return a + b, 0.0) / bugs_arr.size()
+			avg_bugs_str = "  avg bugs: %.0f" % avg_b
+		print("  review grades (period %d, n=%d):%s" % [p, period_total, avg_bugs_str])
 		for metric in METRICS:
 			var counts_m: Dictionary = grade_tally.get("p%d_%s" % [p, metric], {})
 			var parts = []
@@ -221,4 +244,11 @@ func hustle_then_ship(state: Dictionary) -> String:
 		return "ship"
 	if not state.task_overdue:
 		return "hustle"
+	return "work"
+
+func hustle_ship_asap(state: Dictionary) -> String:
+	if state.can_ship and state.day >= state.deadline_day:
+		return "ship"
+	if state.can_ship:
+		return "hustle"  # hit minimum progress, hustle until deadline
 	return "work"
