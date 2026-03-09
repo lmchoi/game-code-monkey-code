@@ -51,14 +51,9 @@ func _add_label(parent: Control, text: String, size: int, wrap: bool = false) ->
 	parent.add_child(label)
 
 func _on_continue() -> void:
-	var any_needs_improvement = GameManager.any_grade_needs_improvement()
-	if GameManager.on_pip and any_needs_improvement:
-		GameManager.game_over_reason = "fired_pip"
-		GameManager.game_over.emit("fired_pip")
+	GameManager.apply_review_outcome()
+	if GameManager.game_over_reason == "fired_pip":
 		queue_free()
 		return
-	GameManager.on_pip = any_needs_improvement
-	GameManager.reset_review_counters()
-	TaskManager.unlock_next_tier()
 	continued.emit()
 	queue_free()
