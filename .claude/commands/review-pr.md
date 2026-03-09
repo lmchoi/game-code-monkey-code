@@ -12,6 +12,10 @@ Steps:
    - **severity**: `error` (must fix before merge), `warning` (should fix), `nit` (minor/style)
    - **category**: `convention` (vs CLAUDE.md rules), `correctness` (logic/bugs), `test` (missing or fragile tests), `architecture` (design concerns)
 
+   **Architecture checks to always apply:**
+   - No game logic in UI/scene scripts (`scenes/*.gd`). Logic belongs in autoloads (`autoloads/*.gd`). UI reads state and calls autoload methods — it must not set `game_over_reason`, mutate `on_pip`, or make decisions that affect game state. Flag any such code as `error` + `architecture`.
+   - Simulation script (`scripts/simulate.gd`) must not duplicate logic from autoloads — it should call the same methods the game uses. If `_on_review` or similar handlers re-implement logic instead of calling a `GameManager` method, flag it.
+
 5. Write `.claude/last-review.md` with this exact structure:
 
 ```
