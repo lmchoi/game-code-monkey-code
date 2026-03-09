@@ -59,11 +59,10 @@ func _on_review() -> void:
 		"timeliness": _gm.calculate_timeliness_grade(),
 	}
 	if _trace_mode:
-		print("  --- period %d review ---  Quality: %s  Output: %s  Timeliness: %s" % [
+		print("  --- period %d review ---  Quality: %s  Output: %s  Timeliness: %s  on_pip=%s" % [
 			_current_run_grades.size() + 1,
-			grades.quality, grades.output, grades.timeliness])
-	_gm.reset_review_counters()
-	_tm.unlock_next_tier()
+			grades.quality, grades.output, grades.timeliness, _gm.on_pip])
+	_gm.apply_review_outcome()
 	_current_run_grades.append(grades)
 
 func run_strategy(strategy: Callable, n: int) -> Dictionary:
@@ -72,8 +71,9 @@ func run_strategy(strategy: Callable, n: int) -> Dictionary:
 	var win_bugs: Array = []
 	var win_strikes: Array = []
 	var all_days: Array = []
+	var all_tasks: Array = []
 	var days_per_outcome = {} # outcome -> Array
-	
+
 	var grade_tally: Dictionary = {}
 
 	for _i in n:
@@ -89,6 +89,7 @@ func run_strategy(strategy: Callable, n: int) -> Dictionary:
 		var outcome = _gm.game_over_reason if _gm.game_over_reason != "" else "timeout"
 		tally[outcome] = tally.get(outcome, 0) + 1
 		all_days.append(_gm.day)
+		all_tasks.append(_gm.tasks_shipped)
 
 		for period_idx in _current_run_grades.size():
 			var p = period_idx + 1
@@ -112,6 +113,7 @@ func run_strategy(strategy: Callable, n: int) -> Dictionary:
 	
 	if all_days.size() > 0:
 		tally["_avg_day"] = all_days.reduce(func(a, b): return a + b, 0.0) / all_days.size()
+		tally["_avg_tasks"] = all_tasks.reduce(func(a, b): return a + b, 0.0) / all_tasks.size()
 		
 	for outcome in days_per_outcome:
 		var ds = days_per_outcome[outcome]
@@ -154,6 +156,9 @@ func print_results(name: String, tally: Dictionary) -> void:
 		var avg_day = tally.get("_avg_day_" + outcome, 0.0)
 		print("    %-20s %d%% (avg day %.1f)" % [outcome + ":", roundi(100.0 * tally[outcome] / n), avg_day])
 	
+	if tally.has("_avg_tasks"):
+		print("  avg tasks completed: %.1f" % tally["_avg_tasks"])
+
 	if tally.has("_win_avg_day"):
 		print("  avg win day:         %.1f" % tally["_win_avg_day"])
 		print("  avg win bugs:        %.1f" % tally["_win_avg_bugs"])
