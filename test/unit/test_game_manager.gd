@@ -292,6 +292,42 @@ func test_hustle_detection_fires_when_on_pip():
 	game_manager._check_game_state("hustle")
 	assert_signal_emitted_with_parameters(game_manager, "game_over", ["fired_hustle"])
 
+# === APPLY_REVIEW_OUTCOME TESTS ===
+
+func test_apply_review_outcome_sets_pip_when_any_ni():
+	game_manager.balance["output_grade_meets"] = 9999  # force NI
+	game_manager.apply_review_outcome()
+	assert_true(game_manager.on_pip)
+
+func test_apply_review_outcome_clears_pip_when_all_passing():
+	game_manager.on_pip = true
+	game_manager.tasks_shipped = 10
+	game_manager.tasks_on_time = 10
+	game_manager.total_bugs_added = 0
+	game_manager.sloppy_ships = 0
+	game_manager.balance["quality_grade_exceeds"] = 0.9
+	game_manager.balance["quality_grade_meets"] = 0.6
+	game_manager.balance["output_grade_exceeds"] = 8
+	game_manager.balance["output_grade_meets"] = 5
+	game_manager.balance["timeliness_grade_exceeds"] = 0.8
+	game_manager.balance["timeliness_grade_meets"] = 0.5
+	game_manager.apply_review_outcome()
+	assert_false(game_manager.on_pip)
+
+func test_apply_review_outcome_fired_pip_when_ni_while_on_pip():
+	game_manager.on_pip = true
+	game_manager.balance["output_grade_meets"] = 9999  # force NI
+	watch_signals(game_manager)
+	game_manager.apply_review_outcome()
+	assert_signal_emitted_with_parameters(game_manager, "game_over", ["fired_pip"])
+
+func test_apply_review_outcome_resets_counters():
+	game_manager.tasks_shipped = 5
+	game_manager.balance["quality_grade_exceeds"] = 9999  # force quality NI
+	game_manager.balance["quality_grade_meets"] = 9999
+	game_manager.apply_review_outcome()
+	assert_eq(game_manager.tasks_shipped, 0)
+
 func test_any_grade_needs_improvement_true_when_nothing_shipped():
 	game_manager.tasks_shipped = 0
 	assert_true(game_manager.any_grade_needs_improvement())

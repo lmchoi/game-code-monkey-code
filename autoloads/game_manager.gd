@@ -238,6 +238,18 @@ func any_grade_needs_improvement() -> bool:
 		or calculate_output_grade() == "Needs Improvement"
 		or calculate_timeliness_grade() == "Needs Improvement")
 
+func apply_review_outcome() -> void:
+	if any_grade_needs_improvement():
+		if on_pip:
+			game_over_reason = "fired_pip"
+			game_over.emit("fired_pip")
+			return
+		on_pip = true
+	else:
+		on_pip = false
+	reset_review_counters()
+	TaskManager.unlock_next_tier()
+
 func _constraint_phase() -> void:
 	pass
 
