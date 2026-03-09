@@ -37,6 +37,8 @@ test-py: ## Run python unit tests
 simulate: ## Run strategy simulation and print outcome distributions
 	$(GODOT4_BIN) --headless --script scripts/simulate.gd 2>/dev/null
 
-STRATEGY ?= diligent_worker
 trace: ## Trace a single game run with turn-by-turn logging (STRATEGY=name)
+ifndef STRATEGY
+	$(error STRATEGY is required. Usage: make trace STRATEGY=diligent_worker)
+endif
 	$(GODOT4_BIN) --headless --script scripts/simulate.gd -- $(STRATEGY) 2>/dev/null
