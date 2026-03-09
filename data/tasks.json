@@ -28,6 +28,14 @@
     { "title": "Fix the recursive memory leak in production", "complexity": 3, "deadline_days": 2 },
     { "title": "Make the app GDPR compliant by Monday", "complexity": 3, "deadline_days": 2 },
     { "title": "Fix prod. It's been down for 40 minutes.", "complexity": 3, "deadline_days": 1 },
-    { "title": "Patch the security breach. It's live right now.", "complexity": 3, "deadline_days": 1 }
+    { "title": "Patch the security breach. It's live right now.", "complexity": 3, "deadline_days": 1 },
+    { "title": "The CEO demo is in 2 hours. Nothing works.", "complexity": 3, "deadline_days": 1 },
+    { "title": "Hotfix the hotfix. The hotfix broke prod.", "complexity": 3, "deadline_days": 1 },
+    { "title": "The audit starts Monday. Three critical findings.", "complexity": 3, "deadline_days": 2 },
+    { "title": "Your on-call shift. Three P0s. You're alone.", "complexity": 3, "deadline_days": 1 },
+    { "title": "Customer data is exposed. Legal is on the phone.", "complexity": 3, "deadline_days": 1 },
+    { "title": "Fix the data pipeline before the board report goes out.", "complexity": 3, "deadline_days": 2 },
+    { "title": "The app crashed during the live TV segment.", "complexity": 3, "deadline_days": 1 },
+    { "title": "Migrate prod data before the server contract expires. Tonight.", "complexity": 3, "deadline_days": 1 }
   ]
 }
