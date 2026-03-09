@@ -13,7 +13,7 @@ Decisions being actively discussed or reconsidered. Once resolved, update the GD
 | 🟡 Open | `[DESIGN]` | Post-core-loop | [day-30-review](#open-day-30-review) |
 | ✅ Closed | `[BALANCE]` | Playtest | [hustle-detection-balance](#open-hustle-detection-balance) |
 | 🟡 Open | `[BALANCE]` | Playtest | [income-scaling](#open-income-scaling) |
-| 🟡 Open | `[BALANCE]` | Pre-win-goal-raise | [sim-calibration](#open-sim-calibration) |
+| 🟠 Active | `[BALANCE]` | Pre-win-goal-raise | [sim-calibration](#open-sim-calibration) |
 | 🟡 Open | `[DESIGN]` | Playtest | [bug-feedback-on-ship](#open-bug-feedback-on-ship) |
 | ✅ Closed | `[DESIGN]` | Post-tier2 | [task-types-tradeoffs](#closed-task-types-tradeoffs) |
 | 🟠 Active | `[DESIGN]` | Post-tier2 | [review-upgrades](#open-review-upgrades) |
@@ -173,7 +173,23 @@ Specifically:
 - At what `win_goal` does `ship_asap` fail to win before the day 60 `fired_pip`?
 - Do the output/timeliness thresholds feel right for `hustle_then_ship` at that length?
 
-**Status:** Parked. Do before raising `win_goal`.
+**Findings (2026-03-09, win_goal=15000):**
+
+| Strategy | Outcome | Avg day | Avg bugs at death/win |
+|----------|---------|---------|----------------------|
+| `diligent_worker` | win 100% | 151 | 62 |
+| `ship_asap` | fired_overdue 100% | 139 | 111 |
+| `hustle_then_ship` | fired_hustle 92%, fired_overdue 5%, fired_pip 3% | ~44 | — |
+| `hustle_ship_asap` | win 86%, fired_hustle 15% | win: 106 | win: 56 |
+
+- `ship_asap` dies to bug spiral (5 bugs at review 1 → 38 at review 2 → 111 at death). Bug penalty slows progress enough to cause overdue deaths — mechanic working as designed.
+- `hustle_then_ship` / pure hustle strategies die to detection after PIP at day 30 review (output + timeliness NI). Detection kills them before they can win.
+- `hustle_ship_asap` is the only viable mixed strategy — 86% win rate at day 106. Gets quality NI at review 2 (always ships at 50%), goes on PIP, 15% die to detection.
+- Sim was previously broken — PIP/fired_pip logic was not applied. Fixed in PR #34.
+
+**Still open:** `diligent_worker` winning at day 151 with no drama is too safe. No strategy feels like a nail-biter. May need grade thresholds tightened or `win_goal` raised further after playtesting.
+
+**Status:** Active. `win_goal=15000` in place. Revisit thresholds after task types are implemented — typed tasks will change strategy outcomes.
 
 ---
 
